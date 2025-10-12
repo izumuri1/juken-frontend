@@ -1,0 +1,230 @@
+// 中学受験管理アプリ - データベース設計
+
+Project exam_management_app {
+  database_type: 'PostgreSQL'
+  Note: '中学受験の学校選び・受験管理を支援するWebアプリケーション'
+}
+
+// ユーザー情報（Supabase Auth連携）
+Table users {
+  id uuid [pk, default: `gen_random_uuid()`]
+  email varchar(255) [unique, not null]
+  username varchar(20) [not null, note: '2-20文字']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  Indexes {
+    email
+    username
+  }
+  
+  Note: 'Supabase Authと連携。メールアドレス・ユーザー名で管理'
+}
+
+// ワークスペース
+Table workspaces {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(30) [not null, note: '30文字以下、半角英数字・ひらがな・カタカナ・漢字・スペース・-・_']
+  owner_id uuid [ref: > users.id, not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  Indexes {
+    owner_id
+  }
+  
+  Note: '中学受験情報を共有・検討する場'
+}
+
+// ワークスペースメンバー
+Table workspace_members {
+  id uuid [pk, default: `gen_random_uuid()`]
+  workspace_id uuid [ref: > workspaces.id, not null]
+  user_id uuid [ref: > users.id, not null]
+  role varchar(20) [not null, default: 'member', note: 'owner/member']
+  joined_at timestamp [default: `now()`]
+  
+  Indexes {
+    (workspace_id, user_id) [unique]
+    workspace_id
+    user_id
+  }
+  
+  Note: 'ワークスペースとユーザーの多対多リレーション'
+}
+
+// 招待トークン
+Table invitation_tokens {
+  id uuid [pk, default: `gen_random_uuid()`]
+  workspace_id uuid [ref: > workspaces.id, not null]
+  token uuid [unique, not null, default: `gen_random_uuid()`]
+  created_by uuid [ref: > users.id, not null]
+  expires_at timestamp [not null, note: '作成から24時間']
+  used_at timestamp [null]
+  used_by uuid [ref: > users.id, null]
+  max_uses int [not null, default: 1, note: '利用可能回数']
+  current_uses int [not null, default: 0]
+  
+  Indexes {
+    token
+    workspace_id
+    expires_at
+  }
+  
+  Note: 'ワークスペースへの招待トークン。有効期間24時間、利用回数1回'
+}
+
+// 学校基礎情報（マスターデータ）
+Table schools {
+  id uuid [pk, default: `gen_random_uuid()`]
+  school_code varchar(20) [unique, not null, note: '文科省学校コード']
+  prefecture varchar(10) [not null]
+  establishment_type varchar(20) [not null, note: '設立区分（国立・公立・私立等）']
+  name varchar(100) [not null]
+  address text [not null]
+  latitude decimal(10, 8) [null, note: '緯度（地図表示用）']
+  longitude decimal(11, 8) [null, note: '経度（地図表示用）']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  Indexes {
+    school_code
+    name
+    prefecture
+  }
+  
+  Note: '文科省の学校コードに基づく基礎データ。全ワークスペースで共有'
+}
+
+// 学校詳細情報（ユーザー入力）
+Table school_details {
+  id uuid [pk, default: `gen_random_uuid()`]
+  workspace_id uuid [ref: > workspaces.id, not null]
+  school_id uuid [ref: > schools.id, not null]
+  has_cafeteria boolean [null, note: '学食・購買の有無']
+  has_uniform boolean [null, note: '制服の有無']
+  commute_route text [null, note: '通学経路']
+  commute_time int [null, note: '自宅からの通学所要時間（分）']
+  nearest_station varchar(100) [null, note: '最寄駅']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  Indexes {
+    (workspace_id, school_id) [unique]
+    workspace_id
+    school_id
+  }
+  
+  Note: 'ユーザーが入力する学校の詳細情報。学校に対して1つ'
+}
+
+// 志望校情報
+Table target_schools {
+  id uuid [pk, default: `gen_random_uuid()`]
+  workspace_id uuid [ref: > workspaces.id, not null]
+  school_id uuid [ref: > schools.id, not null]
+  event_date date [null, note: '学校イベント参加日']
+  event_name varchar(100) [null, note: '参加イベント']
+  participants varchar(200) [null, note: '参加者']
+  access_method text [null, note: '行き方']
+  talked_with varchar(200) [null, note: 'しゃべった相手']
+  child_aspiration int [null, note: '志望度（子供）1-5等']
+  child_impression text [not null, note: '感想（子供）必須']
+  parent_aspiration int [null, note: '志望度（親）1-5等']
+  parent_impression text [null, note: '感想（親）']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  Indexes {
+    workspace_id
+    school_id
+    event_date
+    child_aspiration
+  }
+  
+  Note: '学校説明会等の参加記録。学校に対して複数作成可能'
+}
+
+// 受験情報
+Table exam_info {
+  id uuid [pk, default: `gen_random_uuid()`]
+  workspace_id uuid [ref: > workspaces.id, not null]
+  school_id uuid [ref: > schools.id, not null]
+  
+  // 難易度
+  deviation_value decimal(4, 1) [not null, note: '偏差値（必須）']
+  judgment_date date [null, note: '合否判定日']
+  judgment_result varchar(20) [null, note: '合否判定結果']
+  
+  // 受験申込
+  exam_candidate_sign varchar(20) [null, note: '受験候補サイン: 受験/見送り']
+  application_start date [null, note: '受験申込期間開始']
+  application_end date [null, note: '受験申込期間終了']
+  application_method text [null, note: '受験申込方法']
+  application_note text [null, note: '受験申込備考']
+  
+  // 受験料支払
+  fee_deadline timestamp [null, note: '受験料支払期限']
+  fee_payment_method varchar(100) [null, note: '受験料支払方法']
+  fee_amount int [null, note: '受験料税込（円）']
+  fee_note text [null, note: '受験料支払備考']
+  
+  // 受験
+  exam_start timestamp [not null, note: '受験時間開始（必須）']
+  exam_end timestamp [not null, note: '受験時間終了（必須）']
+  exam_venue varchar(200) [not null, note: '受験会場（必須）']
+  exam_subjects text [not null, note: '受験科目（必須）']
+  parent_waiting_area varchar(200) [null, note: '親の待機場所']
+  exam_note text [null, note: '受験備考']
+  
+  // 合格発表
+  announcement_time timestamp [null, note: '発表時刻']
+  announcement_method varchar(100) [null, note: '発表方法']
+  announcement_note text [null, note: '合格発表備考']
+  
+  // 入学申込
+  enrollment_start timestamp [null, note: '入学申込期間開始']
+  enrollment_end timestamp [null, note: '入学申込期間終了']
+  enrollment_method varchar(100) [null, note: '入学申込方法']
+  enrollment_note text [null, note: '入学申込備考']
+  
+  // 入学金支払
+  admission_fee_deadline timestamp [null, note: '入学金支払期限']
+  admission_fee_payment_method varchar(100) [null, note: '入学金支払方法']
+  admission_fee_amount int [null, note: '入学金税込（円）']
+  admission_fee_note text [null, note: '入学金支払備考']
+  
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  Indexes {
+    workspace_id
+    school_id
+    exam_start
+    deviation_value
+    exam_candidate_sign
+  }
+  
+  Note: '受験情報。同じ学校でも複数回受験する場合があるため、学校に対して複数作成可能'
+}
+
+// タスク管理
+Table tasks {
+  id uuid [pk, default: `gen_random_uuid()`]
+  exam_info_id uuid [ref: > exam_info.id, not null]
+  task_type varchar(30) [not null, note: 'application/fee_payment/exam/announcement/enrollment/admission_fee']
+  assigned_to uuid [ref: > users.id, null, note: '担当者']
+  is_completed boolean [not null, default: false]
+  completed_at timestamp [null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  Indexes {
+    exam_info_id
+    task_type
+    assigned_to
+    is_completed
+  }
+  
+  Note: '受験に関するタスク管理（受験申込、受験料支払、受験、合格発表、入学申込、入学金支払）'
+}
