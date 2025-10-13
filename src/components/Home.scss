@@ -174,7 +174,7 @@
 //////////////////////////////////////////////////////////////
 
 .search-section {
-  background-color: $color-gray-lighter;
+  background-color: $home-bg-color;  // 黄色背景に統一
   
   .search-form {
     @include home-search-form;

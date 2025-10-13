@@ -34,6 +34,8 @@ $color-warning:       #d97706; // 警告
 // アクセントカラー
 $color-blue:          #3b82f6; // アクセント青
 $color-blue-light:    #dbeafe; // アクセント青（薄）
+$color-blue-info:     #5fbde5; // 情報ボタン用の明るい青色（新規追加）
+$color-orange-exam:   #c95a50; // 受験ボタン用のオレンジレッド（新規追加）
 $color-orange:        #f97316; // アクセントオレンジ
 
 //////////////////////////////////////////////////////////////
@@ -84,7 +86,7 @@ $auth-success-border:          $color-success-border; // 成功メッセージ�
 //////////////////////////////////////////////////////////////
 
 // Home画面全体
-$home-bg-color:                $color-white;         // 画面背景色
+$home-bg-color:                $color-yellow;        // 画面背景色（黄色に統一）
 $home-header-bg:               $color-yellow;        // ヘッダー背景色
 $home-header-text:             $color-black;         // ヘッダーテキスト
 
@@ -109,9 +111,9 @@ $home-search-button-text:      $color-white;         // 検索ボタンテキス
 // Home画面ボタン
 $home-button-action-bg:        $color-black;         // アクションボタン背景
 $home-button-action-text:      $color-white;         // アクションボタンテキスト
-$home-button-info-bg:          $color-blue;          // 情報ボタン背景
+$home-button-info-bg:          $color-blue-info;     // 情報ボタン背景
 $home-button-info-text:        $color-white;         // 情報ボタンテキスト
-$home-button-exam-bg:          $color-orange;        // 受験ボタン背景
+$home-button-exam-bg:          $color-orange-exam;   // 受験ボタン背景
 $home-button-exam-text:        $color-white;         // 受験ボタンテキスト
 
 // Home画面バッジ
