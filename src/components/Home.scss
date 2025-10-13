@@ -20,7 +20,8 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0;      // ← 0remを0に修正
+    margin-left: -0.5rem;  // ← 追加：左に寄せる
     width: 40px;
     height: 40px;
     display: flex;
@@ -141,6 +142,9 @@
 
 .home-content {
   flex: 1;
+  max-width: 100%;     // ← 追加：最大幅100%
+  width: 100%;         // ← 追加：幅100%
+  margin: 0 auto;      // ← 追加：中央配置（将来的にmax-widthを設定する場合用）
 }
 
 //////////////////////////////////////////////////////////////
@@ -174,17 +178,21 @@
 //////////////////////////////////////////////////////////////
 
 .search-section {
-  background-color: $home-bg-color;  // 黄色背景に統一
+  background-color: $home-bg-color;
   
   .search-form {
     display: flex;
     gap: $spacing-small;
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;  // ← 追加
     position: relative;
     
     .search-input-wrapper {
       position: relative;
       flex: 1;
+      min-width: 0;
+      box-sizing: border-box;  // ← 追加
       
       .search-input {
         width: 100%;
@@ -195,6 +203,7 @@
         background-color: $home-search-input-bg;
         -webkit-appearance: none;
         touch-action: manipulation;
+        box-sizing: border-box;  // ← 追加
 
         &:focus {
           outline: none;

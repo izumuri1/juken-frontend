@@ -6,7 +6,6 @@ import { PasswordResetConfirm } from './components/PasswordResetConfirm'
 import { EmailConfirmationWaiting } from './components/EmailConfirmationWaiting'
 import Home from './components/Home'  // ← 追加
 import { useAuth } from './contexts/AuthContext'
-import './App.scss'
 
 function App() {
   const { user, loading } = useAuth()

@@ -300,7 +300,10 @@ const handleSearchInput = async (value: string) => {
             value={searchQuery}
             onChange={(e) => handleSearchInput(e.target.value)}
             onCompositionStart={() => { isComposingRef.current = true; }}
-            onCompositionEnd={() => { isComposingRef.current = false; }}
+            onCompositionEnd={(e) => {
+                isComposingRef.current = false;
+                handleSearchInput(e.currentTarget.value);
+            }}
             onFocus={() => searchSuggestions.length > 0 && setShowSuggestions(true)}
             disabled={isSearching}
             />
