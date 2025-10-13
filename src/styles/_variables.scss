@@ -1,0 +1,463 @@
+// src/styles/_variables.scss
+// どうする中学受験？ プロジェクトのスタイル変数とmixinを定義
+// 認証画面（Login, SignUp, PasswordReset）用に特化
+// セマンティック変数 + 二層構造で設計
+
+//////////////////////////////////////////////////////////////
+/// 【プリミティブ変数】基本的な色の定義
+/// 直接使用せず、セマンティック変数で参照する
+//////////////////////////////////////////////////////////////
+
+// カラーパレット
+$color-yellow:        #F4C14E; // メインイエロー
+$color-black:         #000000; // 黒
+$color-white:         #FFFFFF; // 白
+$color-gray-lighter:  #f9fafb; // 最も薄いグレー
+$color-gray-light:    #e5e7eb; // 薄いグレー
+$color-gray-medium:   #6b7280; // ミディアムグレー
+$color-gray-dark:     #6A6A6A; // ダークグレー
+$color-gray-darker:   #4b5563; // より暗いグレー
+$color-gray-secondary: #828282; // セカンダリ用グレー
+
+// ステータスカラー
+$color-error-light:   #fef2f2; // エラー背景
+$color-error:         #dc2626; // エラー
+$color-error-dark:    #b91c1c; // エラー（ホバー）
+$color-error-border:  #fecaca; // エラー枠線
+$color-success-light: #f0fdf4; // 成功背景
+$color-success:       #059669; // 成功
+$color-success-border: #bbf7d0; // 成功枠線
+$color-warning:       #d97706; // 警告
+
+//////////////////////////////////////////////////////////////
+/// 【セマンティック変数】用途別の色定義
+/// コンポーネントごとに明確に分離
+//////////////////////////////////////////////////////////////
+
+// 認証画面全体
+$auth-bg-color:                $color-yellow;      // 画面背景色
+
+// 認証カード
+$auth-card-bg:                 $color-yellow;      // カード背景色
+$auth-card-shadow:             0 4px 6px rgba(0, 0, 0, 0.1); // カードシャドウ
+
+// テキスト（認証画面用）
+$auth-text-heading:            $color-black;       // 見出し（ロゴ、サブタイトル）
+$auth-text-body:               $color-gray-dark;   // 本文（説明文）
+$auth-text-label:              $color-black;       // フォームラベル
+$auth-text-placeholder:        $color-gray-medium; // プレースホルダー
+
+// ボタン（認証画面用）
+$auth-button-primary-bg:       $color-black;       // プライマリボタン背景
+$auth-button-primary-text:     $color-white;       // プライマリボタンテキスト
+$auth-button-primary-hover:    #1a1a1a;            // プライマリボタンホバー
+$auth-button-secondary-bg:     $color-gray-secondary; // セカンダリボタン背景
+$auth-button-secondary-text:   $color-black;       // セカンダリボタンテキスト
+$auth-button-link-text:        $color-black;       // リンクボタンテキスト
+$auth-button-disabled-opacity: 0.6;                // 無効化時の透明度
+
+// フォーム（認証画面用）
+$auth-input-bg:                $color-white;       // 入力欄背景
+$auth-input-text:              $color-black;       // 入力テキスト
+$auth-input-border:            $color-gray-light;  // 入力欄ボーダー
+$auth-input-border-focus:      $color-black;       // フォーカス時ボーダー
+$auth-input-disabled-bg:       $color-gray-lighter; // 無効化背景
+$auth-input-disabled-text:     $color-gray-medium; // 無効化テキスト
+
+// メッセージ（認証画面用）
+$auth-error-bg:                $color-error-light;   // エラーメッセージ背景
+$auth-error-text:              $color-error;         // エラーメッセージテキスト
+$auth-error-border:            $color-error-border;  // エラーメッセージボーダー
+$auth-success-bg:              $color-success-light; // 成功メッセージ背景
+$auth-success-text:            $color-success;       // 成功メッセージテキスト
+$auth-success-border:          $color-success-border; // 成功メッセージボーダー
+
+//////////////////////////////////////////////////////////////
+/// 【基本変数】フォント設定（スマホ最適化）
+//////////////////////////////////////////////////////////////
+
+// フォントファミリー
+$font-family-base:        'Noto Sans JP', sans-serif;
+
+// フォントサイズ (rem単位で統一)
+$font-size-logo:          1.75rem;  // ロゴ (28px)
+$font-size-title:         1.25rem;  // タイトル (20px)
+$font-size-subtitle:      1rem;     // サブタイトル (16px) - ズーム防止
+$font-size-body:          0.875rem; // 本文 (14px)
+$font-size-button:        1rem;     // ボタン (16px) - ズーム防止
+$font-size-small:         0.8rem;   // 小さなテキスト (12.8px)
+
+// フォントウェイト
+$font-weight-normal:      400;
+$font-weight-medium:      500;
+$font-weight-bold:        700;
+$font-weight-black:       900;
+
+//////////////////////////////////////////////////////////////
+/// 【基本変数】レイアウト設定（スマホ特化）
+//////////////////////////////////////////////////////////////
+
+// スペーシング
+$spacing-mobile:          1rem;     // 基本スペーシング
+$spacing-small:           0.5rem;   // 小
+$spacing-large:           1.5rem;   // 大
+$spacing-xlarge:          2rem;     // 特大
+
+// カードサイズ
+$card-padding:            1rem;
+$card-max-width:          400px;
+
+// 角丸
+$radius-card:             12px;
+$radius-input:            8px;
+$radius-button:           8px;
+$radius-message:          8px;
+
+// タッチ対応
+$touch-target-min:        44px;     // 最小タッチ領域（Appleガイドライン）
+
+// シャドウ
+$shadow-card:             0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-button:           0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-hover:            0 8px 25px rgba(0, 0, 0, 0.15);
+
+//////////////////////////////////////////////////////////////
+/// 【基本変数】アニメーション設定
+//////////////////////////////////////////////////////////////
+
+$animation-fast:          0.15s;
+$animation-normal:        0.3s;
+$animation-slow:          0.6s;
+$ease-out:                ease-out;
+$ease-in-out:             ease-in-out;
+
+//////////////////////////////////////////////////////////////
+/// 【共通Mixins】ボタンスタイル
+//////////////////////////////////////////////////////////////
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $radius-button;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  min-height: $touch-target-min;
+  transition: all $animation-fast $ease-out;
+  font-family: $font-family-base;
+  font-size: $font-size-button;
+  font-weight: $font-weight-medium;
+  text-decoration: none;
+  
+  // タッチ対応
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  
+  &:active { transform: scale(0.98); }
+  &:disabled { 
+    cursor: not-allowed; 
+    opacity: $auth-button-disabled-opacity;
+    transform: none;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  color: $auth-button-primary-text;
+  background-color: $auth-button-primary-bg;
+  width: 100%;
+  
+  &:hover:not(:disabled) { 
+    background-color: $auth-button-primary-hover;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  color: $auth-button-secondary-text;
+  background-color: $auth-button-secondary-bg;
+  width: 100%;
+  
+  &:hover:not(:disabled) { 
+    opacity: 0.8;
+  }
+}
+
+@mixin button-link {
+  background: none;
+  border: none;
+  color: $auth-button-link-text;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  font-size: $font-size-body;
+  font-family: $font-family-base;
+  
+  &:hover { opacity: 0.7; }
+}
+
+//////////////////////////////////////////////////////////////
+/// 【共通Mixins】テキストスタイル
+//////////////////////////////////////////////////////////////
+
+@mixin text-logo {
+  font-family: $font-family-base;
+  font-size: $font-size-logo;
+  font-weight: $font-weight-black;
+  color: $auth-text-heading;
+  margin: 0;
+  line-height: 1.2;
+}
+
+@mixin text-subtitle {
+  font-family: $font-family-base;
+  font-size: $font-size-subtitle;
+  font-weight: $font-weight-medium;
+  color: $auth-text-heading;
+  margin: 0;
+  line-height: 1.4;
+}
+
+@mixin text-body {
+  font-family: $font-family-base;
+  font-size: $font-size-body;
+  font-weight: $font-weight-normal;
+  color: $auth-text-body;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@mixin text-small {
+  font-family: $font-family-base;
+  font-size: $font-size-small;
+  font-weight: $font-weight-normal;
+  color: $auth-text-placeholder;
+  line-height: 1.4;
+}
+
+//////////////////////////////////////////////////////////////
+/// 【共通Mixins】フォーム関連
+//////////////////////////////////////////////////////////////
+
+@mixin input-base {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid $auth-input-border;
+  border-radius: $radius-input;
+  font-family: $font-family-base;
+  font-size: $font-size-subtitle; // ズーム防止のため16px
+  background-color: $auth-input-bg;
+  color: $auth-input-text;
+  
+  // スマホ最適化
+  -webkit-appearance: none;
+  touch-action: manipulation;
+  min-height: $touch-target-min;
+  
+  &::placeholder { 
+    color: $auth-text-placeholder;
+    opacity: 1;
+  }
+  
+  &:focus { 
+    outline: none;
+    border-color: $auth-input-border-focus;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:disabled { 
+    background-color: $auth-input-disabled-bg;
+    color: $auth-input-disabled-text;
+    cursor: not-allowed;
+  }
+}
+
+@mixin form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  
+  label {
+    font-family: $font-family-base;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    color: $auth-text-label;
+    margin-bottom: 0.25rem;
+    text-align: left;
+  }
+  
+  input, textarea, select { 
+    @include input-base;
+  }
+  
+  .form-error {
+    @include text-small;
+    color: $auth-error-text;
+    margin: 0.25rem 0 0 0;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+/// 【共通Mixins】メッセージ表示
+//////////////////////////////////////////////////////////////
+
+@mixin message-base {
+  border-radius: $radius-message;
+  padding: $spacing-mobile;
+  margin: 0;
+  font-size: $font-size-body;
+  font-weight: $font-weight-medium;
+  text-align: center;
+  line-height: 1.5;
+}
+
+@mixin message-error {
+  @include message-base;
+  background-color: $auth-error-bg;
+  color: $auth-error-text;
+  border: 1px solid $auth-error-border;
+  animation: errorSlideIn $animation-normal $ease-out;
+}
+
+@mixin message-success {
+  @include message-base;
+  background-color: $auth-success-bg;
+  color: $auth-success-text;
+  border: 1px solid $auth-success-border;
+}
+
+//////////////////////////////////////////////////////////////
+/// 【共通Mixins】レイアウト（認証画面用）
+//////////////////////////////////////////////////////////////
+
+@mixin auth-fullscreen-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: $auth-bg-color;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  
+  // セーフエリア対応 - 下部により多くのスペースを確保
+  padding-top: max($spacing-mobile, env(safe-area-inset-top));
+  padding-bottom: max(calc($spacing-mobile + 2rem), env(safe-area-inset-bottom));
+  padding-left: max($spacing-mobile, env(safe-area-inset-left));
+  padding-right: max($spacing-mobile, env(safe-area-inset-right));
+  
+  // スマホ最適化
+  -webkit-overflow-scrolling: touch;
+}
+
+@mixin auth-card {
+  background: $auth-card-bg;
+  border-radius: $radius-card;
+  box-shadow: $auth-card-shadow;
+  padding: $spacing-large;
+  width: 100%;
+  max-width: $card-max-width;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  
+  // 縦画面での中央配置調整
+  justify-content: flex-start;
+  padding-top: $spacing-xlarge;
+  padding-bottom: calc($spacing-xlarge + 2rem);
+}
+
+//////////////////////////////////////////////////////////////
+/// 【認証画面専用Mixins】統一レイアウトコンポーネント
+//////////////////////////////////////////////////////////////
+
+// 認証画面コンテナ
+@mixin auth-container {
+  @include auth-fullscreen-container;
+}
+
+// 認証カード（ロゴ・タイトル含む）
+@mixin auth-card-container {
+  @include auth-card;
+  
+  .logo {
+    @include text-logo;
+    animation: logoFadeIn $animation-slow $ease-out;
+  }
+
+  .subtitle {
+    @include text-subtitle;
+    animation: fadeInUp 0.8s $ease-out 0.2s both;
+  }
+
+  .introduction {
+    @include text-body;
+    animation: fadeInUp 0.8s $ease-out 0.4s both;
+  }
+}
+
+// 認証フォーム
+@mixin auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  animation: fadeInUp 0.8s $ease-out 0.6s both;
+
+  .form-group {
+    @include form-group;
+  }
+
+  .btn-primary {
+    @include button-primary;
+  }
+
+  .btn-secondary {
+    @include button-secondary;
+  }
+}
+
+// 画面切り替えリンク
+@mixin auth-switch {
+  font-size: $font-size-body;
+  color: $auth-text-heading;
+  margin: 0;
+  line-height: 1.5;
+
+  .link-button {
+    @include button-link;
+  }
+}
+
+// エラーメッセージ（認証画面用）
+@mixin auth-error-message {
+  @include message-error;
+}
+
+// 成功メッセージ（認証画面用）
+@mixin auth-success-message {
+  @include message-success;
+}
+
+//////////////////////////////////////////////////////////////
+/// 【アニメーション定義】キーフレーム
+//////////////////////////////////////////////////////////////
+
+@keyframes logoFadeIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes errorSlideIn {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
