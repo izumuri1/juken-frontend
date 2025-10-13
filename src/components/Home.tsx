@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase' // ← 追加
+import { useNavigate } from 'react-router-dom'; // ← 追加
 import './Home.scss';
 
 // 型定義
+// 学校マスタ用のインターフェースを追加
+interface SchoolMaster {
+  school_code: string;
+  name: string;
+  prefecture: string;
+  address: string;
+}
+
 interface School {
   id: string;
   name: string;
-  desireLevel: number; // 1-5 (子供の志望度)
-  desireLevelParent: number; // 1-5 (親の志望度)
-  commuteTime: number; // 分
+  desireLevel: number;
+  desireLevelParent: number;
+  commuteTime: number;
   nearestStation: string;
   updatedAt: string;
 }
@@ -32,6 +42,9 @@ const Home: React.FC = () => {
   // 検索関連
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [searchSuggestions, setSearchSuggestions] = useState<SchoolMaster[]>([]); // ← 追加
+  const [showSuggestions, setShowSuggestions] = useState(false); // ← 追加
+  const navigate = useNavigate(); // ← 追加
 
   // データ
   const [schools, setSchools] = useState<School[]>([]);
@@ -104,39 +117,67 @@ const Home: React.FC = () => {
   }, []);
 
   // 検索処理（セキュリティ対策：バリデーション付き）
-  const handleSearch = () => {
-    // 入力バリデーション
-    const sanitizedQuery = searchQuery.trim();
+  // リアルタイム検索（入力中に候補を表示）
+    const handleSearchInput = async (value: string) => {
+    setSearchQuery(value);
     
-    if (!sanitizedQuery) {
-      alert('検索キーワードを入力してください');
-      return;
+    const sanitizedQuery = value.trim();
+    
+    // 入力が空または2文字未満の場合は候補を非表示
+    if (!sanitizedQuery || sanitizedQuery.length < 2) {
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+        return;
     }
-
-    // 文字数制限（50文字以内）
+    
+    // 文字数制限
     if (sanitizedQuery.length > 50) {
-      alert('検索キーワードは50文字以内で入力してください');
-      return;
+        return;
     }
-
-    // 特殊文字チェック（基本的な日本語、英数字、スペース、ハイフンのみ許可）
+    
+    // 特殊文字チェック
     const allowedPattern = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBFa-zA-Z0-9\s\-ー]+$/;
     if (!allowedPattern.test(sanitizedQuery)) {
-      alert('使用できない文字が含まれています');
-      return;
+        return;
     }
+    
+    try {
+        setIsSearching(true);
+        
+        // Supabaseから学校名を部分一致検索（ILIKE使用）
+        const { data, error } = await supabase
+        .from('schools')
+        .select('school_code, name, prefecture, address')
+        .ilike('name', `%${sanitizedQuery}%`)
+        .limit(10); // 候補は最大10件
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+        setSearchSuggestions(data);
+        setShowSuggestions(true);
+        } else {
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+        }
+    } catch (error) {
+        console.error('検索エラー:', error);
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+    } finally {
+        setIsSearching(false);
+    }
+    };
 
-    setIsSearching(true);
+    // 候補選択時の処理
+    const handleSelectSchool = (school: SchoolMaster) => {
+    setSearchQuery(school.name);
+    setShowSuggestions(false);
+    setSearchSuggestions([]);
     
-    // TODO: 実際の検索処理を実装
-    console.log('検索:', sanitizedQuery);
-    
-    setTimeout(() => {
-      setIsSearching(false);
-      // 検索結果がない場合のメッセージなど
-      alert(`「${sanitizedQuery}」の検索結果はありません`);
-    }, 500);
-  };
+    // School画面へ遷移
+    navigate(`/school/${school.school_code}`);
+    };
 
   // Enterキーでの検索対応
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -228,25 +269,37 @@ const Home: React.FC = () => {
         <section className="home-section search-section">
           <h2 className="section-title">学校検索</h2>
           <div className="search-form">
+        <div className="search-input-wrapper">
             <input
-              type="text"
-              className="search-input"
-              placeholder="学校名を入力してください"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-              maxLength={50}
-              disabled={isSearching}
+            type="text"
+            className="search-input"
+            placeholder="学校名を入力してください（2文字以上）"
+            value={searchQuery}
+            onChange={(e) => handleSearchInput(e.target.value)}
+            onFocus={() => searchSuggestions.length > 0 && setShowSuggestions(true)}
+            disabled={isSearching}
             />
-            <button 
-              type="button" 
-              className="search-button"
-              onClick={handleSearch}
-              disabled={isSearching}
-            >
-              {isSearching ? '検索中...' : '検索'}
-            </button>
-          </div>
+            {isSearching && <span className="search-loading">検索中...</span>}
+            
+            {/* 候補リスト */}
+            {showSuggestions && searchSuggestions.length > 0 && (
+            <div className="search-suggestions">
+                {searchSuggestions.map((school) => (
+                <div
+                    key={school.school_code}
+                    className="suggestion-item"
+                    onClick={() => handleSelectSchool(school)}
+                >
+                    <div className="suggestion-name">{school.name}</div>
+                    <div className="suggestion-info">
+                    {school.prefecture} - {school.address}
+                    </div>
+                </div>
+                ))}
+            </div>
+            )}
+        </div>
+        </div>
         </section>
 
         {/* 志望校一覧セクション */}
