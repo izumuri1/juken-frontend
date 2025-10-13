@@ -1,7 +1,4 @@
 
-\restrict pMB8ZJles1f797Ul8cQ4h4rmyx7u6QSdEJUjyYNGwmcMP1YzlGUpbbbYSiMf4fj
-
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -1055,36 +1052,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "service_role";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\unrestrict pMB8ZJles1f797Ul8cQ4h4rmyx7u6QSdEJUjyYNGwmcMP1YzlGUpbbbYSiMf4fj
 
 RESET ALL;
