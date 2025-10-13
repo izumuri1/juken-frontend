@@ -4,17 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
-import './PasswordResetConfirm.scss'
+import { PasswordUpdateFormData } from '../types/auth'
+import './Auth.scss'
 
 ////////////////////////////////////////////////////////////////
 // パスワードリセット確認・新パスワード設定機能
 // メールリンクからアクセスされ、新しいパスワードを設定する
 ////////////////////////////////////////////////////////////////
-
-interface PasswordUpdateFormData {
-  password: string
-  confirmPassword: string
-}
 
 export function PasswordResetConfirm() {
   const navigate = useNavigate()

@@ -5,14 +5,10 @@ import { useNavigate } from 'react-router-dom'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
 import { sanitizeHtml } from '../utils/sanitize'
-import './Login.scss'
+import { LoginFormData } from '../types/auth'
+import './Auth.scss'
 
 // ログインフォームの型定義
-interface LoginFormData {
-  email: string
-  password: string
-}
-
 export function Login() {
   const { signIn, loading } = useAuth()
   const appv_navigate = useNavigate()

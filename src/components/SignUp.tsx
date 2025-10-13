@@ -5,7 +5,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
 import { sanitizeHtml } from '../utils/sanitize'
-import './SignUp.scss'
+import { validationRules } from '../utils/validationRules'  // 追加
+import { AUTH_ERROR_MESSAGES } from '../constants/errorMessages'  // 追加
+import { SignUpFormData } from '../types/auth'
+import './Auth.scss'
 
 ////////////////////////////////////////////////////////////////
 // ◆ 実行時の流れ
@@ -15,15 +18,6 @@ import './SignUp.scss'
 // 登録成功 → AuthContextが状態を更新 → App.tsxがHome画面に切り替え
 // 登録失敗 → エラーメッセージを表示
 ////////////////////////////////////////////////////////////////
-
-// 1. 準備・設定
-// 新規アカウント登録フォームの型定義
-interface SignUpFormData {
-  email: string
-  password: string
-  confirmPassword: string
-  username: string
-}
 
 // 2. 状態管理・フック初期化
 export function SignUp() {
@@ -48,48 +42,20 @@ export function SignUp() {
   }, [searchParams])
 
   // リファクタリング：React Hook Form → 自作useFormフックに変更
-  const signUpForm = useForm<SignUpFormData>({
+    const signUpForm = useForm<SignUpFormData>({
     initialValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      username: ''
+        email: '',
+        password: '',
+        confirmPassword: '',
+        username: ''
     },
     validationRules: {
-      email: {
-        custom: (value) => {
-          if (!value.trim()) return 'メールアドレスは必須です'
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return '正しいメールアドレスを入力してください'
-          return undefined
-        }
-      },
-      username: {
-        custom: (value) => {
-          if (!value.trim()) return 'ユーザー名は必須です'
-          if (value.length < 2) return 'ユーザー名は2文字以上で入力してください'
-          if (value.length > 20) return 'ユーザー名は20文字以下で入力してください'
-          return undefined
-        }
-      },
-      password: {
-        custom: (value) => {
-          if (!value.trim()) return 'パスワードは必須です'
-          if (value.length < 8) return 'パスワードは8文字以上で入力してください'
-          return undefined
-        }
-      },
-      confirmPassword: {
-        custom: (value) => {
-          // パスワード確認のカスタムバリデーション
-          if (!value.trim()) return 'パスワードの確認は必須です'
-          if (value !== signUpForm.values.password) {
-            return 'パスワードが一致しません'
-          }
-          return undefined
-        }
-      }
+        email: validationRules.email,
+        username: validationRules.username,
+        password: validationRules.password,
+        confirmPassword: validationRules.confirmPassword(signUpForm?.values?.password || '')
     }
-  })
+    })
 
   // 3. 新規アカウント登録処理ロジック
   const handleSubmit = async (e: React.FormEvent) => {

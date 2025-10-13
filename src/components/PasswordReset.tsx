@@ -1,40 +1,33 @@
 // src/components/PasswordReset.tsx - パスワードリセット機能
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
+import { supabase } from '../lib/supabase'
 import { sanitizeHtml } from '../utils/sanitize'
-import './PasswordReset.scss'
+import { validationRules } from '../utils/validationRules'  // 追加
+import { handleAuthError } from '../utils/authErrorHandler'  // 追加
+import { PasswordResetFormData } from '../types/auth'
+import './Auth.scss'
 
 ////////////////////////////////////////////////////////////////
 // パスワードリセット機能
 // Supabaseの resetPasswordForEmail を使用してリセットメールを送信
 ////////////////////////////////////////////////////////////////
 
-interface PasswordResetFormData {
-  email: string
-}
-
 export function PasswordReset() {
   const navigate = useNavigate()
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const resetForm = useForm<PasswordResetFormData>({
+    const resetForm = useForm<PasswordResetFormData>({
     initialValues: {
-      email: ''
+        email: ''
     },
     validationRules: {
-      email: {
-        custom: (value) => {
-          if (!value.trim()) return 'メールアドレスは必須です'
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return '正しいメールアドレスを入力してください'
-          return undefined
-        }
-      }
+        email: validationRules.email
     }
-  })
+    })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,18 +47,12 @@ export function PasswordReset() {
         redirectTo: `${window.location.origin}/password-reset-confirm`
     })
 
-      if (error) {
-        console.error('Password reset error:', error)
-        if (error.message.includes('Email not confirmed')) {
-          setSubmitError('このメールアドレスは確認されていません。新規登録時の確認メールをご確認ください。')
-        } else if (error.message.includes('Invalid email')) {
-          setSubmitError('有効なメールアドレスを入力してください。')
-        } else {
-          setSubmitError('メール送信に失敗しました。メールアドレスをご確認ください。')
-        }
-      } else {
-        setIsSubmitted(true)
-      }
+    if (error) {
+    console.error('Password reset error:', error)
+    setSubmitError(handleAuthError(error))
+    } else {
+    setIsSubmitted(true)
+    }
     } catch (error) {
       console.error('パスワードリセットエラー:', error)
       setSubmitError('予期しないエラーが発生しました。')

@@ -1,6 +1,6 @@
 // src/components/EmailConfirmationWaiting.tsx
 import { useLocation, useNavigate } from 'react-router-dom'
-import './Login.scss' // 同じスタイルを使用
+import './Auth.scss' // 認証画面共通のスタイルを使用
 
 export function EmailConfirmationWaiting() {
   const location = useLocation()
