@@ -160,7 +160,9 @@ Table exam_info {
   exam_candidate_sign varchar(20) [null, note: '受験候補サイン: 受験/見送り']
   application_start date [null, note: '受験申込期間開始']
   application_end date [null, note: '受験申込期間終了']
+  application_deadline timestamp [null, note: '受験申込期限（年月日時刻）']
   application_method text [null, note: '受験申込方法']
+  application_materials text [null, note: '受験申込用資材（証明写真等）']
   application_note text [null, note: '受験申込備考']
   
   // 受験料支払
