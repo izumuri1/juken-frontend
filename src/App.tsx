@@ -3,6 +3,7 @@ import { Login } from './components/Login'
 import { SignUp } from './components/SignUp'
 import { PasswordReset } from './components/PasswordReset'
 import { PasswordResetConfirm } from './components/PasswordResetConfirm'
+import { EmailConfirmationWaiting } from './components/EmailConfirmationWaiting'
 import { useAuth } from './contexts/AuthContext'
 import './App.scss'
 
@@ -35,6 +36,10 @@ return (
       <Route 
         path="/password-reset-confirm" 
         element={<PasswordResetConfirm />} 
+      />
+      <Route 
+        path="/email-confirmation-waiting" 
+        element={<EmailConfirmationWaiting />} 
       />
       <Route 
         path="/home" 
