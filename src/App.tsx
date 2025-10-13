@@ -4,6 +4,7 @@ import { SignUp } from './components/SignUp'
 import { PasswordReset } from './components/PasswordReset'
 import { PasswordResetConfirm } from './components/PasswordResetConfirm'
 import { EmailConfirmationWaiting } from './components/EmailConfirmationWaiting'
+import Home from './components/Home'  // ← 追加
 import { useAuth } from './contexts/AuthContext'
 import './App.scss'
 
@@ -43,7 +44,7 @@ return (
       />
       <Route 
         path="/home" 
-        element={user ? <div>Home画面（今後実装）</div> : <Navigate to="/login" replace />} 
+        element={user ? <Home /> : <Navigate to="/login" replace />} 
       />
       {/* 未定義のパスは/にリダイレクト */}
       <Route path="*" element={<Navigate to="/" replace />} />

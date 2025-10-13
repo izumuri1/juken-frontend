@@ -3,6 +3,8 @@
 // 認証画面（Login, SignUp, PasswordReset）用に特化
 // セマンティック変数 + 二層構造で設計
 
+@use "sass:color";
+
 //////////////////////////////////////////////////////////////
 /// 【プリミティブ変数】基本的な色の定義
 /// 直接使用せず、セマンティック変数で参照する
@@ -28,6 +30,11 @@ $color-success-light: #f0fdf4; // 成功背景
 $color-success:       #059669; // 成功
 $color-success-border: #bbf7d0; // 成功枠線
 $color-warning:       #d97706; // 警告
+
+// アクセントカラー
+$color-blue:          #3b82f6; // アクセント青
+$color-blue-light:    #dbeafe; // アクセント青（薄）
+$color-orange:        #f97316; // アクセントオレンジ
 
 //////////////////////////////////////////////////////////////
 /// 【セマンティック変数】用途別の色定義
@@ -71,6 +78,49 @@ $auth-error-border:            $color-error-border;  // エラーメッセージ
 $auth-success-bg:              $color-success-light; // 成功メッセージ背景
 $auth-success-text:            $color-success;       // 成功メッセージテキスト
 $auth-success-border:          $color-success-border; // 成功メッセージボーダー
+
+//////////////////////////////////////////////////////////////
+/// 【セマンティック変数】Home画面用
+//////////////////////////////////////////////////////////////
+
+// Home画面全体
+$home-bg-color:                $color-white;         // 画面背景色
+$home-header-bg:               $color-yellow;        // ヘッダー背景色
+$home-header-text:             $color-black;         // ヘッダーテキスト
+
+// Home画面カード
+$home-card-bg:                 $color-white;         // カード背景色
+$home-card-border:             $color-gray-light;    // カードボーダー
+$home-card-shadow:             0 2px 4px rgba(0, 0, 0, 0.1); // カードシャドウ
+$home-card-hover-shadow:       0 4px 8px rgba(0, 0, 0, 0.15); // カードホバーシャドウ
+
+// Home画面テキスト
+$home-text-heading:            $color-black;         // 見出し
+$home-text-body:               $color-gray-dark;     // 本文
+$home-text-label:              $color-black;         // ラベル
+$home-text-muted:              $color-gray-medium;   // 補足テキスト
+
+// Home画面検索
+$home-search-input-bg:         $color-white;         // 検索入力欄背景
+$home-search-input-border:     $color-gray-light;    // 検索入力欄ボーダー
+$home-search-button-bg:        $color-black;         // 検索ボタン背景
+$home-search-button-text:      $color-white;         // 検索ボタンテキスト
+
+// Home画面ボタン
+$home-button-action-bg:        $color-black;         // アクションボタン背景
+$home-button-action-text:      $color-white;         // アクションボタンテキスト
+$home-button-info-bg:          $color-blue;          // 情報ボタン背景
+$home-button-info-text:        $color-white;         // 情報ボタンテキスト
+$home-button-exam-bg:          $color-orange;        // 受験ボタン背景
+$home-button-exam-text:        $color-white;         // 受験ボタンテキスト
+
+// Home画面バッジ
+$home-badge-high-bg:           #fee2e2;              // 高志望度バッジ背景
+$home-badge-high-text:         #991b1b;              // 高志望度バッジテキスト
+$home-badge-medium-bg:         #fef3c7;              // 中志望度バッジ背景
+$home-badge-medium-text:       #92400e;              // 中志望度バッジテキスト
+$home-badge-low-bg:            $color-gray-lighter;  // 低志望度バッジ背景
+$home-badge-low-text:          $color-gray-darker;   // 低志望度バッジテキスト
 
 //////////////////////////////////////////////////////////////
 /// 【基本変数】フォント設定（スマホ最適化）
@@ -460,4 +510,225 @@ $ease-in-out:             ease-in-out;
 @keyframes errorSlideIn {
   0% { opacity: 0; transform: translateY(-10px); }
   100% { opacity: 1; transform: translateY(0); }
+}
+
+//////////////////////////////////////////////////////////////
+/// 【Home画面専用Mixins】統一レイアウトコンポーネント
+//////////////////////////////////////////////////////////////
+
+// Home画面コンテナ
+@mixin home-container {
+  min-height: 100vh;
+  background-color: $home-bg-color;
+  display: flex;
+  flex-direction: column;
+  padding-top: max($spacing-mobile, env(safe-area-inset-top));
+  padding-bottom: max(calc($spacing-mobile + 2rem), env(safe-area-inset-bottom));
+}
+
+// Home画面ヘッダー
+@mixin home-header {
+  background-color: $home-header-bg;
+  padding: $spacing-mobile;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .workspace-info {
+    flex: 1;
+    text-align: center;
+
+    .workspace-name {
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
+      color: $home-header-text;
+      margin: 0;
+    }
+
+    .workspace-owner {
+      font-size: $font-size-small;
+      color: $home-text-muted;
+      margin: 0;
+    }
+  }
+}
+
+// Home画面セクション
+@mixin home-section {
+  padding: $spacing-large $spacing-mobile;
+
+  .section-title {
+    font-size: $font-size-title;
+    font-weight: $font-weight-bold;
+    color: $home-text-heading;
+    margin-bottom: $spacing-mobile;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-mobile;
+  }
+}
+
+// Home画面カード
+@mixin home-card {
+  background-color: $home-card-bg;
+  border: 1px solid $home-card-border;
+  border-radius: $radius-card;
+  padding: $spacing-mobile;
+  box-shadow: $home-card-shadow;
+  transition: all $animation-normal $ease-out;
+
+  &:hover {
+    box-shadow: $home-card-hover-shadow;
+    transform: translateY(-2px);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $spacing-small;
+
+    .school-name {
+      font-size: $font-size-subtitle;
+      font-weight: $font-weight-bold;
+      color: $home-text-heading;
+      margin: 0;
+    }
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-small;
+
+    .card-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: $font-size-body;
+
+      .label {
+        color: $home-text-muted;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+      }
+    }
+  }
+
+  .card-actions {
+    display: flex;
+    gap: $spacing-small;
+    margin-top: $spacing-mobile;
+  }
+}
+
+// Home画面検索フォーム
+@mixin home-search-form {
+  display: flex;
+  gap: $spacing-small;
+  width: 100%;
+
+  .search-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid $home-search-input-border;
+    border-radius: $radius-input;
+    font-size: $font-size-subtitle;
+    background-color: $home-search-input-bg;
+    -webkit-appearance: none;
+    touch-action: manipulation;
+
+    &:focus {
+      outline: none;
+      border-color: $color-black;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .search-button {
+    @include button-primary;
+    min-width: 80px;
+    padding: 0.75rem $spacing-mobile;
+  }
+}
+
+// Home画面ボタン（小）
+@mixin home-button-small {
+  padding: 0.5rem $spacing-mobile;
+  border-radius: $radius-button;
+  font-size: $font-size-small;
+  font-weight: $font-weight-medium;
+  font-family: $font-family-base;
+  border: none;
+  cursor: pointer;
+  transition: all $animation-fast $ease-out;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+  min-height: 36px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@mixin home-button-info {
+  @include home-button-small;
+  background-color: $home-button-info-bg;
+  color: $home-button-info-text;
+
+  &:hover {
+    background-color: color.adjust($home-button-info-bg, $lightness: -10%);
+  }
+}
+
+@mixin home-button-exam {
+  @include home-button-small;
+  background-color: $home-button-exam-bg;
+  color: $home-button-exam-text;
+
+  &:hover {
+    background-color: color.adjust($home-button-exam-bg, $lightness: -10%);
+  }
+}
+
+// Home画面バッジ
+@mixin home-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: $font-size-small;
+  font-weight: $font-weight-medium;
+  display: inline-block;
+}
+
+@mixin home-badge-high {
+  @include home-badge;
+  background-color: $home-badge-high-bg;
+  color: $home-badge-high-text;
+}
+
+@mixin home-badge-medium {
+  @include home-badge;
+  background-color: $home-badge-medium-bg;
+  color: $home-badge-medium-text;
+}
+
+@mixin home-badge-low {
+  @include home-badge;
+  background-color: $home-badge-low-bg;
+  color: $home-badge-low-text;
 }

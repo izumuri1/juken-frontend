@@ -1,0 +1,244 @@
+// src/components/Home.scss
+@use '../styles/variables' as *;
+
+//////////////////////////////////////////////////////////////
+// Home画面コンテナ
+//////////////////////////////////////////////////////////////
+
+.home-container {
+  @include home-container;
+}
+
+//////////////////////////////////////////////////////////////
+// ヘッダー
+//////////////////////////////////////////////////////////////
+
+.home-header {
+  @include home-header;
+  
+  .hamburger-menu {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    
+    .hamburger-icon {
+      font-size: 1.5rem;
+      color: $home-header-text;
+    }
+    
+    &:active {
+      opacity: 0.7;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// サイドメニュー
+//////////////////////////////////////////////////////////////
+
+.side-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  animation: fadeIn 0.2s ease-out;
+  
+  .side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background-color: $home-card-bg;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    padding: $spacing-large;
+    overflow-y: auto;
+    animation: slideInLeft 0.3s ease-out;
+    
+    .close-button {
+      position: absolute;
+      top: $spacing-mobile;
+      right: $spacing-mobile;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:active {
+        opacity: 0.7;
+      }
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0 0 0;
+      
+      li {
+        margin-bottom: 0.5rem;
+        
+        &.divider {
+          height: 1px;
+          background-color: $home-card-border;
+          margin: $spacing-mobile 0;
+        }
+        
+        a {
+          display: block;
+          padding: 0.75rem $spacing-mobile;
+          color: $home-text-heading;
+          text-decoration: none;
+          font-size: $font-size-body;
+          border-radius: $radius-button;
+          transition: background-color $animation-fast $ease-out;
+          
+          &:hover {
+            background-color: $color-gray-lighter;
+          }
+          
+          &:active {
+            background-color: $color-gray-light;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { 
+    transform: translateX(-100%);
+  }
+  to { 
+    transform: translateX(0);
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// メインコンテンツ
+//////////////////////////////////////////////////////////////
+
+.home-content {
+  flex: 1;
+}
+
+//////////////////////////////////////////////////////////////
+// セクション共通
+//////////////////////////////////////////////////////////////
+
+.home-section {
+  @include home-section;
+  
+  // ソートコントロール
+  .sort-controls {
+    .sort-select {
+      padding: 0.5rem;
+      border: 1px solid $home-card-border;
+      border-radius: $radius-input;
+      font-size: $font-size-small;
+      background-color: $home-card-bg;
+      cursor: pointer;
+      -webkit-appearance: none;
+      
+      &:focus {
+        outline: none;
+        border-color: $color-black;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 学校検索セクション
+//////////////////////////////////////////////////////////////
+
+.search-section {
+  background-color: $color-gray-lighter;
+  
+  .search-form {
+    @include home-search-form;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 志望校一覧・受験一覧セクション
+//////////////////////////////////////////////////////////////
+
+.schools-section,
+.exams-section {
+  .school-card,
+  .exam-card {
+    @include home-card;
+  }
+  
+  .desire-badge {
+    &.badge-high {
+      @include home-badge-high;
+    }
+    
+    &.badge-medium {
+      @include home-badge-medium;
+    }
+    
+    &.badge-low {
+      @include home-badge-low;
+    }
+  }
+  
+  .btn-info {
+    @include home-button-info;
+  }
+  
+  .btn-exam {
+    @include home-button-exam;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ワークスペースメンバーセクション
+//////////////////////////////////////////////////////////////
+
+.members-section {
+  .member-card {
+    background-color: $home-card-bg;
+    border: 1px solid $home-card-border;
+    border-radius: $radius-card;
+    padding: $spacing-mobile;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .member-name {
+      font-size: $font-size-body;
+      color: $home-text-heading;
+      font-weight: $font-weight-medium;
+    }
+    
+    .member-badge {
+      @include home-badge;
+      background-color: $color-blue-light;
+      color: $color-blue;
+    }
+  }
+}
