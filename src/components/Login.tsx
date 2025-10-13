@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
+import { sanitizeHtml } from '../utils/sanitize'
 import './Login.scss'
 
 // ログインフォームの型定義
@@ -52,7 +53,10 @@ export function Login() {
     appv_loginForm.setSubmitting(true)
 
     try {
-      const { error } = await signIn(appv_loginForm.values.email, appv_loginForm.values.password)
+    // メールアドレスをサニタイズ
+    const sanitizedEmail = sanitizeHtml(appv_loginForm.values.email.trim())
+    
+    const { error } = await signIn(sanitizedEmail, appv_loginForm.values.password)
 
       if (error) {
         switch (error.code) {

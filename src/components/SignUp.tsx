@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
+import { sanitizeHtml } from '../utils/sanitize'
 import './SignUp.scss'
 
 ////////////////////////////////////////////////////////////////
@@ -103,11 +104,15 @@ export function SignUp() {
     signUpForm.setSubmitting(true)
     
     try {
-      const { error } = await signUp(
-        signUpForm.values.email, 
+    // ユーザー入力をサニタイズ
+    const sanitizedEmail = sanitizeHtml(signUpForm.values.email.trim())
+    const sanitizedUsername = sanitizeHtml(signUpForm.values.username.trim())
+    
+    const { error } = await signUp(
+        sanitizedEmail, 
         signUpForm.values.password, 
-        signUpForm.values.username
-      )
+        sanitizedUsername
+    )
         
       if (error) {
         // エラーコードとメッセージで判定

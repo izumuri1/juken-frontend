@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
+import { sanitizeHtml } from '../utils/sanitize'
 import './PasswordReset.scss'
 
 ////////////////////////////////////////////////////////////////
@@ -46,9 +47,12 @@ export function PasswordReset() {
     resetForm.setSubmitting(true)
 
     try {
-    const { error } = await supabase.auth.resetPasswordForEmail(resetForm.values.email, {
+    // メールアドレスをサニタイズ
+    const sanitizedEmail = sanitizeHtml(resetForm.values.email.trim())
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(sanitizedEmail, {
         redirectTo: `${window.location.origin}/password-reset-confirm`
-      })
+    })
 
       if (error) {
         console.error('Password reset error:', error)
