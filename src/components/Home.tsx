@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase' // ← 追加
 import { useNavigate } from 'react-router-dom'; // ← 追加
 import './Home.scss';
@@ -40,12 +40,12 @@ interface Member {
 
 const Home: React.FC = () => {
   // 検索関連
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchSuggestions, setSearchSuggestions] = useState<SchoolMaster[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isComposing, setIsComposing] = useState(false); // ← この1行を追加
-  const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchSuggestions, setSearchSuggestions] = useState<SchoolMaster[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const isComposingRef = useRef(false); // ← useRefに変更
+    const navigate = useNavigate();
 
   // データ
   const [schools, setSchools] = useState<School[]>([]);
@@ -122,8 +122,8 @@ const Home: React.FC = () => {
 // 【修正箇所】handleSearchInput関数
 const handleSearchInput = async (value: string) => {
   setSearchQuery(value);
-
-  if (isComposing) {
+  
+  if (isComposingRef.current) {
     console.log('IME変換中のため検索スキップ');
     return;
   }
@@ -299,11 +299,8 @@ const handleSearchInput = async (value: string) => {
             placeholder="学校名を入力してください（2文字以上）"
             value={searchQuery}
             onChange={(e) => handleSearchInput(e.target.value)}
-            onCompositionStart={() => setIsComposing(true)}
-            onCompositionEnd={(e) => {
-                setIsComposing(false);
-                handleSearchInput(e.currentTarget.value);
-            }}
+            onCompositionStart={() => { isComposingRef.current = true; }}
+            onCompositionEnd={() => { isComposingRef.current = false; }}
             onFocus={() => searchSuggestions.length > 0 && setShowSuggestions(true)}
             disabled={isSearching}
             />
