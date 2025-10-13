@@ -42,9 +42,10 @@ const Home: React.FC = () => {
   // 検索関連
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [searchSuggestions, setSearchSuggestions] = useState<SchoolMaster[]>([]); // ← 追加
-  const [showSuggestions, setShowSuggestions] = useState(false); // ← 追加
-  const navigate = useNavigate(); // ← 追加
+  const [searchSuggestions, setSearchSuggestions] = useState<SchoolMaster[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isComposing, setIsComposing] = useState(false); // ← この1行を追加
+  const navigate = useNavigate();
 
   // データ
   const [schools, setSchools] = useState<School[]>([]);
@@ -118,56 +119,78 @@ const Home: React.FC = () => {
 
   // 検索処理（セキュリティ対策：バリデーション付き）
   // リアルタイム検索（入力中に候補を表示）
-    const handleSearchInput = async (value: string) => {
-    setSearchQuery(value);
+// 【修正箇所】handleSearchInput関数
+const handleSearchInput = async (value: string) => {
+  setSearchQuery(value);
+
+  if (isComposing) {
+    console.log('IME変換中のため検索スキップ');
+    return;
+  }
+  
+  const sanitizedQuery = value.trim();
+  
+  console.log('=== 検索デバッグ ===');
+  console.log('入力値:', value);
+  console.log('検索クエリ:', sanitizedQuery);
+  
+  // 入力が空または2文字未満の場合は候補を非表示
+  if (!sanitizedQuery || sanitizedQuery.length < 2) {
+    console.log('2文字未満のため検索スキップ');
+    setSearchSuggestions([]);
+    setShowSuggestions(false);
+    return;
+  }
+  
+  // 文字数制限
+  if (sanitizedQuery.length > 50) {
+    console.log('50文字を超えているため検索スキップ');
+    return;
+  }
+  
+  // 特殊文字チェック
+  const allowedPattern = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBFa-zA-Z0-9\s\-ー]+$/;
+  if (!allowedPattern.test(sanitizedQuery)) {
+    console.log('使用できない文字が含まれています');
+    return;
+  }
+  
+  try {
+    setIsSearching(true);
+    console.log('Supabase検索開始...');
     
-    const sanitizedQuery = value.trim();
+    // Supabaseから学校名を部分一致検索（ILIKE使用）
+    const { data, error } = await supabase
+      .from('schools')
+      .select('school_code, name, prefecture, address')
+      .ilike('name', `%${sanitizedQuery}%`)
+      .limit(10);
     
-    // 入力が空または2文字未満の場合は候補を非表示
-    if (!sanitizedQuery || sanitizedQuery.length < 2) {
-        setSearchSuggestions([]);
-        setShowSuggestions(false);
-        return;
+    console.log('検索結果:', data);
+    console.log('エラー:', error);
+    
+    if (error) {
+      console.error('Supabaseエラー詳細:', error);
+      throw error;
     }
     
-    // 文字数制限
-    if (sanitizedQuery.length > 50) {
-        return;
+    if (data && data.length > 0) {
+      console.log(`${data.length}件の候補を表示`);
+      setSearchSuggestions(data);
+      setShowSuggestions(true);
+    } else {
+      console.log('該当する学校が見つかりませんでした');
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
     }
-    
-    // 特殊文字チェック
-    const allowedPattern = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBFa-zA-Z0-9\s\-ー]+$/;
-    if (!allowedPattern.test(sanitizedQuery)) {
-        return;
-    }
-    
-    try {
-        setIsSearching(true);
-        
-        // Supabaseから学校名を部分一致検索（ILIKE使用）
-        const { data, error } = await supabase
-        .from('schools')
-        .select('school_code, name, prefecture, address')
-        .ilike('name', `%${sanitizedQuery}%`)
-        .limit(10); // 候補は最大10件
-        
-        if (error) throw error;
-        
-        if (data && data.length > 0) {
-        setSearchSuggestions(data);
-        setShowSuggestions(true);
-        } else {
-        setSearchSuggestions([]);
-        setShowSuggestions(false);
-        }
-    } catch (error) {
-        console.error('検索エラー:', error);
-        setSearchSuggestions([]);
-        setShowSuggestions(false);
-    } finally {
-        setIsSearching(false);
-    }
-    };
+  } catch (error) {
+    console.error('検索エラー:', error);
+    setSearchSuggestions([]);
+    setShowSuggestions(false);
+  } finally {
+    setIsSearching(false);
+  }
+};
 
     // 候補選択時の処理
     const handleSelectSchool = (school: SchoolMaster) => {
@@ -276,6 +299,11 @@ const Home: React.FC = () => {
             placeholder="学校名を入力してください（2文字以上）"
             value={searchQuery}
             onChange={(e) => handleSearchInput(e.target.value)}
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={(e) => {
+                setIsComposing(false);
+                handleSearchInput(e.currentTarget.value);
+            }}
             onFocus={() => searchSuggestions.length > 0 && setShowSuggestions(true)}
             disabled={isSearching}
             />
