@@ -7,7 +7,7 @@ import { useForm } from '../hooks/useForm'
 import { sanitizeHtml } from '../utils/sanitize'
 import { validationRules } from '../utils/validationRules'  // 追加
 import { AUTH_ERROR_MESSAGES } from '../constants/errorMessages'  // 追加
-import { SignUpFormData } from '../types/auth'
+import type { SignUpFormData } from '../types/auth'
 import './Auth.scss'
 
 ////////////////////////////////////////////////////////////////
@@ -53,7 +53,15 @@ export function SignUp() {
         email: validationRules.email,
         username: validationRules.username,
         password: validationRules.password,
-        confirmPassword: validationRules.confirmPassword(signUpForm?.values?.password || '')
+        confirmPassword: {
+        custom: (value) => {
+            if (!value.trim()) return 'パスワードの確認は必須です'
+            if (value !== signUpForm.values.password) {
+            return 'パスワードが一致しません'
+            }
+            return undefined
+        }
+        }
     }
     })
 

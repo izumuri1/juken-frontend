@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
-import { PasswordUpdateFormData } from '../types/auth'
+import type { PasswordUpdateFormData } from '../types/auth'
 import './Auth.scss'
 
 ////////////////////////////////////////////////////////////////
@@ -18,27 +18,21 @@ export function PasswordResetConfirm() {
   const [isCompleted, setIsCompleted] = useState(false)
 
   const passwordForm = useForm<PasswordUpdateFormData>({
-    initialValues: {
-      password: '',
-      confirmPassword: ''
-    },
-    validationRules: {
-      password: {
-        custom: (value) => {
-          if (!value.trim()) return 'パスワードは必須です'
-          if (value.length < 8) return 'パスワードは8文字以上で入力してください'
-          return undefined
-        }
-      },
-      confirmPassword: {
-        custom: (value) => {
-          if (!value.trim()) return 'パスワード確認は必須です'
-          if (value !== passwordForm.values.password) return 'パスワードが一致しません'
-          return undefined
-        }
+  initialValues: {
+    password: '',
+    confirmPassword: ''
+  },
+  validationRules: {
+    password: validationRules.password,
+    confirmPassword: {
+      custom: (value) => {
+        if (!value.trim()) return 'パスワード確認は必須です'
+        if (value !== passwordForm.values.password) return 'パスワードが一致しません'
+        return undefined
       }
     }
-  })
+  }
+})
 
     useEffect(() => {
             // パスワードリセット用のセッション処理

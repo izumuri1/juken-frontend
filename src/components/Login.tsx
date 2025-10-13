@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
 import { sanitizeHtml } from '../utils/sanitize'
-import { LoginFormData } from '../types/auth'
+import type { LoginFormData } from '../types/auth'
 import './Auth.scss'
 
 // ログインフォームの型定義

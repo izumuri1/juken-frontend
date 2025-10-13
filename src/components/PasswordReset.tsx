@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase'
 import { sanitizeHtml } from '../utils/sanitize'
 import { validationRules } from '../utils/validationRules'  // 追加
 import { handleAuthError } from '../utils/authErrorHandler'  // 追加
-import { PasswordResetFormData } from '../types/auth'
+import type { PasswordResetFormData } from '../types/auth'
 import './Auth.scss'
 
 ////////////////////////////////////////////////////////////////
