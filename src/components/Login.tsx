@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import FormField from './common/FormField'
 import { useForm } from '../hooks/useForm'
-import { sanitizeHtml } from '../utils/sanitize'
+import { LoadingSpinner } from './LoadingSpinner'  // 追加
 import type { LoginFormData } from '../types/auth'
 import './Auth.scss'
 
@@ -39,22 +39,21 @@ export function Login() {
 
   // ログイン処理
   const appf_handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  e.preventDefault()
 
-    if (!appv_loginForm.validateAll()) {
-      return
-    }
+  if (!appv_loginForm.validateAll()) {
+    return
+  }
 
-    appf_setSubmitError('')
-    appv_loginForm.setSubmitting(true)
+  appf_setSubmitError('')
+  appv_loginForm.setSubmitting(true)
 
-    try {
-    // メールアドレスをサニタイズ
-    const sanitizedEmail = sanitizeHtml(appv_loginForm.values.email.trim())
-    
-    const { error } = await signIn(sanitizedEmail, appv_loginForm.values.password)
+  try {
+  const trimmedEmail = appv_loginForm.values.email.trim()
+  
+  const { error } = await signIn(trimmedEmail, appv_loginForm.values.password)
 
-      if (error) {
+  if (error) {
         switch (error.code) {
           case 'invalid_credentials':
             appf_setSubmitError('メールアドレスまたはパスワードが正しくありません。')
@@ -120,7 +119,12 @@ export function Login() {
             className="btn-primary"
             disabled={loading || appv_loginForm.isSubmitting}
           >
-            {loading || appv_loginForm.isSubmitting ? 'ログイン中...' : 'ログイン'}
+            {loading || appv_loginForm.isSubmitting ? (
+              <>
+                <LoadingSpinner inline />
+                ログイン中...
+              </>
+            ) : 'ログイン'}
           </button>
 
           <p className="auth-switch">
