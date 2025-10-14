@@ -562,6 +562,9 @@ $ease-in-out:             ease-in-out;
 // Home画面セクション
 @mixin home-section {
   padding: $spacing-large $spacing-mobile;
+  max-width: $card-max-width;  // ← 追加：認証画面と同じ横幅制限（400px）
+  margin: 0 auto;               // ← 追加:中央揃え
+  width: 100%;                  // ← 追加：幅の基準を100%に設定
 
   .section-title {
     font-size: $font-size-title;
