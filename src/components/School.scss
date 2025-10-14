@@ -1,0 +1,411 @@
+// src/components/School.scss
+// School画面のスタイル（Home画面と同一デザイン）
+
+@use "sass:color";
+@use '../styles/variables' as *;
+
+//////////////////////////////////////////////////////////////
+// School画面コンテナ
+//////////////////////////////////////////////////////////////
+
+.school-container {
+  @include home-container;
+}
+
+//////////////////////////////////////////////////////////////
+// ヘッダー
+//////////////////////////////////////////////////////////////
+
+.school-header {
+  @include home-header;
+  
+  .hamburger-menu {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: -0.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    
+    .hamburger-icon {
+      font-size: 1.5rem;
+      color: $home-header-text;
+    }
+    
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  .header-center {
+    flex: 1;
+    text-align: center;
+
+    .workspace-name {
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
+      color: $home-header-text;
+      margin: 0;
+    }
+
+    .workspace-owner {
+      font-size: $font-size-small;
+      color: $home-text-muted;
+      margin: 0.25rem 0 0;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// サイドメニュー
+//////////////////////////////////////////////////////////////
+
+.side-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  animation: fadeIn 0.2s ease-out;
+  
+  .side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background-color: $home-card-bg;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    padding: $spacing-large;
+    overflow-y: auto;
+    animation: slideInLeft 0.3s ease-out;
+    
+    .close-button {
+      position: absolute;
+      top: $spacing-mobile;
+      right: $spacing-mobile;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:active {
+        opacity: 0.7;
+      }
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0 0 0;
+      
+      li {
+        margin-bottom: 0.5rem;
+        
+        &.divider {
+          height: 1px;
+          background-color: $home-card-border;
+          margin: $spacing-mobile 0;
+        }
+        
+        button {
+          display: block;
+          width: 100%;
+          padding: 0.75rem $spacing-mobile;
+          color: $home-text-heading;
+          text-decoration: none;
+          font-size: $font-size-body;
+          border-radius: $radius-button;
+          transition: background-color $animation-fast $ease-out;
+          background: none;
+          border: none;
+          cursor: pointer;
+          text-align: left;
+          
+          &:hover {
+            background-color: $color-gray-lighter;
+          }
+          
+          &:active {
+            background-color: $color-gray-light;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { 
+    transform: translateX(-100%);
+  }
+  to { 
+    transform: translateX(0);
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// メインコンテンツ
+//////////////////////////////////////////////////////////////
+
+.school-main {
+  flex: 1;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+
+//////////////////////////////////////////////////////////////
+// セクション共通
+//////////////////////////////////////////////////////////////
+
+.school-section {
+  @include home-section;
+}
+
+//////////////////////////////////////////////////////////////
+// 学校情報セクション
+//////////////////////////////////////////////////////////////
+
+.school-info-section {
+  .info-card {
+    @include home-card;
+    
+    &:hover {
+      transform: none;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+      }
+    }
+  }
+
+  .map-container {
+    margin-top: $spacing-mobile;
+    background-color: $home-card-bg;
+    border: 1px solid $home-card-border;
+    border-radius: $radius-card;
+    overflow: hidden;
+    box-shadow: $home-card-shadow;
+
+    .map-placeholder {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $color-gray-lighter;
+      color: $home-text-muted;
+      font-size: $font-size-body;
+      text-align: center;
+      padding: $spacing-mobile;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 学校情報入力セクション
+//////////////////////////////////////////////////////////////
+
+.school-input-section {
+  .school-form {
+    background-color: $home-card-bg;
+    border: 1px solid $home-card-border;
+    border-radius: $radius-card;
+    padding: $spacing-mobile;
+    box-shadow: $home-card-shadow;
+
+    .form-group {
+      margin-bottom: $spacing-mobile;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+
+    .form-label {
+      display: block;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: $home-text-label;
+      margin-bottom: 0.5rem;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: $spacing-mobile;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: $font-size-body;
+        color: $home-text-body;
+        cursor: pointer;
+
+        input[type='radio'] {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .form-input {
+      @include input-base;
+    }
+
+    .form-textarea {
+      @include input-base;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn-submit {
+      @include button-primary;
+      width: 100%;
+      margin-top: $spacing-mobile;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 学校情報表示セクション
+//////////////////////////////////////////////////////////////
+
+.school-display-section {
+  .info-card {
+    @include home-card;
+    
+    &:hover {
+      transform: none;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+      }
+    }
+
+    .card-actions {
+      display: flex;
+      gap: $spacing-small;
+      margin-top: $spacing-mobile;
+      padding-top: $spacing-mobile;
+      border-top: 1px solid $home-card-border;
+    }
+  }
+
+  .btn-edit {
+    @include home-button-info;
+    flex: 1;
+  }
+
+  .btn-delete {
+    @include home-button-small;
+    background-color: $color-error;
+    color: $color-white;
+    flex: 1;
+
+    &:hover {
+      background-color: $color-error-dark;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ボタンセクション
+//////////////////////////////////////////////////////////////
+
+.action-buttons-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-small;
+  padding: $spacing-large $spacing-mobile;
+  max-width: $card-max-width;
+  margin: 0 auto;
+  width: 100%;
+
+  .btn-register {
+    @include button-primary;
+    background-color: $color-orange;
+    width: 100%;
+
+    &:hover {
+      background-color: color.adjust($color-orange, $lightness: -10%);
+    }
+  }
+
+  .btn-home {
+    @include button-primary;
+    width: 100%;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ローディング・エラー表示
+//////////////////////////////////////////////////////////////
+
+.loading,
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  font-size: $font-size-body;
+  color: $home-text-muted;
+}
+
+.error-message {
+  color: $color-error;
+  margin-bottom: $spacing-mobile;
+}
+
+.btn-primary {
+  @include button-primary;
+  margin: 0 auto;
+  display: block;
+}
