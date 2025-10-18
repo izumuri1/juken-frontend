@@ -583,6 +583,7 @@ const handleRegisterTarget = async () => {
         <section className="school-section action-buttons-section">
           <ActionButtons
             workspaceId={workspaceId!}
+            direction="vertical"
             buttons={[
               {
                 label: isRegistering ? '登録中...' : '志望校登録',

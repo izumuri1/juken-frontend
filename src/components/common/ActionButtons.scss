@@ -4,12 +4,21 @@
 
 .action-buttons {
   display: flex;
-  flex-direction: column;  // ← 追加（上下並びに戻す）
   gap: $spacing-small;
   width: 100%;
 
   button {
     flex: 1;
+  }
+
+  // 上下並び用のモディファイア
+  &--vertical {
+    flex-direction: column;
+  }
+
+  // 横並び用のモディファイア（デフォルト）
+  &--horizontal {
+    flex-direction: row;
   }
 
   .btn-primary {

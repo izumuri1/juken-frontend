@@ -14,9 +14,14 @@ interface ButtonConfig {
 interface ActionButtonsProps {
   workspaceId: string;
   buttons: ButtonConfig[];
+  direction?: 'horizontal' | 'vertical';  // ← 追加
 }
 
-export const ActionButtons: React.FC<ActionButtonsProps> = ({ workspaceId, buttons }) => {
+export const ActionButtons: React.FC<ActionButtonsProps> = ({ 
+  workspaceId, 
+  buttons,
+  direction = 'horizontal'  // ← デフォルトは横並び
+}) => {
   const navigate = useNavigate();
 
   const handleClick = (button: ButtonConfig) => {
@@ -28,7 +33,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ workspaceId, butto
   };
 
   return (
-    <div className="action-buttons">
+    <div className={`action-buttons action-buttons--${direction}`}>
       {buttons.map((button, index) => (
         <button
           key={index}
