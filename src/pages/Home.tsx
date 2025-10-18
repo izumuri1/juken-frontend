@@ -18,6 +18,8 @@ interface SchoolMaster {
 
 interface School {
   id: string;
+  schoolId: string;  // 追加: schools.id
+  schoolCode: string; // 追加: schools.school_code
   name: string;
   desireLevel: number;
   desireLevelParent: number;
@@ -77,57 +79,94 @@ const Home: React.FC = () => {
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // データ取得（仮実装）
+  // 志望校データを取得
   useEffect(() => {
-    // TODO: Supabaseからデータ取得
-    // 仮データ
-    setSchools([
-      {
-        id: '1',
-        name: '桜蔭中学校',
-        desireLevel: 5,
-        desireLevelParent: 5,
-        commuteTime: 45,
-        nearestStation: '本郷三丁目駅',
-        updatedAt: '2025-10-01'
-      },
-      {
-        id: '2',
-        name: '女子学院中学校',
-        desireLevel: 4,
-        desireLevelParent: 5,
-        commuteTime: 35,
-        nearestStation: '飯田橋駅',
-        updatedAt: '2025-09-28'
+    const fetchTargetSchools = async () => {
+      if (!workspaceId) {
+        console.log('workspaceIdが未設定のため志望校データ取得をスキップ');
+        return;
       }
-    ]);
 
-    setExams([
-      {
-        id: '1',
-        schoolName: '桜蔭中学校',
-        desireLevel: 5,
-        examDate: '2026-02-01',
-        examTime: '09:00-12:00',
-        deviationValue: 75,
-        updatedAt: '2025-10-01'
-      },
-      {
-        id: '2',
-        schoolName: '女子学院中学校',
-        desireLevel: 4,
-        examDate: '2026-02-01',
-        examTime: '13:00-16:00',
-        deviationValue: 73,
-        updatedAt: '2025-09-28'
+      try {
+        console.log('=== 志望校データ取得開始 ===');
+        
+        // target_schoolsとschoolsとschool_detailsを結合して取得
+        const { data, error } = await supabase
+        .from('target_schools')
+        .select(`
+          id,
+          child_aspiration,
+          parent_aspiration,
+          updated_at,
+          school_id,
+          schools!inner (
+            id,
+            school_code,
+            name
+          )
+        `)
+        .eq('workspace_id', workspaceId);
+
+      console.log('志望校データ取得結果:', data);
+      console.log('志望校データ取得エラー:', error);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        // 各学校のschool_detailsを個別に取得
+        const schoolsWithDetails = await Promise.all(
+          data.map(async (item: any) => {
+            // school_detailsを取得
+            const { data: detailsData } = await supabase
+              .from('school_details')
+              .select('commute_time, nearest_station')
+              .eq('school_id', item.school_id)
+              .eq('workspace_id', workspaceId)
+              .maybeSingle();
+
+            return {
+              id: item.id,
+              schoolId: item.schools.id,
+              schoolCode: item.schools.school_code,
+              name: item.schools.name,
+              desireLevel: item.child_aspiration || 0,
+              desireLevelParent: item.parent_aspiration || 0,
+              commuteTime: detailsData?.commute_time || 0,
+              nearestStation: detailsData?.nearest_station || '未設定',
+              updatedAt: new Date(item.updated_at).toLocaleDateString('ja-JP')
+            };
+          })
+        );
+
+        console.log('整形後の志望校データ:', schoolsWithDetails);
+        setSchools(schoolsWithDetails);
+
+        // URLパラメータからscrollToを取得してスクロール
+        const params = new URLSearchParams(window.location.search);
+        const scrollToId = params.get('scrollTo');
+        if (scrollToId) {
+          // 少し遅延させてDOMレンダリング完了後にスクロール
+          setTimeout(() => {
+            const element = document.getElementById(`school-${scrollToId}`);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // URLパラメータをクリーンアップ
+              window.history.replaceState({}, '', `/workspace/${workspaceId}`);
+            }
+          }, 300);
+        }
+        } else {
+        console.log('志望校データが見つかりません');
+        setSchools([]);
       }
-    ]);
+      } catch (err) {
+        console.error('志望校データ取得エラー:', err);
+        setSchools([]);
+      }
+    };
 
-    setMembers([
-      { id: '1', name: '田中太郎', role: 'owner' },
-      { id: '2', name: '田中花子', role: 'member' }
-    ]);
-  }, []);
+    fetchTargetSchools();
+  }, [workspaceId]);
 
   // ワークスペース情報を取得
   useEffect(() => {
@@ -271,6 +310,11 @@ const handleSearchInput = async (value: string) => {
       navigate(`/workspace/${workspaceId}/school/${school.school_code}`); // ← workspaceIdを追加
     };
 
+    const handleSearch = () => {
+      // 検索ボタンクリック時の処理（現状は入力時に自動検索されるため空実装）
+      console.log('検索ボタンがクリックされました');
+    };
+
   // Enterキーでの検索対応
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -386,8 +430,8 @@ const handleSearchInput = async (value: string) => {
 
           <div className="section-content">
             {sortSchools(schools).map((school) => (
+            <div id={`school-${school.id}`} key={school.id}>
               <InfoCard
-                key={school.id}
                 className="school-card"
                 title={school.name}
                 badge={
@@ -402,12 +446,18 @@ const handleSearchInput = async (value: string) => {
                   { label: '更新日', value: school.updatedAt }
                 ]}
                 actions={
-                  <>
-                    <button className="btn-info">学校情報</button>
-                    <button className="btn-exam">受験情報</button>
-                  </>
-                }
+                <>
+                  <button 
+                    className="btn-info"
+                    onClick={() => navigate(`/workspace/${workspaceId}/school/${school.schoolCode}`)}
+                  >
+                    学校情報
+                  </button>
+                  <button className="btn-exam">受験情報</button>
+                </>
+              }
               />
+            </div>
             ))}
           </div>
         </section>

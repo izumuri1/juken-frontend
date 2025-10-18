@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';  // ← 追加
+import { useAuth } from "../contexts/AuthContext";
 import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { SchoolMap } from '../components/SchoolMap';
@@ -30,9 +30,10 @@ interface SchoolDetails {
 }
 
 const School: React.FC = () => {
-  const { workspaceId, schoolCode } = useParams<{ workspaceId: string; schoolCode: string }>(); // ← workspaceIdを追加
+  const { workspaceId, schoolCode } = useParams<{ workspaceId: string; schoolCode: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [isRegistering, setIsRegistering] = useState(false);  // ← この行を追加
 
   // データ
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
@@ -288,6 +289,62 @@ const School: React.FC = () => {
     }
   };
 
+// 志望校登録処理
+const handleRegisterTarget = async () => {
+  if (!schoolInfo || !workspaceId) {
+    alert('学校情報が読み込まれていません');
+    return;
+  }
+
+  try {
+    setIsRegistering(true);
+    
+    // 既に志望校登録されているか確認
+    const { data: existing, error: checkError } = await supabase
+      .from('target_schools')
+      .select('id')
+      .eq('workspace_id', workspaceId)
+      .eq('school_id', schoolInfo.id)
+      .maybeSingle();
+
+    if (checkError) throw checkError;
+
+    if (existing) {
+      alert('この学校は既に志望校として登録されています');
+      return;
+    }
+
+    // 初期データを設定して志望校登録
+    const { error: insertError } = await supabase
+      .from('target_schools')
+      .insert({
+        workspace_id: workspaceId,
+        school_id: schoolInfo.id,
+        child_impression: '（未入力）', // 必須項目のため初期値設定
+      });
+
+    if (insertError) throw insertError;
+
+    // 登録成功後、target_schoolsのIDを取得
+    const { data: newTarget } = await supabase
+      .from('target_schools')
+      .select('id')
+      .eq('workspace_id', workspaceId)
+      .eq('school_id', schoolInfo.id)
+      .single();
+
+    alert('志望校として登録しました');
+    // Home画面へ遷移（登録したIDをURLパラメータで渡す）
+    navigate(`/workspace/${workspaceId}?scrollTo=${newTarget?.id || ''}`);
+    
+  } catch (err) {
+    console.error('志望校登録エラー:', err);
+    alert('志望校登録に失敗しました');
+  } finally {
+    setIsRegistering(false);
+  }
+};
+
   if (loading) {
     return (
       <div className="school-container">
@@ -531,11 +588,15 @@ const School: React.FC = () => {
         <section className="school-section action-buttons-section">
           <button
             className="btn-register"
-            onClick={() => alert('Target画面への遷移は未実装')}
+            onClick={handleRegisterTarget}
+            disabled={isRegistering}
           >
-            志望校登録
+            {isRegistering ? '登録中...' : '志望校登録'}
           </button>
-          <button className="btn-home" onClick={() => navigate('/home')}>
+          <button 
+            className="btn-home" 
+            onClick={() => navigate(`/workspace/${workspaceId}`)}
+          >
             Home
           </button>
         </section>
