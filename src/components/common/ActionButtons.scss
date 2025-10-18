@@ -1,0 +1,37 @@
+// src/components/common/ActionButtons.scss
+@use "sass:color";
+@use '../../styles/variables' as *;
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;  // ← 追加（上下並びに戻す）
+  gap: $spacing-small;
+  width: 100%;
+
+  button {
+    flex: 1;
+  }
+
+  .btn-primary {
+    @include button-primary;
+    background-color: $color-orange;
+    width: 100%;
+
+    &:hover {
+      background-color: color.adjust($color-orange, $lightness: -10%);
+    }
+  }
+
+  .btn-home {
+    @include button-primary;
+    width: 100%;
+  }
+
+  .btn-info {
+    @include home-button-info;
+  }
+
+  .btn-exam {
+    @include home-button-exam;
+  }
+}

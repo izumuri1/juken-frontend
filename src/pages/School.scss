@@ -252,21 +252,6 @@
   max-width: $card-max-width;
   margin: 0 auto;
   width: 100%;
-
-  .btn-register {
-    @include button-primary;
-    background-color: $color-orange;
-    width: 100%;
-
-    &:hover {
-      background-color: color.adjust($color-orange, $lightness: -10%);
-    }
-  }
-
-  .btn-home {
-    @include button-primary;
-    width: 100%;
-  }
 }
 
 //////////////////////////////////////////////////////////////

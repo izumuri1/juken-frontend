@@ -6,6 +6,7 @@ import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { WorkspaceMembers } from '../components/WorkspaceMembers'; // 追加
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
+import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
 import './Home.scss';
 
 // 型定義
@@ -396,15 +397,20 @@ const handleSearchInput = async (value: string) => {
                   { label: '更新日', value: school.updatedAt }
                 ]}
                 actions={
-                <>
-                  <button 
-                    className="btn-info"
-                    onClick={() => navigate(`/workspace/${workspaceId}/school/${school.schoolCode}`)}
-                  >
-                    学校情報
-                  </button>
-                  <button className="btn-exam">受験情報</button>
-                </>
+                  <ActionButtons
+                    workspaceId={workspaceId!}
+                    buttons={[
+                      {
+                        label: '学校情報',
+                        path: `/workspace/${workspaceId}/school/${school.schoolCode}`,
+                        variant: 'info'
+                      },
+                      {
+                        label: '受験情報',
+                        variant: 'exam'
+                      }
+                    ]}
+                  />
               }
               />
             </div>
@@ -470,8 +476,19 @@ const handleSearchInput = async (value: string) => {
                   </div>
                 </div>
                 <div className="card-actions">
-                  <button className="btn-info">受験情報</button>
-                  <button className="btn-exam">受験管理</button>
+                  <ActionButtons
+                    workspaceId={workspaceId!}
+                    buttons={[
+                      {
+                        label: '受験情報',
+                        variant: 'info'
+                      },
+                      {
+                        label: '受験管理',
+                        variant: 'exam'
+                      }
+                    ]}
+                  />
                 </div>
               </div>
             ))

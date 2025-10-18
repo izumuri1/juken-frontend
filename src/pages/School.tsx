@@ -7,6 +7,7 @@ import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { SchoolMap } from '../components/SchoolMap';
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
+import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
 import './School.scss';
 
 // 型定義
@@ -580,19 +581,22 @@ const handleRegisterTarget = async () => {
 
         {/* ボタンセクション */}
         <section className="school-section action-buttons-section">
-          <button
-            className="btn-register"
-            onClick={handleRegisterTarget}
-            disabled={isRegistering}
-          >
-            {isRegistering ? '登録中...' : '志望校登録'}
-          </button>
-          <button 
-            className="btn-home" 
-            onClick={() => navigate(`/workspace/${workspaceId}`)}
-          >
-            Home
-          </button>
+          <ActionButtons
+            workspaceId={workspaceId!}
+            buttons={[
+              {
+                label: isRegistering ? '登録中...' : '志望校登録',
+                onClick: handleRegisterTarget,
+                variant: 'primary',
+                disabled: isRegistering
+              },
+              {
+                label: 'Home',
+                path: `/workspace/${workspaceId}`,
+                variant: 'home'
+              }
+            ]}
+          />
         </section>
       </main>
     </div>
