@@ -1,0 +1,81 @@
+// src/components/InvitationTokenGenerator.scss
+@use '../styles/variables' as *;
+
+.invitation-token-generator {
+  padding: $auth-padding-default;
+  
+  .btn-generate-invite {
+    background-color: $auth-button-primary-bg;
+    color: $auth-button-primary-text;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: $auth-button-primary-hover;
+    }
+
+    &:disabled {
+      opacity: $auth-button-disabled-opacity;
+      cursor: not-allowed;
+    }
+  }
+
+  .invite-url-container {
+    .invite-description {
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: $auth-text-body;
+    }
+
+    .invite-url-box {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+
+      .invite-url-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid $color-gray-light;
+        border-radius: 4px;
+        font-size: 13px;
+        background-color: $color-gray-lighter;
+      }
+
+      .btn-copy {
+        background-color: $auth-button-secondary-bg;
+        color: $auth-button-secondary-text;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .invite-expiry {
+      font-size: 12px;
+      color: $color-gray-medium;
+    }
+  }
+
+  .error-message {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: $color-error-light;
+    border: 1px solid $color-error-border;
+    border-radius: 4px;
+    color: $color-error;
+    font-size: 14px;
+  }
+}

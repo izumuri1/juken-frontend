@@ -1,0 +1,64 @@
+// src/components/InviteHandler.scss
+@use '../styles/variables' as *;
+
+.invite-error-container,
+.invite-processing-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $auth-bg-color;
+  padding: 20px;
+}
+
+.invite-error-card,
+.invite-processing-card {
+  background-color: $auth-card-bg;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: $auth-card-shadow;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  
+  .logo {
+    font-size: 32px;
+    font-weight: 700;
+    color: $auth-text-heading;
+    margin-bottom: 32px;
+  }
+  
+  .error-content,
+  .processing-content {
+    .error-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: $color-error;
+      margin-bottom: 16px;
+    }
+    
+    .error-message,
+    .processing-message {
+      font-size: 14px;
+      color: $auth-text-body;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    
+    .btn-back {
+      background-color: $auth-button-primary-bg;
+      color: $auth-button-primary-text;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: $auth-button-primary-hover;
+      }
+    }
+  }
+}

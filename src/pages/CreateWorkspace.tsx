@@ -182,46 +182,46 @@ export function CreateWorkspace() {
   };
 
   // 招待リンク生成処理
-  const generateInviteLink = async (workspace: Workspace) => {
+    const generateInviteLink = async (workspace: Workspace) => {
     if (!user) return;
 
     try {
-      setIsLoading(true);
-      
-      // ランダムトークンを生成 (64文字)
-      const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
+        setIsLoading(true);
+        
+        // 24時間後の有効期限を設定
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 24);
 
-      // 招待トークンをDBに保存
-      const { error } = await supabase
+        // 招待トークンをDBに保存（tokenはデフォルト値のgen_random_uuid()で自動生成）
+        const { data, error } = await supabase
         .from('invitation_tokens')
         .insert({
-          token,
-          workspace_id: workspace.id,
-          created_by: user.id,
-          expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24時間後
-          max_uses: 1,
-          current_uses: 0
-        });
+            workspace_id: workspace.id,
+            created_by: user.id,
+            expires_at: expiresAt.toISOString(),
+            max_uses: 1,
+            current_uses: 0
+        })
+        .select('token')
+        .single();
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // 招待URLを生成
-      const inviteUrl = `${window.location.origin}/invite/${token}`;
-      
-      setCurrentInviteWorkspace(workspace);
-      setInviteUrl(inviteUrl);
-      setShowInviteModal(true);
-      setCopyButtonText("リンクをコピー");
-      
+        // 招待URLを生成
+        const inviteUrl = `${window.location.origin}/invite/${data.token}`;
+        
+        setCurrentInviteWorkspace(workspace);
+        setInviteUrl(inviteUrl);
+        setShowInviteModal(true);
+        setCopyButtonText("リンクをコピー");
+        
     } catch (error: any) {
-      console.error('招待リンク生成エラー:', error);
-      setSubmitError('招待リンクの生成に失敗しました');
+        console.error('招待リンク生成エラー:', error);
+        setSubmitError('招待リンクの生成に失敗しました');
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+    };
 
   // 招待リンクをコピー
   const copyInviteLink = async () => {

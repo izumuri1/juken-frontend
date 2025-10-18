@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Login } from './pages/Login'
 import { SignUp } from './pages/SignUp'
+import { InviteHandler } from './components/InviteHandler';  // ← 追加
 import { PasswordReset } from './pages/PasswordReset'
 import { PasswordResetConfirm } from './pages/PasswordResetConfirm'
 import { EmailConfirmationWaiting } from './pages/EmailConfirmationWaiting'
@@ -30,6 +31,10 @@ return (
       <Route 
         path="/signup" 
         element={user ? <Navigate to="/home" replace /> : <SignUp />} 
+      />
+      <Route 
+        path="/invite/:token" 
+        element={<InviteHandler />} 
       />
       <Route 
         path="/password-reset" 
