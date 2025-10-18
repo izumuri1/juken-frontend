@@ -51,3 +51,7 @@ CREATE POLICY "Token creators can update"
 -- Supabaseの anon ロールに SELECT 権限を付与
 GRANT SELECT ON public.invitation_tokens TO anon;
 GRANT SELECT ON public.invitation_tokens TO authenticated;
+
+-- authenticated ロールに INSERT, UPDATE 権限を付与
+GRANT INSERT ON public.invitation_tokens TO authenticated;
+GRANT UPDATE ON public.invitation_tokens TO authenticated;
