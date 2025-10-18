@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { LoadingSpinner } from '../components/LoadingSpinner'
+import { supabase } from '../lib/supabase'
 import type { LoginFormData } from '../types/auth'
 import './Auth.scss'
 
@@ -53,21 +54,57 @@ export function Login() {
   
   const { error } = await signIn(trimmedEmail, appv_loginForm.values.password)
 
-  if (error) {
-        switch (error.code) {
-          case 'invalid_credentials':
-            appf_setSubmitError('メールアドレスまたはパスワードが正しくありません。')
-            break
-          case 'email_not_confirmed':
-            appf_setSubmitError('メールアドレスの確認が完了していません。確認メールをご確認ください。')
-            break
-          case 'user_not_found':
-            appf_setSubmitError('アカウントが見つかりません。メールアドレスを確認してください。')
-            break
-          default:
-            appf_setSubmitError('ログインに失敗しました。メールアドレスとパスワードを確認してください。')
+    if (error) {
+      switch (error.code) {
+        case 'invalid_credentials':
+          appf_setSubmitError('メールアドレスまたはパスワードが正しくありません。')
+          break
+        case 'email_not_confirmed':
+          appf_setSubmitError('メールアドレスの確認が完了していません。確認メールをご確認ください。')
+          break
+        case 'user_not_found':
+          appf_setSubmitError('アカウントが見つかりません。メールアドレスを確認してください。')
+          break
+        default:
+          appf_setSubmitError('ログインに失敗しました。メールアドレスとパスワードを確認してください。')
+      }
+    } else {
+      // ログイン成功 - ワークスペース数を確認して遷移先を決定
+      // Note: AuthContextのuserはまだ更新されていない可能性があるため、
+      // Supabaseから直接現在のユーザーを取得
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      
+      if (currentUser) {
+        // ユーザーが参加しているワークスペースを取得
+        const { data: ownerWorkspaces } = await supabase
+          .from("workspaces")
+          .select("id")
+          .eq("owner_id", currentUser.id)
+        
+        const { data: memberWorkspaces } = await supabase
+          .from("workspace_members")
+          .select("workspace_id")
+          .eq("user_id", currentUser.id)
+        
+        // 重複を除いた全ワークスペース数を計算
+        const allWorkspaceIds = new Set([
+          ...(ownerWorkspaces || []).map(w => w.id),
+          ...(memberWorkspaces || []).map(m => m.workspace_id)
+        ])
+        
+        if (allWorkspaceIds.size === 0) {
+          // ワークスペースが0個 → ワークスペース作成/選択画面へ
+          appv_navigate('/workspaces')
+        } else if (allWorkspaceIds.size === 1) {
+          // ワークスペースが1個 → そのワークスペースのHome画面へ
+          const workspaceId = Array.from(allWorkspaceIds)[0]
+          appv_navigate(`/workspace/${workspaceId}`)
+        } else {
+          // ワークスペースが複数 → ワークスペース選択画面へ
+          appv_navigate('/workspaces')
         }
       }
+    }
     } catch (err) {
       console.error('Login error:', err)
       appf_setSubmitError('ログインに失敗しました。')

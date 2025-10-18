@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase' // ← 追加
-import { useNavigate } from 'react-router-dom'; // ← 追加
+import { useNavigate, useParams } from 'react-router-dom'; // ← useParamsを追加
 import { getDesireBadgeClass } from '../utils/helpers'; // 追加
 import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
+import { WorkspaceMembers } from '../components/WorkspaceMembers'; // 追加
 import './Home.scss';
 
 // 型定義
@@ -42,6 +43,9 @@ interface Member {
 }
 
 const Home: React.FC = () => {
+  // URLパラメータからworkspaceIdを取得
+  const { workspaceId } = useParams<{ workspaceId: string }>();
+  
   // 検索関連
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
@@ -408,17 +412,7 @@ const handleSearchInput = async (value: string) => {
 
         {/* ワークスペースメンバーセクション */}
         <section className="home-section members-section">
-          <h2 className="section-title">ワークスペースメンバー</h2>
-          <div className="section-content">
-            {members.map((member) => (
-              <div key={member.id} className="member-card">
-                <span className="member-name">{member.name}</span>
-                {member.role === 'owner' && (
-                  <span className="member-badge">オーナー</span>
-                )}
-              </div>
-            ))}
-          </div>
+          <WorkspaceMembers workspaceId={workspaceId || ''} />
         </section>
       </main>
     </div>

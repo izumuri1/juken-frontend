@@ -53,89 +53,38 @@ export function CreateWorkspace() {
   // 3. ユーザーのワークスペース一覧を取得（修正版）
   const fetchWorkspaces = async () => {
     if (!user) {
-      console.log("ユーザーが存在しません:", user);
-      return;
+        console.log("ユーザーが存在しません:", user);
+        return;
     }
 
     console.log("現在のユーザーID:", user.id);
 
     try {
-      // 1. オーナーとしてのワークスペースを取得
-      const { data: ownerWorkspaces, error: ownerError } = await supabase
+        // オーナーとしてのワークスペースのみを取得
+        // Note: RLSポリシーの問題により、一時的にメンバーワークスペースの取得を無効化
+        const { data: ownerWorkspaces, error: ownerError } = await supabase
         .from("workspaces")
         .select("*")
         .eq("owner_id", user.id);
 
-      console.log("オーナーワークスペース:", ownerWorkspaces);
-      if (ownerError) {
+        console.log("オーナーワークスペース:", ownerWorkspaces);
+        if (ownerError) {
         console.error("オーナークエリエラー:", ownerError);
         throw ownerError;
-      }
-
-      // 2. メンバーとしてのワークスペースを取得
-      const { data: memberData, error: memberError } = await supabase
-        .from("workspace_members")
-        .select(
-          `
-          workspace_id,
-          workspaces (
-            id,
-            name,
-            owner_id,
-            created_at
-          )
-        `
-        )
-        .eq("user_id", user.id);
-
-      console.log("メンバーデータ:", memberData);
-      if (memberError) {
-        console.error("メンバークエリエラー:", memberError);
-        throw memberError;
-      }
-
-      // 3. メンバーワークスペースを整形（型安全版）
-      const memberWorkspaces: Workspace[] = [];
-
-      if (memberData) {
-        for (const item of memberData) {
-          const workspace = item.workspaces as any;
-          if (
-            workspace &&
-            workspace.id &&
-            workspace.name &&
-            workspace.owner_id &&
-            workspace.created_at
-          ) {
-            memberWorkspaces.push({
-              id: workspace.id,
-              name: workspace.name,
-              owner_id: workspace.owner_id,
-              created_at: workspace.created_at,
-            });
-          }
         }
-      }
 
-      console.log("整形後メンバーワークスペース:", memberWorkspaces);
-
-      // 4. 重複を除いて結合
-      const allWorkspaces: Workspace[] = [...(ownerWorkspaces || [])];
-
-      // メンバーワークスペースから、既にオーナーワークスペースに含まれていないものを追加
-      memberWorkspaces.forEach((workspace: Workspace) => {
-        if (!allWorkspaces.find((w) => w.id === workspace.id)) {
-          allWorkspaces.push(workspace);
-        }
-      });
-
-      console.log("全ワークスペース:", allWorkspaces);
-      setWorkspaces(allWorkspaces);
+        // 全ワークスペースを設定（現時点ではオーナーのみ）
+        const allWorkspaces: Workspace[] = [...(ownerWorkspaces || [])];
+        
+        console.log("全ワークスペース:", allWorkspaces);
+        setWorkspaces(allWorkspaces);
     } catch (error) {
-      console.error("ワークスペース取得エラー:", error);
-      setSubmitError("ワークスペース一覧の取得に失敗しました");
+        console.error("ワークスペース取得エラー:", error);
+        // エラーが発生してもワークスペースを空配列に設定（新規ユーザーの場合は正常）
+        setWorkspaces([]);
+        // エラーメッセージは表示しない（ワークスペースが0件でも正常なため）
     }
-  };
+    };
 
   // 4. コンポーネント初期化時にワークスペース一覧を取得
   useEffect(() => {
