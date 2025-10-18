@@ -1,7 +1,7 @@
 // src/components/Login.tsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { LoadingSpinner } from '../components/LoadingSpinner'
@@ -13,7 +13,19 @@ import './Auth.scss'
 export function Login() {
   const { signIn, loading } = useAuth()
   const appv_navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [appv_submitError, appf_setSubmitError] = useState('')
+  const [inviteToken, setInviteToken] = useState<string | null>(null)
+
+  // URLパラメータから招待トークンを取得
+  useEffect(() => {
+    const token = searchParams.get('inviteToken')
+    if (token) {
+      setInviteToken(token)
+      // sessionStorageに保存（ログイン後に使用）
+      sessionStorage.setItem('pendingInviteToken', token)
+    }
+  }, [searchParams])
 
   // フォーム管理
   const appv_loginForm = useForm<LoginFormData>({
@@ -69,13 +81,19 @@ export function Login() {
           appf_setSubmitError('ログインに失敗しました。メールアドレスとパスワードを確認してください。')
       }
     } else {
-      // ログイン成功 - ワークスペース数を確認して遷移先を決定
-      // Note: AuthContextのuserはまだ更新されていない可能性があるため、
-      // Supabaseから直接現在のユーザーを取得
+      // ログイン成功
       const { data: { user: currentUser } } = await supabase.auth.getUser()
       
       if (currentUser) {
-        // ユーザーが参加しているワークスペースを取得
+        // 招待トークンがある場合は招待リンクに戻る
+        const pendingToken = sessionStorage.getItem('pendingInviteToken')
+        if (pendingToken) {
+          sessionStorage.removeItem('pendingInviteToken')
+          appv_navigate(`/invite/${pendingToken}`)
+          return
+        }
+
+        // 通常のログイン処理
         const { data: ownerWorkspaces } = await supabase
           .from("workspaces")
           .select("id")
@@ -86,21 +104,17 @@ export function Login() {
           .select("workspace_id")
           .eq("user_id", currentUser.id)
         
-        // 重複を除いた全ワークスペース数を計算
         const allWorkspaceIds = new Set([
           ...(ownerWorkspaces || []).map(w => w.id),
           ...(memberWorkspaces || []).map(m => m.workspace_id)
         ])
         
         if (allWorkspaceIds.size === 0) {
-          // ワークスペースが0個 → ワークスペース作成/選択画面へ
           appv_navigate('/workspaces')
         } else if (allWorkspaceIds.size === 1) {
-          // ワークスペースが1個 → そのワークスペースのHome画面へ
           const workspaceId = Array.from(allWorkspaceIds)[0]
           appv_navigate(`/workspace/${workspaceId}`)
         } else {
-          // ワークスペースが複数 → ワークスペース選択画面へ
           appv_navigate('/workspaces')
         }
       }

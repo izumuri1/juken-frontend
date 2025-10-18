@@ -45,6 +45,11 @@ interface Member {
 const Home: React.FC = () => {
   // URLパラメータからworkspaceIdを取得
   const { workspaceId } = useParams<{ workspaceId: string }>();
+
+  // デバッグログを追加（← ここに追加）
+  useEffect(() => {
+    console.log('Home画面: workspaceId =', workspaceId);
+  }, [workspaceId]);
   
   // 検索関連
     const [searchQuery, setSearchQuery] = useState('');
@@ -127,7 +132,13 @@ const Home: React.FC = () => {
   // ワークスペース情報を取得
   useEffect(() => {
     const fetchWorkspaceInfo = async () => {
-      if (!workspaceId) return;
+      console.log('=== ワークスペース情報取得開始 ===');
+      console.log('workspaceId:', workspaceId);
+      
+      if (!workspaceId) {
+        console.log('workspaceIdが未設定のため処理をスキップ');
+        return;
+      }
 
       try {
         // ワークスペース情報を取得
@@ -137,11 +148,17 @@ const Home: React.FC = () => {
           .eq('id', workspaceId)
           .single();
 
+        console.log('ワークスペース取得結果:', workspace);
+        console.log('ワークスペース取得エラー:', workspaceError);
+
         if (workspaceError) throw workspaceError;
 
         if (workspace) {
+          console.log('ワークスペース名設定:', workspace.name);
           setWorkspaceName(workspace.name);
 
+          console.log('オーナーID:', workspace.owner_id);
+          
           // オーナー情報を取得
           const { data: owner, error: ownerError } = await supabase
             .from('users')
@@ -149,9 +166,13 @@ const Home: React.FC = () => {
             .eq('id', workspace.owner_id)
             .single();
 
+          console.log('オーナー取得結果:', owner);
+          console.log('オーナー取得エラー:', ownerError);
+
           if (ownerError) throw ownerError;
 
           if (owner) {
+            console.log('オーナー名設定:', owner.username);
             setWorkspaceOwner(owner.username);
           }
         }

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import './InviteHandler.scss';
 
 interface InviteTokenData {
@@ -22,19 +23,25 @@ interface InviteTokenData {
 export function InviteHandler() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [inviteData, setInviteData] = useState<InviteTokenData | null>(null);
 
   useEffect(() => {
     if (!token) {
-      setError('招待URLが無効です');
-      setLoading(false);
-      return;
+        setError('招待URLが無効です');
+        setLoading(false);
+        return;
+    }
+
+    // 認証状態の読み込みが完了するまで待つ
+    if (authLoading) {
+        return;
     }
 
     validateInviteToken();
-  }, [token]);
+    }, [token, authLoading]);
 
   const validateInviteToken = async () => {
     try {
@@ -90,11 +97,14 @@ export function InviteHandler() {
       setInviteData(processedData);
 
       // ログイン状態チェック
-      const { data: { user } } = await supabase.auth.getUser();
+        console.log('招待トークン処理: ユーザー情報', user);
+        console.log('招待トークン処理: ワークスペース情報', processedData);
 
-      if (user) {
+        if (user) {
+        console.log('ログイン済みユーザー - joinWorkspace実行');
         await joinWorkspace(processedData, user.id);
-      } else {
+        } else {
+        console.log('未ログインユーザー - 新規登録画面へ');
         // 未ログインの場合は新規登録画面へ
         sessionStorage.setItem('pendingInvite', JSON.stringify({
           token: token,
@@ -118,17 +128,20 @@ export function InviteHandler() {
       setLoading(true);
 
       // 既にメンバーかチェック
-      const { data: existingMember } = await supabase
+        const { data: existingMember, error: memberCheckError } = await supabase
         .from('workspace_members')
         .select('id')
         .eq('workspace_id', tokenData.workspace_id)
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (existingMember) {
+        console.log('既存メンバーチェック:', existingMember);
+
+        if (existingMember) {
+        console.log('既にメンバーです。ワークスペースへ遷移します。');
         navigate(`/workspace/${tokenData.workspace_id}`);
         return;
-      }
+        }
 
       // ワークスペースメンバーとして追加
       const { error: memberError } = await supabase

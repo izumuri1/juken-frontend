@@ -60,8 +60,7 @@ export function CreateWorkspace() {
     console.log("現在のユーザーID:", user.id);
 
     try {
-        // オーナーとしてのワークスペースのみを取得
-        // Note: RLSポリシーの問題により、一時的にメンバーワークスペースの取得を無効化
+        // オーナーとしてのワークスペースを取得
         const { data: ownerWorkspaces, error: ownerError } = await supabase
         .from("workspaces")
         .select("*")
@@ -70,11 +69,38 @@ export function CreateWorkspace() {
         console.log("オーナーワークスペース:", ownerWorkspaces);
         if (ownerError) {
         console.error("オーナークエリエラー:", ownerError);
-        throw ownerError;
         }
 
-        // 全ワークスペースを設定（現時点ではオーナーのみ）
-        const allWorkspaces: Workspace[] = [...(ownerWorkspaces || [])];
+        // メンバーとして参加しているワークスペースを取得
+        const { data: memberWorkspaces, error: memberError } = await supabase
+        .from("workspace_members")
+        .select("workspace_id, workspaces(id, name, owner_id, created_at)")
+        .eq("user_id", user.id);
+
+        console.log("メンバーワークスペース:", memberWorkspaces);
+        if (memberError) {
+        console.error("メンバークエリエラー:", memberError);
+        }
+
+        // ワークスペースを結合（重複排除）
+        const workspaceMap = new Map<string, Workspace>();
+        
+        // オーナーワークスペースを追加
+        (ownerWorkspaces || []).forEach(ws => {
+        workspaceMap.set(ws.id, ws);
+        });
+        
+        // メンバーワークスペースを追加
+        (memberWorkspaces || []).forEach(member => {
+        if (member.workspaces) {
+            const ws = Array.isArray(member.workspaces) ? member.workspaces[0] : member.workspaces;
+            if (ws && !workspaceMap.has(ws.id)) {
+            workspaceMap.set(ws.id, ws as Workspace);
+            }
+        }
+        });
+        
+        const allWorkspaces = Array.from(workspaceMap.values());
         
         console.log("全ワークスペース:", allWorkspaces);
         setWorkspaces(allWorkspaces);
