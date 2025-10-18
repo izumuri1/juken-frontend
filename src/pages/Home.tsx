@@ -66,8 +66,8 @@ const Home: React.FC = () => {
   const [examSortOrder, setExamSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // ワークスペース情報
-  const [workspaceName] = useState('田中家の中学受験');
-  const [workspaceOwner] = useState('田中太郎');
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [workspaceOwner, setWorkspaceOwner] = useState('');
 
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,6 +123,47 @@ const Home: React.FC = () => {
       { id: '2', name: '田中花子', role: 'member' }
     ]);
   }, []);
+
+  // ワークスペース情報を取得
+  useEffect(() => {
+    const fetchWorkspaceInfo = async () => {
+      if (!workspaceId) return;
+
+      try {
+        // ワークスペース情報を取得
+        const { data: workspace, error: workspaceError } = await supabase
+          .from('workspaces')
+          .select('name, owner_id')
+          .eq('id', workspaceId)
+          .single();
+
+        if (workspaceError) throw workspaceError;
+
+        if (workspace) {
+          setWorkspaceName(workspace.name);
+
+          // オーナー情報を取得
+          const { data: owner, error: ownerError } = await supabase
+            .from('users')
+            .select('username')
+            .eq('id', workspace.owner_id)
+            .single();
+
+          if (ownerError) throw ownerError;
+
+          if (owner) {
+            setWorkspaceOwner(owner.username);
+          }
+        }
+      } catch (error) {
+        console.error('ワークスペース情報取得エラー:', error);
+        setWorkspaceName('ワークスペース');
+        setWorkspaceOwner('');
+      }
+    };
+
+    fetchWorkspaceInfo();
+  }, [workspaceId]);
 
   // 検索処理（セキュリティ対策：バリデーション付き）
   // リアルタイム検索（入力中に候補を表示）

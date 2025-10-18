@@ -327,3 +327,65 @@
     }
   }
 }
+
+//////////////////////////////////////////////////////////////
+// ワークスペースメンバーセクション
+//////////////////////////////////////////////////////////////
+
+.members-section {
+  .workspace-members {
+    width: 100%;
+    
+    .members-title {
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
+      color: $home-text-heading;
+      margin-bottom: $spacing-mobile;
+    }
+    
+    .members-list {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-mobile;
+    }
+    
+    .member-item {
+      @include home-card;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: $spacing-mobile;
+      
+      .member-username {
+        font-size: $font-size-subtitle;
+        font-weight: $font-weight-bold;
+        color: $home-text-heading;
+      }
+      
+      .member-role {
+        @include home-badge;
+        background-color: $home-badge-high-bg;
+        color: $home-badge-high-text;
+        font-size: $font-size-small;
+        padding: 0.25rem 0.75rem;
+      }
+    }
+  }
+  
+  .workspace-members-loading {
+    text-align: center;
+    padding: $spacing-large;
+    color: $home-text-muted;
+    font-size: $font-size-body;
+  }
+  
+  .workspace-members-error {
+    background-color: $auth-error-bg;
+    color: $auth-error-text;
+    border: 1px solid $auth-error-border;
+    border-radius: $radius-card;
+    padding: $spacing-mobile;
+    text-align: center;
+    font-size: $font-size-body;
+  }
+}
