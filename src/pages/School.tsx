@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';  // ← 追加
 import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
+import { SchoolMap } from '../components/SchoolMap';
 import './School.scss';
 
 // 型定義
@@ -187,6 +188,28 @@ const School: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // === 認証状態デバッグ ===
+    console.log('=== 認証確認 ===');
+    console.log('AuthContext user:', user);
+    
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    console.log('Supabase getUser:', currentUser);
+    console.log('workspaceId:', workspaceId);
+    console.log('schoolInfo.id:', schoolInfo?.id);
+
+    // workspace_membersにレコードが存在するか確認
+    if (currentUser) {
+      const { data: memberCheck, error: memberError } = await supabase
+        .from('workspace_members')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .eq('workspace_id', workspaceId);
+      
+      console.log('workspace_members確認:', memberCheck);
+      console.log('workspace_membersエラー:', memberError);
+    }
+    // === デバッグ終了 ===
+
     if (!workspaceId || !schoolInfo?.id) {
       alert('ワークスペース情報または学校情報が取得できていません');
       return;
@@ -315,15 +338,19 @@ const School: React.FC = () => {
             </div>
           </div>
 
-          {/* 地図表示エリア（TODO: Leaflet.js実装） */}
+          {/* 地図表示エリア */}
           <div className="map-container">
-            <div className="map-placeholder">
-              {schoolInfo.latitude && schoolInfo.longitude ? (
-                <p>地図表示エリア（OpenStreetMap + Leaflet.js）</p>
-              ) : (
-                <p>位置情報が登録されていません</p>
-              )}
-            </div>
+            {schoolInfo.latitude && schoolInfo.longitude ? (
+              <SchoolMap
+                latitude={schoolInfo.latitude}
+                longitude={schoolInfo.longitude}
+                schoolName={schoolInfo.name}
+              />
+            ) : (
+              <div className="map-placeholder">
+                緯度経度情報がないため、地図を表示できません
+              </div>
+            )}
           </div>
         </section>
 
