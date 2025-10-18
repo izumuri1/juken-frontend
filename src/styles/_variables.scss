@@ -660,6 +660,8 @@ $ease-in-out:             ease-in-out;
     display: flex;
     gap: $spacing-small;
     margin-top: $spacing-mobile;
+    padding-top: $spacing-mobile;       // ← 追加
+    border-top: 1px solid $home-card-border;  // ← 追加
   }
 }
 

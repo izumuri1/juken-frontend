@@ -182,10 +182,12 @@
   
   .btn-info {
     @include home-button-info;
+    flex: 1;  // ← 追加
   }
   
   .btn-exam {
     @include home-button-exam;
+    flex: 1;  // ← 追加
   }
 }
 

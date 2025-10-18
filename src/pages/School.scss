@@ -84,13 +84,15 @@
     }
   }
 
-  .map-container {
+ .map-container {
     margin-top: $spacing-mobile;
     background-color: $home-card-bg;
     border: 1px solid $home-card-border;
     border-radius: $radius-card;
     overflow: hidden;
     box-shadow: $home-card-shadow;
+    position: relative;  // ← 追加
+    z-index: 1;          // ← 追加(ヘッダーのz-index: 100より低い値)
 
     .map-placeholder {
       height: 200px;
