@@ -106,6 +106,7 @@ Table school_details {
   commute_route text [null, note: '通学経路']
   commute_time int [null, note: '自宅からの通学所要時間（分）']
   nearest_station varchar(100) [null, note: '最寄駅']
+  official_website varchar(255) [null, note: '公式サイトURL']
   created_at timestamp [default: `now()`]
   updated_at timestamp [default: `now()`]
   

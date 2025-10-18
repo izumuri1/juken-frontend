@@ -23,6 +23,7 @@ interface SchoolDetails {
   commute_route: string;
   commute_time: number | null;
   nearest_station: string;
+  official_website: string;
 }
 
 const School: React.FC = () => {
@@ -43,6 +44,7 @@ const School: React.FC = () => {
   const [commuteRoute, setCommuteRoute] = useState('');
   const [commuteTime, setCommuteTime] = useState<number | null>(null);
   const [nearestStation, setNearestStation] = useState('');
+  const [officialWebsite, setOfficialWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // メニュー表示状態
@@ -102,12 +104,13 @@ const School: React.FC = () => {
             .single();
 
             if (detailsData) {
-            setSchoolDetails(detailsData);
-            setHasCafeteria(detailsData.has_cafeteria);
-            setHasUniform(detailsData.has_uniform);
-            setCommuteRoute(detailsData.commute_route || '');
-            setCommuteTime(detailsData.commute_time);
-            setNearestStation(detailsData.nearest_station || '');
+              setSchoolDetails(detailsData);
+              setHasCafeteria(detailsData.has_cafeteria);
+              setHasUniform(detailsData.has_uniform);
+              setCommuteRoute(detailsData.commute_route || '');
+              setCommuteTime(detailsData.commute_time);
+              setNearestStation(detailsData.nearest_station || '');
+              setOfficialWebsite(detailsData.official_website || '');
             }
         } catch (err) {
             console.error('データ取得エラー:', err);
@@ -143,6 +146,7 @@ const School: React.FC = () => {
           commute_route: commuteRoute,
           commute_time: commuteTime,
           nearest_station: nearestStation,
+          official_website: officialWebsite,
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'workspace_id,school_id'
@@ -189,12 +193,13 @@ const School: React.FC = () => {
       if (error) throw error;
 
       alert('学校情報を削除しました');
-      setSchoolDetails(null);
-      setHasCafeteria(null);
-      setHasUniform(null);
-      setCommuteRoute('');
-      setCommuteTime(null);
-      setNearestStation('');
+        setSchoolDetails(null);
+        setHasCafeteria(null);
+        setHasUniform(null);
+        setCommuteRoute('');
+        setCommuteTime(null);
+        setNearestStation('');
+        setOfficialWebsite('');
     } catch (err) {
       console.error('削除エラー:', err);
       alert('学校情報の削除に失敗しました');
@@ -400,6 +405,17 @@ const School: React.FC = () => {
               />
             </div>
 
+            <div className="form-group">
+              <label className="form-label">公式サイトURL</label>
+              <input
+                type="url"
+                className="form-input"
+                value={officialWebsite}
+                onChange={(e) => setOfficialWebsite(e.target.value)}
+                placeholder="例: https://www.example.com"
+              />
+            </div>
+
             <button type="submit" className="btn-submit" disabled={isSubmitting}>
               {isSubmitting ? '登録中...' : '登録'}
             </button>
@@ -444,6 +460,23 @@ const School: React.FC = () => {
               <div className="info-row">
                 <span className="label">最寄駅:</span>
                 <span className="value">{schoolDetails.nearest_station || '未設定'}</span>
+              </div>
+              <div className="info-row">
+                <span className="label">公式サイト:</span>
+                <span className="value">
+                  {schoolDetails.official_website ? (
+                    <a 
+                      href={schoolDetails.official_website} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="website-link"
+                    >
+                      {schoolDetails.official_website}
+                    </a>
+                  ) : (
+                    '未設定'
+                  )}
+                </span>
               </div>
               <div className="card-actions">
                 <button className="btn-edit" onClick={() => alert('編集機能は未実装')}>
