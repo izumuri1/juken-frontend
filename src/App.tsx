@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Login } from './components/Login'
-import { SignUp } from './components/SignUp'
-import { PasswordReset } from './components/PasswordReset'
-import { PasswordResetConfirm } from './components/PasswordResetConfirm'
-import { EmailConfirmationWaiting } from './components/EmailConfirmationWaiting'
-import Home from './components/Home'
-import School from './components/School'  // ← 追加
+import { Login } from './pages/Login'
+import { SignUp } from './pages/SignUp'
+import { PasswordReset } from './pages/PasswordReset'
+import { PasswordResetConfirm } from './pages/PasswordResetConfirm'
+import { EmailConfirmationWaiting } from './pages/EmailConfirmationWaiting'
+import Home from './pages/Home'
+import School from './pages/School'
 import { useAuth } from './contexts/AuthContext'
 
 function App() {

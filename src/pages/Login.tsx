@@ -2,9 +2,9 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
-import FormField from './common/FormField'
+import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
-import { LoadingSpinner } from './LoadingSpinner'  // 追加
+import { LoadingSpinner } from '../components/LoadingSpinner'
 import type { LoginFormData } from '../types/auth'
 import './Auth.scss'
 

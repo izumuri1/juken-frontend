@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import FormField from './common/FormField'
+import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import type { PasswordUpdateFormData } from '../types/auth'
 import './Auth.scss'

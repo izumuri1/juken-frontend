@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import FormField from './common/FormField'
+import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { sanitizeHtml } from '../utils/sanitize'
 import { validationRules } from '../utils/validationRules'  // 追加

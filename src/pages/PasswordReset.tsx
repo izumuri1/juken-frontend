@@ -1,7 +1,7 @@
 // src/components/PasswordReset.tsx - パスワードリセット機能
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import FormField from './common/FormField'
+import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { supabase } from '../lib/supabase'
 import { sanitizeHtml } from '../utils/sanitize'
