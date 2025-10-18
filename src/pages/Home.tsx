@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase' // ← 追加
 import { useNavigate } from 'react-router-dom'; // ← 追加
+import { getDesireBadgeClass } from '../utils/helpers'; // 追加
+import { PageHeader } from '../components/common/PageHeader'; // 追加
+import { InfoCard } from '../components/common/InfoCard'; // 追加
 import './Home.scss';
 
 // 型定義
@@ -209,13 +212,6 @@ const handleSearchInput = async (value: string) => {
     }
   };
 
-  // 志望度バッジの色を取得
-  const getDesireBadgeClass = (level: number): string => {
-    if (level >= 4) return 'badge-high';
-    if (level >= 2) return 'badge-medium';
-    return 'badge-low';
-  };
-
   // ソート処理
   const sortSchools = (schools: School[]) => {
     const sorted = [...schools].sort((a, b) => {
@@ -248,43 +244,13 @@ const handleSearchInput = async (value: string) => {
   return (
     <div className="home-container">
       {/* ヘッダー */}
-      <header className="home-header">
-        <button 
-          className="hamburger-menu"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="メニュー"
-        >
-          <span className="hamburger-icon">☰</span>
-        </button>
-        
-        <div className="workspace-info">
-          <h1 className="workspace-name">{workspaceName}</h1>
-          <p className="workspace-owner">オーナー: {workspaceOwner}</p>
-        </div>
-
-        <div style={{ width: '40px' }}></div>
-      </header>
-
-      {/* サイドメニュー */}
-      {isMenuOpen && (
-        <div className="side-menu-overlay" onClick={() => setIsMenuOpen(false)}>
-          <nav className="side-menu" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={() => setIsMenuOpen(false)}>✕</button>
-            <ul>
-              <li><a href="/home">Home</a></li>
-              <li><a href="/school">School</a></li>
-              <li><a href="/target">Target</a></li>
-              <li><a href="/exam">Exam</a></li>
-              <li><a href="/comparison">Comparison</a></li>
-              <li><a href="/task">Task</a></li>
-              <li className="divider"></li>
-              <li><a href="/workspace">ワークスペース選択</a></li>
-              <li><a href="/tutorial">チュートリアル</a></li>
-              <li><a href="/logout">ログアウト</a></li>
-            </ul>
-          </nav>
-        </div>
-      )}
+      <PageHeader
+        workspaceName={workspaceName}
+        workspaceOwner={workspaceOwner}
+        isMenuOpen={isMenuOpen}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onMenuClose={() => setIsMenuOpen(false)}
+      />
 
       {/* メインコンテンツ */}
       <main className="home-content">
@@ -354,36 +320,28 @@ const handleSearchInput = async (value: string) => {
 
           <div className="section-content">
             {sortSchools(schools).map((school) => (
-              <div key={school.id} className="school-card">
-                <div className="card-header">
-                  <h3 className="school-name">{school.name}</h3>
+              <InfoCard
+                key={school.id}
+                className="school-card"
+                title={school.name}
+                badge={
                   <span className={`desire-badge ${getDesireBadgeClass(school.desireLevel)}`}>
                     志望度: {school.desireLevel}
                   </span>
-                </div>
-                <div className="card-body">
-                  <div className="card-info-row">
-                    <span className="label">志望度（親）:</span>
-                    <span className="value">{school.desireLevelParent}</span>
-                  </div>
-                  <div className="card-info-row">
-                    <span className="label">通学時間:</span>
-                    <span className="value">{school.commuteTime}分</span>
-                  </div>
-                  <div className="card-info-row">
-                    <span className="label">最寄駅:</span>
-                    <span className="value">{school.nearestStation}</span>
-                  </div>
-                  <div className="card-info-row">
-                    <span className="label">更新日:</span>
-                    <span className="value">{school.updatedAt}</span>
-                  </div>
-                </div>
-                <div className="card-actions">
-                  <button className="btn-info">学校情報</button>
-                  <button className="btn-exam">受験情報</button>
-                </div>
-              </div>
+                }
+                rows={[
+                  { label: '志望度（親）', value: school.desireLevelParent },
+                  { label: '通学時間', value: `${school.commuteTime}分` },
+                  { label: '最寄駅', value: school.nearestStation },
+                  { label: '更新日', value: school.updatedAt }
+                ]}
+                actions={
+                  <>
+                    <button className="btn-info">学校情報</button>
+                    <button className="btn-exam">受験情報</button>
+                  </>
+                }
+              />
             ))}
           </div>
         </section>

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';  // ← 追加
+import { PageHeader } from '../components/common/PageHeader'; // 追加
+import { InfoCard } from '../components/common/InfoCard'; // 追加
 import './School.scss';
 
 // 型定義
@@ -228,63 +230,14 @@ const School: React.FC = () => {
   return (
     <div className="school-container">
       {/* ヘッダー */}
-      <header className="school-header">
-        <button
-          className="hamburger-menu"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="メニュー"
-        >
-          <span className="hamburger-icon">☰</span>
-        </button>
-
-        <div className="workspace-info">
-          <h1 className="workspace-name">{workspaceName}</h1>
-          <p className="workspace-owner">オーナー: {workspaceOwner}</p>
-        </div>
-
-        <div style={{ width: '40px' }}></div>
-      </header>
-
-      {/* サイドメニュー */}
-      {isMenuOpen && (
-        <div className="side-menu-overlay" onClick={() => setIsMenuOpen(false)}>
-          <nav className="side-menu" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={() => setIsMenuOpen(false)}>
-              ✕
-            </button>
-            <ul>
-              <li>
-                <button onClick={() => navigate('/home')}>Home</button>
-              </li>
-              <li>
-                <button onClick={() => setIsMenuOpen(false)}>School</button>
-              </li>
-              <li>
-                <button onClick={() => alert('未実装')}>Target</button>
-              </li>
-              <li>
-                <button onClick={() => alert('未実装')}>Exam</button>
-              </li>
-              <li>
-                <button onClick={() => alert('未実装')}>Comparison</button>
-              </li>
-              <li>
-                <button onClick={() => alert('未実装')}>Task</button>
-              </li>
-              <li className="divider"></li>
-              <li>
-                <button onClick={() => alert('未実装')}>ワークスペース選択</button>
-              </li>
-              <li>
-                <button onClick={() => alert('未実装')}>チュートリアル</button>
-              </li>
-              <li>
-                <button onClick={() => alert('未実装')}>ログアウト</button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      )}
+      <PageHeader
+        workspaceName={workspaceName}
+        workspaceOwner={workspaceOwner}
+        isMenuOpen={isMenuOpen}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onMenuClose={() => setIsMenuOpen(false)}
+        className="school-header"
+      />
 
       <main className="school-main">
         {/* 学校情報セクション */}
