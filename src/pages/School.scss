@@ -169,6 +169,18 @@
       width: 100%;
       margin-top: $spacing-mobile;
     }
+
+    .btn-cancel {
+      @include button-primary;
+      width: 100%;
+      margin-top: $spacing-small;
+      background-color: $color-gray-light;
+      color: $color-black;
+
+      &:hover {
+        background-color: color.adjust($color-gray-light, $lightness: -10%);
+      }
+    }
   }
 }
 

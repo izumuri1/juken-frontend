@@ -537,7 +537,6 @@ const handleRegisterTarget = async () => {
                 type="button"
                 className="btn-cancel"
                 onClick={() => setIsEditing(false)}
-                style={{ marginLeft: '10px' }}
               >
                 キャンセル
               </button>
