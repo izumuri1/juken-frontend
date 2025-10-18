@@ -5,6 +5,7 @@ import { getDesireBadgeClass } from '../utils/helpers'; // 追加
 import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { WorkspaceMembers } from '../components/WorkspaceMembers'; // 追加
+import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import './Home.scss';
 
 // 型定義
@@ -66,18 +67,17 @@ const Home: React.FC = () => {
   const [exams, setExams] = useState<Exam[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
 
-  // ソート設定
-  const [schoolSortBy, setSchoolSortBy] = useState<'desire' | 'commute'>('desire');
+  // ソート
+  const [schoolSortBy, setSchoolSortBy] = useState<'desire' | 'time'>('desire');
   const [schoolSortOrder, setSchoolSortOrder] = useState<'asc' | 'desc'>('desc');
   const [examSortBy, setExamSortBy] = useState<'desire' | 'date' | 'deviation'>('date');
   const [examSortOrder, setExamSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  // ワークスペース情報
-  const [workspaceName, setWorkspaceName] = useState('');
-  const [workspaceOwner, setWorkspaceOwner] = useState('');
-
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // ワークスペース情報（カスタムフックに置き換え）
+  const { workspaceName, workspaceOwner } = useWorkspace(workspaceId);
 
   // 志望校データを取得
   useEffect(() => {
@@ -168,62 +168,7 @@ const Home: React.FC = () => {
     fetchTargetSchools();
   }, [workspaceId]);
 
-  // ワークスペース情報を取得
-  useEffect(() => {
-    const fetchWorkspaceInfo = async () => {
-      console.log('=== ワークスペース情報取得開始 ===');
-      console.log('workspaceId:', workspaceId);
-      
-      if (!workspaceId) {
-        console.log('workspaceIdが未設定のため処理をスキップ');
-        return;
-      }
-
-      try {
-        // ワークスペース情報を取得
-        const { data: workspace, error: workspaceError } = await supabase
-          .from('workspaces')
-          .select('name, owner_id')
-          .eq('id', workspaceId)
-          .single();
-
-        console.log('ワークスペース取得結果:', workspace);
-        console.log('ワークスペース取得エラー:', workspaceError);
-
-        if (workspaceError) throw workspaceError;
-
-        if (workspace) {
-          console.log('ワークスペース名設定:', workspace.name);
-          setWorkspaceName(workspace.name);
-
-          console.log('オーナーID:', workspace.owner_id);
-          
-          // オーナー情報を取得
-          const { data: owner, error: ownerError } = await supabase
-            .from('users')
-            .select('username')
-            .eq('id', workspace.owner_id)
-            .single();
-
-          console.log('オーナー取得結果:', owner);
-          console.log('オーナー取得エラー:', ownerError);
-
-          if (ownerError) throw ownerError;
-
-          if (owner) {
-            console.log('オーナー名設定:', owner.username);
-            setWorkspaceOwner(owner.username);
-          }
-        }
-      } catch (error) {
-        console.error('ワークスペース情報取得エラー:', error);
-        setWorkspaceName('ワークスペース');
-        setWorkspaceOwner('');
-      }
-    };
-
-    fetchWorkspaceInfo();
-  }, [workspaceId]);
+  // この useEffect は削除（useWorkspace フックで置き換え済み）
 
   // 検索処理（セキュリティ対策：バリデーション付き）
   // リアルタイム検索（入力中に候補を表示）

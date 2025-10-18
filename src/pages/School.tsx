@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { SchoolMap } from '../components/SchoolMap';
+import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import './School.scss';
 
 // 型定義
@@ -54,9 +55,8 @@ const School: React.FC = () => {
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // ワークスペース情報
-  const [workspaceName, setWorkspaceName] = useState('');
-  const [workspaceOwner, setWorkspaceOwner] = useState('');
+  // ワークスペース情報（カスタムフックに置き換え）
+  const { workspaceName, workspaceOwner } = useWorkspace(workspaceId);
 
   // データ取得
     useEffect(() => {
@@ -104,44 +104,9 @@ const School: React.FC = () => {
           setSchoolInfo(schoolData);
           console.log('学校情報設定完了:', schoolData);
 
-          // 2. ワークスペース情報を取得
-          console.log('ステップ2: ワークスペース情報取得中...');
-          const { data: workspaceInfo, error: workspaceInfoError } = await supabase
-            .from('workspaces')
-            .select('name, owner_id')
-            .eq('id', workspaceId)
-            .single();
-
-          console.log('ワークスペース情報取得結果:', workspaceInfo);
-
-          if (!workspaceInfoError && workspaceInfo) {
-            console.log('✅ ワークスペース名設定:', workspaceInfo.name);
-            setWorkspaceName(workspaceInfo.name);
-
-            // オーナー情報を取得
-            console.log('👤 オーナー情報取得開始 - owner_id:', workspaceInfo.owner_id);
-            const { data: owner, error: ownerError } = await supabase
-              .from('users')  // ← profilesからusersに変更
-              .select('username')
-              .eq('id', workspaceInfo.owner_id)
-              .single();
-
-            console.log('👤 オーナー情報取得結果:', owner);
-            console.log('👤 オーナー情報取得エラー:', ownerError);
-
-            if (ownerError) {
-              console.error('オーナー情報取得エラー:', ownerError);
-              // エラーがあっても処理は続行
-            }
-
-            if (owner) {
-              console.log('✅ オーナー名設定:', owner.username);
-              setWorkspaceOwner(owner.username);
-            }
-          }
-
-          // 3. 学校詳細情報を取得（ユーザー入力データ）
-          console.log('ステップ3: 学校詳細情報取得中...');
+          // 2. 学校詳細情報を取得（ユーザー入力データ）
+          // ※ワークスペース情報の取得処理は削除（useWorkspaceフックで処理）
+          console.log('ステップ2: 学校詳細情報取得中...');
           console.log('検索条件 - school_id:', schoolData.id);
           console.log('検索条件 - workspace_id:', workspaceId);
           
