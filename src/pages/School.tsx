@@ -33,7 +33,6 @@ const School: React.FC = () => {
   const { workspaceId, schoolCode } = useParams<{ workspaceId: string; schoolCode: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [isRegistering, setIsRegistering] = useState(false);  // ← この行を追加
 
   // データ
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
@@ -49,6 +48,8 @@ const School: React.FC = () => {
   const [nearestStation, setNearestStation] = useState('');
   const [officialWebsite, setOfficialWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // 編集モードの状態を追加
 
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -168,8 +169,10 @@ const School: React.FC = () => {
             setCommuteTime(detailsData.commute_time);
             setNearestStation(detailsData.nearest_station || '');
             setOfficialWebsite(detailsData.official_website || '');
+            setIsEditing(false); // 登録済みの場合は編集モードをOFFに
           } else {
             console.log('学校詳細情報は未登録です');
+            setIsEditing(true); // 未登録の場合は編集モードをONに
           }
       } catch (err) {
           console.error('=== データ取得エラー ===');
@@ -249,6 +252,7 @@ const School: React.FC = () => {
 
       if (detailsData) {
         setSchoolDetails(detailsData);
+        setIsEditing(false); // 登録成功後は編集モードをOFFに
       }
     } catch (err) {
       console.error('登録エラー:', err);
@@ -260,7 +264,7 @@ const School: React.FC = () => {
 
   // 学校詳細情報の削除
   const handleDelete = async () => {
-    if (!confirm('学校情報を削除してもよろしいですか?')) return;
+    if (!confirm('学校情報を削除してもよろしいですか?\n※志望校として登録されている場合は、志望校情報も削除されます。')) return;
 
     if (!schoolDetails?.id) {
       alert('削除する情報が見つかりません');
@@ -268,6 +272,19 @@ const School: React.FC = () => {
     }
 
     try {
+      // 1. この学校の志望校情報を削除
+      const { error: targetError } = await supabase
+        .from('target_schools')
+        .delete()
+        .eq('workspace_id', workspaceId)
+        .eq('school_id', schoolInfo!.id);
+
+      if (targetError) {
+        console.error('志望校情報削除エラー:', targetError);
+        // エラーがあっても処理を続行
+      }
+
+      // 2. 学校詳細情報を削除
       const { error } = await supabase
         .from('school_details')
         .delete()
@@ -276,13 +293,14 @@ const School: React.FC = () => {
       if (error) throw error;
 
       alert('学校情報を削除しました');
-        setSchoolDetails(null);
-        setHasCafeteria(null);
-        setHasUniform(null);
-        setCommuteRoute('');
-        setCommuteTime(null);
-        setNearestStation('');
-        setOfficialWebsite('');
+      setSchoolDetails(null);
+      setHasCafeteria(null);
+      setHasUniform(null);
+      setCommuteRoute('');
+      setCommuteTime(null);
+      setNearestStation('');
+      setOfficialWebsite('');
+      setIsEditing(true); // 削除後は入力欄を表示
     } catch (err) {
       console.error('削除エラー:', err);
       alert('学校情報の削除に失敗しました');
@@ -411,10 +429,11 @@ const handleRegisterTarget = async () => {
           </div>
         </section>
 
-        {/* 学校情報入力セクション */}
-        <section className="school-section school-input-section">
-          <h2 className="section-title">学校情報入力</h2>
-          <form onSubmit={handleSubmit} className="school-form">
+        {/* 学校情報入力セクション - 編集モードまたは未登録の場合のみ表示 */}
+        {(isEditing || !schoolDetails) && (
+          <section className="school-section school-input-section">
+            <h2 className="section-title">学校情報入力</h2>
+            <form onSubmit={handleSubmit} className="school-form">
             <div className="form-group">
               <label className="form-label">学食・購買の有無</label>
               <div className="radio-group">
@@ -513,11 +532,22 @@ const handleRegisterTarget = async () => {
             <button type="submit" className="btn-submit" disabled={isSubmitting}>
               {isSubmitting ? '登録中...' : '登録'}
             </button>
+            {schoolDetails && (
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() => setIsEditing(false)}
+                style={{ marginLeft: '10px' }}
+              >
+                キャンセル
+              </button>
+            )}
           </form>
         </section>
+        )}
 
-        {/* 学校情報表示セクション */}
-        {schoolDetails && (
+        {/* 学校情報表示セクション - 登録済みかつ編集モードでない場合のみ表示 */}
+        {schoolDetails && !isEditing && (
           <section className="school-section school-display-section">
             <h2 className="section-title">登録済み学校情報</h2>
             <div className="info-card">
@@ -573,7 +603,7 @@ const handleRegisterTarget = async () => {
                 </span>
               </div>
               <div className="card-actions">
-                <button className="btn-edit" onClick={() => alert('編集機能は未実装')}>
+                <button className="btn-edit" onClick={() => setIsEditing(true)}>
                   編集
                 </button>
                 <button className="btn-delete" onClick={handleDelete}>
