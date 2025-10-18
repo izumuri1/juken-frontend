@@ -23,4 +23,15 @@ dist-ssr
 *.sw?
 
 # Environment variables (重要！)
-.env.vscode/
+.env
+.env.local
+.env.*.local
+
+# Supabase
+supabase/schema_complete.sql
+supabase/.branches
+supabase/.temp
+supabase/.env
+supabase/.env.keys
+supabase/.env.local
+supabase/.env.*.local
