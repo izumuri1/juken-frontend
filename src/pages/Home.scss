@@ -189,6 +189,18 @@
     @include home-button-exam;
     flex: 1;  // ← 追加
   }
+
+  // 空メッセージ表示
+  .empty-message {
+    text-align: center;
+    padding: $spacing-large $spacing-mobile;
+    color: $home-text-muted;
+    font-size: $font-size-body;
+    
+    p {
+      margin: 0;
+    }
+  }
 }
 
 //////////////////////////////////////////////////////////////

@@ -429,11 +429,16 @@ const handleSearchInput = async (value: string) => {
           </div>
 
           <div className="section-content">
-            {sortSchools(schools).map((school) => (
-            <div id={`school-${school.id}`} key={school.id}>
-              <InfoCard
-                className="school-card"
-                title={school.name}
+          {schools.length === 0 ? (
+            <div className="empty-message">
+              <p>志望校はまだ登録されていません</p>
+            </div>
+          ) : (
+            sortSchools(schools).map((school) => (
+              <div key={school.id}>
+                <InfoCard
+                  className="school-card"
+                  title={school.name}
                 badge={
                   <span className={`desire-badge ${getDesireBadgeClass(school.desireLevel)}`}>
                     志望度: {school.desireLevel}
@@ -458,9 +463,10 @@ const handleSearchInput = async (value: string) => {
               }
               />
             </div>
-            ))}
-          </div>
-        </section>
+            ))
+            )}
+        </div>
+      </section>
 
         {/* 受験一覧セクション */}
         <section className="home-section exams-section">
@@ -487,10 +493,15 @@ const handleSearchInput = async (value: string) => {
           </div>
 
           <div className="section-content">
-            {sortExams(exams).map((exam) => (
-              <div key={exam.id} className="exam-card">
-                <div className="card-header">
-                  <h3 className="school-name">{exam.schoolName}</h3>
+            {exams.length === 0 ? (
+              <div className="empty-message">
+                <p>受験はまだ登録されていません</p>
+              </div>
+            ) : (
+              sortExams(exams).map((exam) => (
+                <div key={exam.id}>
+                  <div className="card-header">
+                    <h3 className="school-name">{exam.schoolName}</h3>
                   <span className={`desire-badge ${getDesireBadgeClass(exam.desireLevel)}`}>
                     志望度: {exam.desireLevel}
                   </span>
@@ -518,9 +529,10 @@ const handleSearchInput = async (value: string) => {
                   <button className="btn-exam">受験管理</button>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
+            ))
+          )}
+        </div>
+      </section>
 
         {/* ワークスペースメンバーセクション */}
         {workspaceId && (
