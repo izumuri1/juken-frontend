@@ -20,30 +20,28 @@ export function WorkspaceMembers({ workspaceId }: WorkspaceMembersProps) {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      try {
+        try {
         setIsLoading(true);
         setError('');
 
         const { data, error } = await supabase
-          .rpc('get_workspace_members_safe', {
+            .rpc('get_workspace_members_safe', {
             workspace_id_param: workspaceId
-          });
+            });
 
         if (error) throw error;
 
         setMembers(data || []);
-      } catch (err: any) {
+        } catch (err: any) {
         console.error('メンバー取得エラー:', err);
         setError('メンバー情報の取得に失敗しました');
-      } finally {
+        } finally {
         setIsLoading(false);
-      }
+        }
     };
 
-    if (workspaceId) {
-      fetchMembers();
-    }
-  }, [workspaceId]);
+    fetchMembers();
+    }, [workspaceId]);
 
   if (isLoading) {
     return <div className="workspace-members-loading">読み込み中...</div>;

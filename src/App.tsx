@@ -21,11 +21,11 @@ return (
     <Routes>
       <Route 
         path="/" 
-        element={user ? <Navigate to="/home" replace /> : <Login />} 
+        element={user ? <Navigate to="/workspaces" replace /> : <Login />} 
       />
       <Route 
         path="/login" 
-        element={user ? <Navigate to="/home" replace /> : <Login />} 
+        element={user ? <Navigate to="/workspaces" replace /> : <Login />} 
       />
       <Route 
         path="/signup" 
@@ -48,7 +48,7 @@ return (
         element={user ? <CreateWorkspace /> : <Navigate to="/login" replace />} 
       />
       <Route 
-        path="/home" 
+        path="/workspace/:workspaceId" 
         element={user ? <Home /> : <Navigate to="/login" replace />} 
       />
       <Route 

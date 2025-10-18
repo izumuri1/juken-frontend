@@ -411,9 +411,11 @@ const handleSearchInput = async (value: string) => {
         </section>
 
         {/* ワークスペースメンバーセクション */}
-        <section className="home-section members-section">
-          <WorkspaceMembers workspaceId={workspaceId || ''} />
-        </section>
+        {workspaceId && (
+          <section className="home-section members-section">
+            <WorkspaceMembers workspaceId={workspaceId} />
+          </section>
+        )}
       </main>
     </div>
   );
