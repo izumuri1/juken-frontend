@@ -263,12 +263,12 @@ const handleSearchInput = async (value: string) => {
 
     // 候補選択時の処理
     const handleSelectSchool = (school: SchoolMaster) => {
-    setSearchQuery(school.name);
-    setShowSuggestions(false);
-    setSearchSuggestions([]);
-    
-    // School画面へ遷移
-    navigate(`/school/${school.school_code}`);
+      setSearchQuery(school.name);
+      setShowSuggestions(false);
+      setSearchSuggestions([]);
+      
+      // School画面へ遷移
+      navigate(`/workspace/${workspaceId}/school/${school.school_code}`); // ← workspaceIdを追加
     };
 
   // Enterキーでの検索対応

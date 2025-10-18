@@ -29,16 +29,15 @@ interface SchoolDetails {
 }
 
 const School: React.FC = () => {
-  const { schoolCode } = useParams<{ schoolCode: string }>();
+  const { workspaceId, schoolCode } = useParams<{ workspaceId: string; schoolCode: string }>(); // ← workspaceIdを追加
   const navigate = useNavigate();
-  const { user } = useAuth();  // ← 追加
+  const { user } = useAuth();
 
   // データ
   const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
   const [schoolDetails, setSchoolDetails] = useState<SchoolDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [workspaceId, setWorkspaceId] = useState<string | null>(null);  // ← 追加
 
   // フォーム入力状態
   const [hasCafeteria, setHasCafeteria] = useState<boolean | null>(null);
@@ -52,80 +51,138 @@ const School: React.FC = () => {
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // ワークスペース情報（仮）
-  const [workspaceName] = useState('田中家の中学受験');
-  const [workspaceOwner] = useState('田中太郎');
+  // ワークスペース情報
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [workspaceOwner, setWorkspaceOwner] = useState('');
 
   // データ取得
-  // データ取得
-  useEffect(() => {
-        const fetchSchoolData = async () => {
-        if (!schoolCode) {
-            setError('学校コードが指定されていません');
-            setLoading(false);
-            return;
-        }
+    useEffect(() => {
+    const fetchSchoolData = async () => {
+    console.log('=== School画面データ取得開始 ===');
+    console.log('workspaceId:', workspaceId); // ← 追加
+    console.log('schoolCode:', schoolCode);
+    console.log('user:', user);
 
-        if (!user) {
-            setError('ユーザー情報が取得できません');
-            setLoading(false);
-            return;
-        }
+    if (!schoolCode) {
+        console.error('学校コードが未指定');
+        setError('学校コードが指定されていません');
+        setLoading(false);
+        return;
+    }
 
-        try {
-            // 1. ワークスペースIDを取得
-            const { data: workspaceData, error: workspaceError } = await supabase
-            .from('workspace_members')
-            .select('workspace_id')
-            .eq('user_id', user.id)
+    if (!workspaceId) { // ← userからworkspaceIdに変更
+        console.error('ワークスペースIDが未指定');
+        setError('ワークスペースIDが指定されていません');
+        setLoading(false);
+        return;
+    }
+
+    try {
+        // 1. 学校基礎情報を取得
+        console.log('ステップ1: 学校基礎情報取得中...');
+          const { data: schoolData, error: schoolError } = await supabase
+          .from('schools')
+          .select('id, school_code, name, prefecture, address, latitude, longitude')
+          .eq('school_code', schoolCode)
+          .single();
+
+          console.log('学校情報取得結果:', schoolData);
+          console.log('学校情報取得エラー:', schoolError);
+
+          if (schoolError) {
+              console.error('学校情報取得でエラー:', schoolError);
+              throw schoolError;
+          }
+          if (!schoolData) {
+              console.error('学校が見つかりません');
+              throw new Error('学校が見つかりません');
+          }
+
+          setSchoolInfo(schoolData);
+          console.log('学校情報設定完了:', schoolData);
+
+          // 2. ワークスペース情報を取得
+          console.log('ステップ2: ワークスペース情報取得中...');
+          const { data: workspaceInfo, error: workspaceInfoError } = await supabase
+            .from('workspaces')
+            .select('name, owner_id')
+            .eq('id', workspaceId)
             .single();
 
-            if (workspaceError) throw workspaceError;
-            if (!workspaceData) throw new Error('ワークスペースが見つかりません');
+          console.log('ワークスペース情報取得結果:', workspaceInfo);
 
-            setWorkspaceId(workspaceData.workspace_id);
+          if (!workspaceInfoError && workspaceInfo) {
+            console.log('✅ ワークスペース名設定:', workspaceInfo.name);
+            setWorkspaceName(workspaceInfo.name);
 
-            // 2. 学校基礎情報を取得（idを含める）
-            const { data: schoolData, error: schoolError } = await supabase
-            .from('schools')
-            .select('id, school_code, name, prefecture, address, latitude, longitude')
-            .eq('school_code', schoolCode)
-            .single();
+            // オーナー情報を取得
+            console.log('👤 オーナー情報取得開始 - owner_id:', workspaceInfo.owner_id);
+            const { data: owner, error: ownerError } = await supabase
+              .from('users')  // ← profilesからusersに変更
+              .select('username')
+              .eq('id', workspaceInfo.owner_id)
+              .single();
 
-            if (schoolError) throw schoolError;
-            if (!schoolData) throw new Error('学校が見つかりません');
+            console.log('👤 オーナー情報取得結果:', owner);
+            console.log('👤 オーナー情報取得エラー:', ownerError);
 
-            setSchoolInfo(schoolData);
-
-            // 3. 学校詳細情報を取得（ユーザー入力データ）
-            const { data: detailsData } = await supabase
-            .from('school_details')
-            .select('*')
-            .eq('school_id', schoolData.id)
-            .eq('workspace_id', workspaceData.workspace_id)
-            .single();
-
-            if (detailsData) {
-              setSchoolDetails(detailsData);
-              setHasCafeteria(detailsData.has_cafeteria);
-              setHasUniform(detailsData.has_uniform);
-              setCommuteRoute(detailsData.commute_route || '');
-              setCommuteTime(detailsData.commute_time);
-              setNearestStation(detailsData.nearest_station || '');
-              setOfficialWebsite(detailsData.official_website || '');
+            if (ownerError) {
+              console.error('オーナー情報取得エラー:', ownerError);
+              // エラーがあっても処理は続行
             }
-        } catch (err) {
-            console.error('データ取得エラー:', err);
-            setError('学校情報の取得に失敗しました');
-        } finally {
-            setLoading(false);
-        }
-        };
 
-        fetchSchoolData();
-    }, [schoolCode, user]);
+            if (owner) {
+              console.log('✅ オーナー名設定:', owner.username);
+              setWorkspaceOwner(owner.username);
+            }
+          }
 
-  // 学校情報登録・更新
+          // 3. 学校詳細情報を取得（ユーザー入力データ）
+          console.log('ステップ3: 学校詳細情報取得中...');
+          console.log('検索条件 - school_id:', schoolData.id);
+          console.log('検索条件 - workspace_id:', workspaceId);
+          
+          const { data: detailsData, error: detailsError } = await supabase
+          .from('school_details')
+          .select('*')
+          .eq('school_id', schoolData.id)
+          .eq('workspace_id', workspaceId) // ← workspaceData.workspace_idからworkspaceIdに変更
+          .maybeSingle();
+
+          console.log('学校詳細情報取得結果:', detailsData);
+          console.log('学校詳細情報取得エラー:', detailsError);
+
+          if (detailsError) {
+              console.error('学校詳細情報取得でエラー:', detailsError);
+              throw detailsError;
+          }
+
+          if (detailsData) {
+            console.log('学校詳細情報が存在します');
+            setSchoolDetails(detailsData);
+            setHasCafeteria(detailsData.has_cafeteria);
+            setHasUniform(detailsData.has_uniform);
+            setCommuteRoute(detailsData.commute_route || '');
+            setCommuteTime(detailsData.commute_time);
+            setNearestStation(detailsData.nearest_station || '');
+            setOfficialWebsite(detailsData.official_website || '');
+          } else {
+            console.log('学校詳細情報は未登録です');
+          }
+      } catch (err) {
+          console.error('=== データ取得エラー ===');
+          console.error('エラー詳細:', err);
+          console.error('エラーメッセージ:', (err as Error).message);
+          setError('学校情報の取得に失敗しました');
+      } finally {
+          setLoading(false);
+          console.log('=== School画面データ取得完了 ===');
+      }
+      };
+
+      fetchSchoolData();
+  }, [schoolCode, workspaceId]); // ← userからworkspaceIdに変更
+          
   // 学校情報登録・更新
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

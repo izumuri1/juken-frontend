@@ -19,7 +19,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
         onClick={onToggle}
         aria-label="メニュー"
       >
-        <span className="hamburger-icon">☰</span>
+        <span className="hamburger-icon">≡</span>
       </button>
       
       {isOpen && (

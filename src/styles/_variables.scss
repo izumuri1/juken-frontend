@@ -36,7 +36,7 @@ $color-blue:          #3b82f6; // アクセント青
 $color-blue-light:    #dbeafe; // アクセント青（薄）
 $color-blue-info:     #5fbde5; // 情報ボタン用の明るい青色（新規追加）
 $color-orange-exam:   #c95a50; // 受験ボタン用のオレンジレッド（新規追加）
-$color-orange:        #f97316; // アクセントオレンジ
+$color-orange:        #D97757; // アクセントオレンジ
 
 //////////////////////////////////////////////////////////////
 /// 【セマンティック変数】用途別の色定義
@@ -540,6 +540,30 @@ $ease-in-out:             ease-in-out;
   top: 0;
   z-index: 100;
 
+  .hamburger-menu {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: -0.5rem;
+    width: 80px;         // ← 40pxから80pxに変更
+    height: 80px;        // ← 40pxから80pxに変更
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    
+    .hamburger-icon {
+      font-size: 3rem;   // ← 1.5remから3remに変更
+      color: $home-header-text;
+    }
+    
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
   .workspace-info {
     flex: 1;
     text-align: center;
@@ -826,4 +850,106 @@ $ease-in-out:             ease-in-out;
 @keyframes pulse {
   0%, 100% { transform: scale(0.8); opacity: 0.3; }
   50% { transform: scale(1.2); opacity: 0.1; }
+}
+
+// 追加する場所: ファイルの最後（他のHome画面用mixinの後）
+
+//////////////////////////////////////////////////////////////
+/// 【共通Mixins】サイドメニュー
+//////////////////////////////////////////////////////////////
+
+@mixin side-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  animation: fadeIn 0.2s ease-out;
+  
+  .side-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background-color: $home-card-bg;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    padding: $spacing-large;
+    overflow-y: auto;
+    animation: slideInLeft 0.3s ease-out;
+    
+    .close-button {
+      position: absolute;
+      top: $spacing-mobile;
+      right: $spacing-mobile;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:active {
+        opacity: 0.7;
+      }
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0 0 0;
+      
+      li {
+        margin-bottom: 0.5rem;
+        
+        &.divider {
+          height: 1px;
+          background-color: $home-card-border;
+          margin: $spacing-mobile 0;
+        }
+        
+        a, button {
+          display: block;
+          padding: 0.75rem $spacing-mobile;
+          color: $home-text-heading;
+          text-decoration: none;
+          font-size: $font-size-body;
+          border-radius: $radius-button;
+          transition: background-color $animation-fast $ease-out;
+          background: none;
+          border: none;
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          
+          &:hover {
+            background-color: $color-gray-lighter;
+          }
+          
+          &:active {
+            background-color: $color-gray-light;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { 
+    transform: translateX(-100%);
+  }
+  to { 
+    transform: translateX(0);
+  }
 }

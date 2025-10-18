@@ -57,7 +57,7 @@ return (
         element={user ? <Home /> : <Navigate to="/login" replace />} 
       />
       <Route 
-        path="/school/:schoolCode" 
+        path="/workspace/:workspaceId/school/:schoolCode" 
         element={user ? <School /> : <Navigate to="/login" replace />} 
       />
       {/* 未定義のパスは/にリダイレクト */}
