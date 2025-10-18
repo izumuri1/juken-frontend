@@ -4,6 +4,7 @@ import { SignUp } from './pages/SignUp'
 import { PasswordReset } from './pages/PasswordReset'
 import { PasswordResetConfirm } from './pages/PasswordResetConfirm'
 import { EmailConfirmationWaiting } from './pages/EmailConfirmationWaiting'
+import { CreateWorkspace } from './pages/CreateWorkspace'
 import Home from './pages/Home'
 import School from './pages/School'
 import { useAuth } from './contexts/AuthContext'
@@ -41,6 +42,10 @@ return (
       <Route 
         path="/email-confirmation-waiting" 
         element={<EmailConfirmationWaiting />} 
+      />
+      <Route 
+        path="/workspaces" 
+        element={user ? <CreateWorkspace /> : <Navigate to="/login" replace />} 
       />
       <Route 
         path="/home" 

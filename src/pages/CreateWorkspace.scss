@@ -1,0 +1,517 @@
+// src/pages/CreateWorkspace.scss
+// ワークスペース作成・選択画面専用スタイル
+// _variables.scssのmixinを最大限活用してシンプルに記述
+@use '../styles/variables' as *;
+
+//////////////////////////////////////////////////////////////
+// 基本コンテナスタイル（Login.scssから継承）
+//////////////////////////////////////////////////////////////
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $auth-bg-color;
+  padding: $spacing-mobile;
+}
+
+.login-card {
+  background-color: $auth-card-bg;
+  border-radius: $radius-card;
+  box-shadow: $auth-card-shadow;
+  padding: $spacing-xlarge $spacing-mobile;
+  width: 100%;
+  max-width: $card-max-width;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  // 縦画面での中央配置調整
+  justify-content: flex-start;
+  padding-top: $spacing-xlarge;
+  padding-bottom: $spacing-xlarge;
+
+  .logo {
+    font-size: $font-size-logo;
+    font-weight: $font-weight-bold;
+    color: $auth-text-heading;
+    margin-bottom: $spacing-large;
+    text-align: center;
+    animation: logoFadeIn $animation-slow $ease-out;
+  }
+
+  .subtitle {
+    font-size: $font-size-subtitle;
+    color: $auth-text-heading;
+    margin-bottom: $spacing-small;
+    text-align: center;
+    font-weight: $font-weight-medium;
+    animation: fadeInUp 0.8s $ease-out 0.2s both;
+  }
+
+  .introduction {
+    font-size: $font-size-body;
+    color: $auth-text-body;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    animation: fadeInUp 0.8s $ease-out 0.4s both;
+  }
+}
+
+.error-message {
+  background-color: $auth-error-bg;
+  color: $auth-error-text;
+  border: 1px solid $auth-error-border;
+  border-radius: $radius-input;
+  padding: $spacing-mobile;
+  margin-bottom: $spacing-mobile;
+  font-size: $font-size-small;
+  text-align: center;
+  animation: shake $animation-normal;
+  width: 100%;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  animation: fadeInUp 0.8s $ease-out 0.6s both;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-small;
+
+    label {
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      color: $auth-text-label;
+    }
+
+    input {
+      padding: $spacing-mobile;
+      border: 1px solid $auth-input-border;
+      border-radius: $radius-input;
+      font-size: $font-size-body;
+      background-color: $auth-input-bg;
+      color: $auth-input-text;
+      transition: border-color $animation-fast;
+
+      &:focus {
+        outline: none;
+        border-color: $auth-input-border-focus;
+      }
+
+      &::placeholder {
+        color: $auth-text-placeholder;
+      }
+
+      &:disabled {
+        background-color: $auth-input-disabled-bg;
+        color: $auth-input-disabled-text;
+        cursor: not-allowed;
+      }
+    }
+
+    .field-error {
+      font-size: $font-size-small;
+      color: $auth-error-text;
+      margin-top: $spacing-small;
+    }
+  }
+
+  .btn-primary {
+    padding: $spacing-mobile;
+    background-color: $auth-button-primary-bg;
+    color: $auth-button-primary-text;
+    border: none;
+    border-radius: $radius-button;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all $animation-fast $ease-out;
+
+    &:hover:not(:disabled) {
+      background-color: $auth-button-primary-hover;
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: $auth-button-disabled-opacity;
+      cursor: not-allowed;
+    }
+  }
+  
+  .btn-secondary {
+    padding: $spacing-mobile;
+    background-color: $auth-button-secondary-bg;
+    color: $auth-button-secondary-text;
+    border: 1px solid $auth-input-border;
+    border-radius: $radius-button;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all $animation-fast $ease-out;
+
+    &:hover:not(:disabled) {
+      background-color: $color-gray-light;
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: $auth-button-disabled-opacity;
+      cursor: not-allowed;
+    }
+  }
+  
+  // フォーム用ボタングループを適用
+  .form-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-mobile;
+    width: 100%;
+    margin-top: $spacing-small;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ワークスペース関連のスタイル
+//////////////////////////////////////////////////////////////
+
+.workspace-create-btn {
+  padding: $spacing-mobile;
+  background-color: $auth-button-primary-bg;
+  color: $auth-button-primary-text;
+  border: none;
+  border-radius: $radius-button;
+  font-size: $font-size-body;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $animation-fast $ease-out;
+  margin-bottom: $spacing-xlarge;
+  width: 100%;
+
+  &:hover:not(:disabled) {
+    background-color: $auth-button-primary-hover;
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: $auth-button-disabled-opacity;
+    cursor: not-allowed;
+  }
+}
+
+// ワークスペースリスト（スクロールバー隠し + グラデーション効果）
+.workspace-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: $spacing-xlarge;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: $spacing-small;
+  
+  // スクロールバーのカスタマイズ
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $color-gray-light;
+    border-radius: 3px;
+    
+    &:hover {
+      background: $color-gray-medium;
+    }
+  }
+  
+  .no-workspaces {
+    font-size: $font-size-body;
+    text-align: center;
+    color: $auth-text-body;
+    padding: $spacing-xlarge $spacing-mobile;
+    line-height: 1.6;
+  }
+}
+
+.workspace-item {
+  background-color: $color-white;
+  border: 1px solid $color-gray-light;
+  border-radius: $radius-card;
+  padding: $spacing-large;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all $animation-fast $ease-out;
+  
+  &:hover {
+    border-color: $color-black;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .workspace-info {
+    flex: 1;
+    
+    .workspace-name {
+      font-size: $font-size-subtitle;
+      font-weight: $font-weight-bold;
+      color: $auth-text-heading;
+      margin: 0 0 $spacing-small 0;
+    }
+    
+    .workspace-meta {
+      display: flex;
+      gap: 1rem;
+      
+      .workspace-owner {
+        font-size: $font-size-small;
+        color: $auth-text-body;
+      }
+    }
+  }
+  
+  .workspace-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .workspace-arrow {
+    font-size: $font-size-title;
+    color: $color-gray-medium;
+    font-weight: $font-weight-bold;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 招待ボタンスタイル
+//////////////////////////////////////////////////////////////
+
+.btn-invite {
+  padding: 0.5rem $spacing-large;
+  background-color: $auth-button-primary-bg;
+  color: $auth-button-primary-text;
+  border: none;
+  border-radius: $radius-input;
+  font-size: $font-size-small;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $animation-fast $ease-out;
+  
+  &:hover:not(:disabled) {
+    background-color: $auth-button-primary-hover;
+    transform: translateY(-1px);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ログアウトボタン専用スタイル
+//////////////////////////////////////////////////////////////
+
+.logout-btn {
+  padding: $spacing-mobile;
+  background-color: $auth-button-secondary-bg;
+  color: $auth-button-secondary-text;
+  border: 1px solid $auth-input-border;
+  border-radius: $radius-button;
+  font-size: $font-size-body;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $animation-fast $ease-out;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+  
+  &:hover:not(:disabled) {
+    background-color: $color-gray-light;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: $auth-button-disabled-opacity;
+    cursor: not-allowed;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 招待モーダルスタイル
+//////////////////////////////////////////////////////////////
+
+.invite-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-mobile;
+  
+  .invite-modal-content {
+    background-color: $color-white;
+    border-radius: $radius-card;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    padding: $spacing-xlarge;
+    animation: modalSlideUp 0.3s $ease-out;
+    
+    .modal-header {
+      text-align: center;
+      margin-bottom: $spacing-large;
+      
+      .modal-title {
+        font-size: $font-size-title;
+        font-weight: $font-weight-bold;
+        margin-bottom: 0.5rem;
+        color: $auth-text-heading;
+      }
+      
+      .modal-subtitle {
+        font-size: $font-size-small;
+        color: $auth-text-body;
+      }
+    }
+    
+    .invite-url-container {
+      background-color: $color-gray-lighter;
+      border-radius: $radius-input;
+      padding: $spacing-mobile;
+      margin-bottom: $spacing-large;
+      border: 1px solid $color-gray-light;
+      
+      .invite-url {
+        font-family: monospace;
+        font-size: $font-size-small;
+        color: $auth-text-heading;
+        word-break: break-all;
+        line-height: 1.4;
+      }
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: $spacing-mobile;
+      
+      .btn-copy {
+        flex: 1;
+        padding: $spacing-mobile;
+        background-color: $auth-button-primary-bg;
+        color: $auth-button-primary-text;
+        border: none;
+        border-radius: $radius-input;
+        cursor: pointer;
+        font-weight: $font-weight-medium;
+        transition: all $animation-fast $ease-out;
+        font-size: $font-size-body;
+        
+        &:hover {
+          background-color: $auth-button-primary-hover;
+          transform: translateY(-1px);
+        }
+        
+        &.copied {
+          background-color: $auth-button-secondary-bg;
+        }
+      }
+      
+      .btn-close {
+        flex: 1;
+        padding: $spacing-mobile;
+        background-color: $color-gray-medium;
+        color: $color-white;
+        border: none;
+        border-radius: $radius-input;
+        cursor: pointer;
+        font-weight: $font-weight-medium;
+        transition: all $animation-fast $ease-out;
+        font-size: $font-size-body;
+        
+        &:hover:not(:disabled) {
+          background-color: $color-gray-darker;
+        }
+      }
+    }
+  }
+}
+
+// モーダルアニメーション
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ロゴのフェードインアニメーション
+@keyframes logoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 要素のフェードインアップアニメーション
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// エラーメッセージのシェイクアニメーション
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+//////////////////////////////////////////////////////////////
+// レスポンシブ調整
+//////////////////////////////////////////////////////////////
+
+@media (max-width: 480px) {
+  .login-card {
+    padding-top: $spacing-large;
+    padding-bottom: $spacing-large;
+  }
+  
+  .workspace-list {
+    gap: 0.75rem;
+  }
+  
+  .workspace-item {
+    padding: $spacing-mobile;
+  }
+}
