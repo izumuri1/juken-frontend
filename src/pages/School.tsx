@@ -52,6 +52,7 @@ const School: React.FC = () => {
   const [officialWebsite, setOfficialWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isAlreadyTarget, setIsAlreadyTarget] = useState(false); // 志望校登録済みフラグ
   const [isEditing, setIsEditing] = useState(false); // 編集モードの状態を追加
 
   // メニュー表示状態
@@ -112,12 +113,23 @@ const School: React.FC = () => {
           console.log('検索条件 - school_id:', schoolData.id);
           console.log('検索条件 - workspace_id:', workspaceId);
           
+          // 学校詳細情報の取得
           const { data: detailsData, error: detailsError } = await supabase
-          .from('school_details')
-          .select('*')
-          .eq('school_id', schoolData.id)
-          .eq('workspace_id', workspaceId) // ← workspaceData.workspace_idからworkspaceIdに変更
-          .maybeSingle();
+            .from('school_details')
+            .select('*')
+            .eq('school_id', schoolData.id)
+            .eq('workspace_id', workspaceId)
+            .maybeSingle();
+
+          // 志望校登録済みかチェック
+          const { data: targetData } = await supabase
+            .from('target_schools')
+            .select('id')
+            .eq('workspace_id', workspaceId)
+            .eq('school_id', schoolData.id)
+            .maybeSingle();
+
+          setIsAlreadyTarget(!!targetData); // 登録済みならtrue
 
           console.log('学校詳細情報取得結果:', detailsData);
           console.log('学校詳細情報取得エラー:', detailsError);
@@ -586,16 +598,17 @@ const handleRegisterTarget = async () => {
             workspaceId={workspaceId!}
             direction="vertical"
             buttons={[
-              {
+              // 志望校登録済みでない場合のみボタンを表示
+              ...(!isAlreadyTarget ? [{
                 label: isRegistering ? '登録中...' : '志望校登録',
                 onClick: handleRegisterTarget,
-                variant: 'primary',
+                variant: 'primary' as const,
                 disabled: isRegistering
-              },
+              }] : []),
               {
                 label: 'Home',
                 path: `/workspace/${workspaceId}`,
-                variant: 'home'
+                variant: 'home' as const
               }
             ]}
           />
