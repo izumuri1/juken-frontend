@@ -337,61 +337,66 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
         </div>
 
         <div className="card-actions">
-          <button className="btn-secondary" onClick={() => setIsEditing(false)}>
+        <button className="btn btn-cancel" onClick={() => setIsEditing(false)}>
             キャンセル
-          </button>
-          <button className="btn-primary" onClick={handleUpdate} disabled={form.isSubmitting}>
+        </button>
+        <button className="btn btn-submit" onClick={handleUpdate} disabled={form.isSubmitting}>
             {form.isSubmitting ? '更新中...' : '更新'}
-          </button>
+        </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="exam-info-card">
-      <div className="card-section">
-        <h3 className="section-title">難易度</h3>
-        <dl className="info-list">
-          <dt>偏差値</dt><dd>{examInfo.deviation_value}</dd>
-          <dt>合否判定日</dt><dd>{formatDate(examInfo.judgment_date)}</dd>
-          <dt>合否判定結果</dt><dd>{examInfo.judgment_result || '-'}</dd>
-        </dl>
-      </div>
+  <div className="exam-info-card">
+    {/* 1. 難易度セクション */}
+    <div className="card-section">
+      <h3 className="section-title">難易度</h3>
+      <dl className="info-list">
+        <dt>偏差値</dt><dd>{examInfo.deviation_value}</dd>
+        <dt>合否判定日</dt><dd>{formatDate(examInfo.judgment_date)}</dd>
+        <dt>合否判定結果</dt><dd>{examInfo.judgment_result || '-'}</dd>
+      </dl>
+    </div>
 
-      <div className="card-section">
-        <h3 className="section-title">受験申込</h3>
-        <dl className="info-list">
-          <dt>受験候補サイン</dt><dd>{examInfo.exam_candidate_sign || '-'}</dd>
-          <dt>申込期間</dt><dd>{formatDate(examInfo.application_start)} ～ {formatDate(examInfo.application_end)}</dd>
-          <dt>申込期限</dt><dd>{formatDateTime(examInfo.application_deadline)}</dd>
-          <dt>申込方法</dt><dd>{examInfo.application_method || '-'}</dd>
-          <dt>必要資材</dt><dd>{examInfo.application_materials || '-'}</dd>
-          {examInfo.application_note && <><dt>備考</dt><dd>{examInfo.application_note}</dd></>}
-        </dl>
-      </div>
+    {/* 2. 受験セクション ← ここに移動 */}
+    <div className="card-section">
+      <h3 className="section-title">受験</h3>
+      <dl className="info-list">
+        <dt>受験時間</dt><dd>{formatDateTime(examInfo.exam_start)} ～ {formatDateTime(examInfo.exam_end)}</dd>
+        <dt>受験会場</dt><dd>{examInfo.exam_venue}</dd>
+        <dt>受験科目</dt><dd>{examInfo.exam_subjects}</dd>
+        <dt>親の待機場所</dt><dd>{examInfo.parent_waiting_area || '-'}</dd>
+        {examInfo.exam_note && <><dt>備考</dt><dd>{examInfo.exam_note}</dd></>}
+      </dl>
+    </div>
 
-      <div className="card-section">
-        <h3 className="section-title">受験料支払</h3>
-        <dl className="info-list">
-          <dt>支払期限</dt><dd>{formatDateTime(examInfo.fee_deadline)}</dd>
-          <dt>支払方法</dt><dd>{examInfo.fee_payment_method || '-'}</dd>
-          <dt>受験料</dt><dd>{examInfo.fee_amount ? `¥${examInfo.fee_amount.toLocaleString()}` : '-'}</dd>
-          {examInfo.fee_note && <><dt>備考</dt><dd>{examInfo.fee_note}</dd></>}
-        </dl>
-      </div>
+    {/* 3. 受験申込セクション */}
+    <div className="card-section">
+      <h3 className="section-title">受験申込</h3>
+      <dl className="info-list">
+        <dt>受験候補サイン</dt><dd>{examInfo.exam_candidate_sign || '-'}</dd>
+        <dt>申込期間</dt><dd>{formatDate(examInfo.application_start)} ～ {formatDate(examInfo.application_end)}</dd>
+        <dt>申込期限</dt><dd>{formatDateTime(examInfo.application_deadline)}</dd>
+        <dt>申込方法</dt><dd>{examInfo.application_method || '-'}</dd>
+        <dt>必要資材</dt><dd>{examInfo.application_materials || '-'}</dd>
+        {examInfo.application_note && <><dt>備考</dt><dd>{examInfo.application_note}</dd></>}
+      </dl>
+    </div>
 
-      <div className="card-section">
-        <h3 className="section-title">受験</h3>
-        <dl className="info-list">
-          <dt>受験時間</dt><dd>{formatDateTime(examInfo.exam_start)} ～ {formatDateTime(examInfo.exam_end)}</dd>
-          <dt>受験会場</dt><dd>{examInfo.exam_venue}</dd>
-          <dt>受験科目</dt><dd>{examInfo.exam_subjects}</dd>
-          <dt>親の待機場所</dt><dd>{examInfo.parent_waiting_area || '-'}</dd>
-          {examInfo.exam_note && <><dt>備考</dt><dd>{examInfo.exam_note}</dd></>}
-        </dl>
-      </div>
+    {/* 4. 受験料支払セクション */}
+    <div className="card-section">
+      <h3 className="section-title">受験料支払</h3>
+      <dl className="info-list">
+        <dt>支払期限</dt><dd>{formatDateTime(examInfo.fee_deadline)}</dd>
+        <dt>支払方法</dt><dd>{examInfo.fee_payment_method || '-'}</dd>
+        <dt>受験料</dt><dd>{examInfo.fee_amount ? `¥${examInfo.fee_amount.toLocaleString()}` : '-'}</dd>
+        {examInfo.fee_note && <><dt>備考</dt><dd>{examInfo.fee_note}</dd></>}
+      </dl>
+    </div>
 
+{/* 5. 合格発表セクション */}
       <div className="card-section">
         <h3 className="section-title">合格発表</h3>
         <dl className="info-list">
@@ -401,6 +406,7 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
         </dl>
       </div>
 
+{/* 6. 入学申込セクション */}
       <div className="card-section">
         <h3 className="section-title">入学申込</h3>
         <dl className="info-list">
@@ -410,6 +416,7 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
         </dl>
       </div>
 
+{/* 7. 入学金支払セクション */}
       <div className="card-section">
         <h3 className="section-title">入学金支払</h3>
         <dl className="info-list">
@@ -420,18 +427,21 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
         </dl>
       </div>
 
-      <div className="card-meta">
-        <span className="meta-item">更新日: {formatDate(examInfo.updated_at)}</span>
-      </div>
+      <div className="card-section">
+        <div className="info-row">
+            <span className="label">更新日</span>
+            <span className="value">{formatDate(examInfo.updated_at)}</span>
+        </div>
+        </div>
 
       <div className="card-actions">
-        <button className="btn-secondary" onClick={() => setIsEditing(true)}>
-          編集
+        <button className="btn-edit" onClick={() => setIsEditing(true)}>
+            編集
         </button>
-        <button className="btn-danger" onClick={handleDelete}>
-          削除
+        <button className="btn-delete" onClick={handleDelete}>
+            削除
         </button>
-      </div>
+        </div>
     </div>
   )
 }

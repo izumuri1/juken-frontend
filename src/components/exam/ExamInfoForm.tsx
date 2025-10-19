@@ -157,11 +157,32 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
   })
 
   const handleSubmit = async () => {
-    // 必須フィールドのバリデーション
-    if (!difficultyForm.validateAll() || !examForm.validateAll()) {
-      setError('必須項目を入力してください')
-      return
+  // 必須フィールドのバリデーション
+  const difficultyValid = difficultyForm.validateAll()
+  const examValid = examForm.validateAll()
+  
+  if (!difficultyValid || !examValid) {
+    const missingFields: string[] = []
+    
+    if (!difficultyValid) {
+      Object.entries(difficultyForm.validationRules).forEach(([field, rule]) => {
+        if (rule.required && !difficultyForm.values[field as keyof DifficultyFormData]) {
+          missingFields.push(rule.displayName || field)
+        }
+      })
     }
+    
+    if (!examValid) {
+      Object.entries(examForm.validationRules).forEach(([field, rule]) => {
+        if (rule.required && !examForm.values[field as keyof ExamFormData]) {
+          missingFields.push(rule.displayName || field)
+        }
+      })
+    }
+    
+    setError(`必須項目を入力してください: ${missingFields.join('、')}`)
+    return
+  }
 
     const allForms = [
       difficultyForm,
@@ -254,48 +275,48 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
 
       <div className="tab-menu">
         <button
-          className={`tab-button ${activeTab === 'difficulty' ? 'active' : ''}`}
-          onClick={() => setActiveTab('difficulty')}
+            className={`tab-button ${activeTab === 'difficulty' ? 'active' : ''}`}
+            onClick={() => setActiveTab('difficulty')}
         >
-          難易度
+            難易度（必須）
         </button>
         <button
-          className={`tab-button ${activeTab === 'application' ? 'active' : ''}`}
-          onClick={() => setActiveTab('application')}
+            className={`tab-button ${activeTab === 'exam' ? 'active' : ''}`}
+            onClick={() => setActiveTab('exam')}
         >
-          受験申込
+            受験（必須）
         </button>
         <button
-          className={`tab-button ${activeTab === 'fee' ? 'active' : ''}`}
-          onClick={() => setActiveTab('fee')}
+            className={`tab-button ${activeTab === 'application' ? 'active' : ''}`}
+            onClick={() => setActiveTab('application')}
         >
-          受験料支払
+            受験申込
         </button>
         <button
-          className={`tab-button ${activeTab === 'exam' ? 'active' : ''}`}
-          onClick={() => setActiveTab('exam')}
+            className={`tab-button ${activeTab === 'fee' ? 'active' : ''}`}
+            onClick={() => setActiveTab('fee')}
         >
-          受験
+            受験料支払
         </button>
         <button
-          className={`tab-button ${activeTab === 'announcement' ? 'active' : ''}`}
-          onClick={() => setActiveTab('announcement')}
+            className={`tab-button ${activeTab === 'announcement' ? 'active' : ''}`}
+            onClick={() => setActiveTab('announcement')}
         >
-          合格発表
+            合格発表
         </button>
         <button
-          className={`tab-button ${activeTab === 'enrollment' ? 'active' : ''}`}
-          onClick={() => setActiveTab('enrollment')}
+            className={`tab-button ${activeTab === 'enrollment' ? 'active' : ''}`}
+            onClick={() => setActiveTab('enrollment')}
         >
-          入学申込
+            入学申込
         </button>
         <button
-          className={`tab-button ${activeTab === 'admissionFee' ? 'active' : ''}`}
-          onClick={() => setActiveTab('admissionFee')}
+            className={`tab-button ${activeTab === 'admissionFee' ? 'active' : ''}`}
+            onClick={() => setActiveTab('admissionFee')}
         >
-          入学金支払
+            入学金支払
         </button>
-      </div>
+        </div>
 
       <div className="tab-content">
         {/* 難易度タブ */}

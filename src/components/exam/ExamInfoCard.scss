@@ -9,13 +9,13 @@
 
   &.editing {
     .tab-menu {
-      display: flex;
-      flex-wrap: wrap;
-      gap: $spacing-small;
-      margin-bottom: $spacing-mobile;
-      border-bottom: 2px solid $color-gray-light;
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-small;
+        margin-bottom: $spacing-mobile;
+        border-bottom: 2px solid $color-gray-light;
 
-      .tab-button {
+        .tab-button {
         padding: $spacing-small $spacing-mobile;
         background: transparent;
         border: none;
@@ -27,26 +27,61 @@
         white-space: nowrap;
 
         &:hover {
-          background: $color-gray-lighter;
+            background: $color-gray-lighter;
         }
 
         &.active {
-          color: $home-button-action-bg;
-          border-bottom-color: $home-button-action-bg;
-          font-weight: bold;
+            color: $home-button-action-bg;
+            border-bottom-color: $home-button-action-bg;
+            font-weight: bold;
         }
-      }
+        }
     }
 
     .tab-content {
-      .form-fields {
+        .form-fields {
         display: flex;
         flex-direction: column;
         gap: $spacing-mobile;
         margin-bottom: $spacing-mobile;
-      }
+        }
     }
-  }
+
+    .card-actions {
+        display: flex;
+        gap: $spacing-small;
+        margin-top: $spacing-mobile;
+
+        .btn {
+        flex: 1;
+        padding: $spacing-small $spacing-mobile;
+        border: none;
+        border-radius: $radius-button;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.btn-submit {
+            background-color: $home-button-action-bg;
+            color: $home-button-action-text;
+
+            &:hover {
+            opacity: 0.9;
+            }
+        }
+
+        &.btn-cancel {
+            background-color: $color-gray-light;
+            color: $color-black;
+
+            &:hover {
+            background-color: $color-gray-medium;
+            }
+        }
+        }
+    }
+    }
 
   .card-section {
     margin-bottom: $spacing-large;
@@ -65,41 +100,50 @@
     }
 
     .info-list {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: $spacing-small $spacing-mobile;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: $spacing-small $spacing-mobile;
 
-      dt {
-        font-weight: bold;
+    dt {
+        font-weight: $font-weight-normal;
         color: $home-text-label;
-      }
+    }
 
-      dd {
+    dd {
         color: $home-text-body;
         margin: 0;
-      }
+    }
     }
   }
 
-  .card-meta {
-    display: flex;
-    justify-content: flex-end;
-    gap: $spacing-mobile;
-    margin-top: $spacing-mobile;
-    padding-top: $spacing-mobile;
-    border-top: 1px solid $color-gray-light;
-
-    .meta-item {
-      font-size: $font-size-small;
-      color: $home-text-muted;
-    }
-  }
 
   .card-actions {
     display: flex;
     gap: $spacing-small;
     margin-top: $spacing-mobile;
-  }
+
+    .btn-edit {
+        @include home-button-info;
+        flex: 1;
+    }
+
+    .btn-delete {
+        background-color: $home-button-exam-bg;
+        color: $home-button-exam-text;
+        flex: 1;
+        padding: $spacing-small $spacing-mobile;
+        border: none;
+        border-radius: $radius-button;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+        opacity: 0.9;
+        }
+    }
+    }
 
   .error-message {
     background: $auth-error-bg;
