@@ -8,6 +8,7 @@ import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { SchoolMap } from '../components/SchoolMap';
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
+import { LoadingError } from '../components/common/LoadingError'; // ← 追加
 import './School.scss';
 
 // 型定義
@@ -332,7 +333,7 @@ const handleRegisterTarget = async () => {
   if (loading) {
     return (
       <div className="school-container">
-        <div className="loading">読み込み中...</div>
+        <LoadingError loading={true} />
       </div>
     );
   }
@@ -340,10 +341,10 @@ const handleRegisterTarget = async () => {
   if (error || !schoolInfo) {
     return (
       <div className="school-container">
-        <div className="error-message">{error || '学校情報が見つかりません'}</div>
-        <button onClick={() => navigate('/home')} className="btn-primary">
-          Homeへ戻る
-        </button>
+        <LoadingError 
+          error={error || '学校情報が見つかりません'} 
+          homeLink={`/workspace/${workspaceId}`}
+        />
       </div>
     );
   }
