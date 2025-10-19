@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { PageLayout } from '../components/common/PageLayout'
+import { LoadingError } from '../components/common/LoadingError'
 import ExamInfoForm from '../components/exam/ExamInfoForm'
 import ExamInfoCard from '../components/exam/ExamInfoCard'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
@@ -151,15 +152,25 @@ export default function Exam() {
   }
 
   const fetchSchool = async () => {
+    console.log('=== fetchSchool開始 ===')
+    console.log('schoolId:', schoolId)
+    console.log('workspaceId:', workspaceId)
+    
     const { data, error } = await supabase
-      .from('schools')
-      .select('*')
-      .eq('id', schoolId)
-      .single()
+        .from('schools')
+        .select('*')
+        .eq('id', schoolId)
+        .single()
 
-    if (error) throw error
+    console.log('学校データ取得結果:', data)
+    console.log('学校データ取得エラー:', error)
+
+    if (error) {
+        console.error('fetchSchoolでエラー:', error)
+        throw error
+    }
     setSchool(data)
-  }
+    }
 
   const fetchSchoolDetail = async () => {
     const { data, error } = await supabase
@@ -208,10 +219,7 @@ export default function Exam() {
     }
   }
 
-  if (loading) return <LoadingSpinner />
-  if (error) return <ErrorMessage message={error} />
-  if (!school) return <ErrorMessage message="学校が見つかりません" />
-
+  if (loading || error || !school) {
   return (
     <PageLayout
       workspaceName={workspaceName}
@@ -220,11 +228,29 @@ export default function Exam() {
       onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
       onMenuClose={() => setIsMenuOpen(false)}
     >
-      <div className="exam-page">
-        <BackButton 
-          to={`/workspace/${workspaceId}`}
-          label="Homeに戻る"
-        />
+      <LoadingError
+        loading={loading}
+        error={error || (!school ? '学校が見つかりません' : null)}
+      />
+    </PageLayout>
+  )
+}
+
+return (
+  <PageLayout
+    workspaceName={workspaceName}
+    workspaceOwner={workspaceOwner}
+    isMenuOpen={isMenuOpen}
+    onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+    onMenuClose={() => setIsMenuOpen(false)}
+  >
+    <div className="exam-page">
+      <button 
+        onClick={() => navigate(`/workspace/${workspaceId}`)}
+        className="back-button"
+      >
+        Home
+      </button>
 
         {/* 学校情報セクション */}
         <section className="exam-section school-info-section">

@@ -414,6 +414,7 @@ const handleSearchInput = async (value: string) => {
                       },
                       {
                         label: '受験情報',
+                        path: `/workspace/${workspaceId}/school/${school.schoolId}/exam`,
                         variant: 'exam'
                       }
                     ]}
