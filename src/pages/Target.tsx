@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
-import PageLayout from '../components/common/PageLayout';
+import { supabase } from '../lib/supabase';
+import { PageLayout } from '../components/common/PageLayout';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -58,6 +58,11 @@ function Target() {
   const [schoolDetails, setSchoolDetails] = useState<SchoolDetails | null>(null);
   const [targetInfos, setTargetInfos] = useState<TargetInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // PageLayout用の状態追加
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [workspaceOwner, setWorkspaceOwner] = useState('');
 
   // フォーム状態
   const [formData, setFormData] = useState({
@@ -81,6 +86,27 @@ function Target() {
 
       try {
         setLoading(true);
+
+        // ワークスペース情報を取得
+        const { data: workspaceData } = await supabase
+          .from('workspaces')
+          .select('name, owner_id')
+          .eq('id', workspaceId)
+          .single();
+
+        if (workspaceData) {
+          setWorkspaceName(workspaceData.name);
+          
+          const { data: ownerData } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', workspaceData.owner_id)
+            .single();
+          
+          if (ownerData) {
+            setWorkspaceOwner(ownerData.username);
+          }
+        }
 
         // 学校基本情報
         const { data: schoolData, error: schoolError } = await supabase
@@ -247,7 +273,13 @@ function Target() {
 
   if (loading) {
     return (
-      <PageLayout>
+      <PageLayout
+        workspaceName={workspaceName}
+        workspaceOwner={workspaceOwner}
+        isMenuOpen={isMenuOpen}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onMenuClose={() => setIsMenuOpen(false)}
+      >
         <div className="loading-message">読み込み中...</div>
       </PageLayout>
     );
@@ -255,14 +287,26 @@ function Target() {
 
   if (!school) {
     return (
-      <PageLayout>
+      <PageLayout
+        workspaceName={workspaceName}
+        workspaceOwner={workspaceOwner}
+        isMenuOpen={isMenuOpen}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onMenuClose={() => setIsMenuOpen(false)}
+      >
         <div className="error-message">学校情報が見つかりません</div>
       </PageLayout>
     );
   }
 
   return (
-    <PageLayout>
+    <PageLayout
+      workspaceName={workspaceName}
+      workspaceOwner={workspaceOwner}
+      isMenuOpen={isMenuOpen}
+      onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+      onMenuClose={() => setIsMenuOpen(false)}
+    >
       <div className="target-page">
         {/* 学校情報セクション */}
         <section className="target-section school-info-section">

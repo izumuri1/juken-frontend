@@ -1,13 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Login } from './pages/Login'
 import { SignUp } from './pages/SignUp'
-import { InviteHandler } from './components/InviteHandler';  // ← 追加
+import { InviteHandler } from './components/InviteHandler';
 import { PasswordReset } from './pages/PasswordReset'
 import { PasswordResetConfirm } from './pages/PasswordResetConfirm'
 import { EmailConfirmationWaiting } from './pages/EmailConfirmationWaiting'
 import { CreateWorkspace } from './pages/CreateWorkspace'
 import Home from './pages/Home'
 import School from './pages/School'
+import Target from './pages/Target'
 import { useAuth } from './contexts/AuthContext'
 
 function App() {
@@ -59,6 +60,10 @@ return (
       <Route 
         path="/workspace/:workspaceId/school/:schoolCode" 
         element={user ? <School /> : <Navigate to="/login" replace />} 
+      />
+      <Route 
+        path="/workspace/:workspaceId/target/:schoolCode" 
+        element={user ? <Target /> : <Navigate to="/login" replace />} 
       />
       {/* 未定義のパスは/にリダイレクト */}
       <Route path="*" element={<Navigate to="/" replace />} />

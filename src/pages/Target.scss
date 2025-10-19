@@ -80,7 +80,7 @@
     margin-top: $spacing-mobile;
 
     .card-subtitle {
-      font-size: $font-size-large;
+      font-size: $font-size-title;
       font-weight: $font-weight-bold;
       color: $home-text-heading;
       margin-bottom: $spacing-small;
@@ -126,7 +126,7 @@
         font-size: $font-size-body;
         font-weight: $font-weight-medium;
         color: $home-text-label;
-        margin-bottom: $spacing-xs;
+        margin-bottom: $spacing-small;
 
         .required {
           color: $color-error;
@@ -252,7 +252,7 @@
         &.desire-badge {
           display: inline-block;
           padding: 0.25rem 0.75rem;
-          border-radius: $radius-badge;
+          border-radius: 9999px;
           font-weight: $font-weight-bold;
           min-width: 40px;
           text-align: center;
@@ -346,7 +346,12 @@
     }
 
     &.btn-home {
-      @include home-button-action;
+      background-color: $home-button-action-bg;
+      color: $home-button-action-text;
+
+      &:hover {
+        opacity: 0.9;
+      }
     }
   }
 }
