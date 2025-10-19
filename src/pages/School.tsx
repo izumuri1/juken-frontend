@@ -168,7 +168,7 @@ const School: React.FC = () => {
       fetchSchoolData();
   }, [schoolCode, workspaceId]); // ← userからworkspaceIdに変更
           
-  // 学校詳細情報の登録 + 志望校登録 + Home画面遷移
+  // 学校詳細情報の登録
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -193,52 +193,10 @@ const School: React.FC = () => {
 
       if (error) throw error;
 
-      // 2. 志望校として登録（既に登録済みかチェック）
-      const { data: existing, error: checkError } = await supabase
-        .from('target_schools')
-        .select('id')
-        .eq('workspace_id', workspaceId)
-        .eq('school_id', schoolInfo.id)
-        .maybeSingle();
+      alert('学校情報を登録しました');
 
-      if (checkError) throw checkError;
-
-      let targetSchoolId = existing?.id;
-
-      if (!existing) {
-        // まだ志望校登録されていない場合のみ登録
-        const { data: newTarget, error: insertError } = await supabase
-          .from('target_schools')
-          .insert({
-            workspace_id: workspaceId,
-            school_id: schoolInfo.id,
-            child_impression: '（未入力）', // 必須項目のため初期値設定
-          })
-          .select('id')
-          .single();
-
-        if (insertError) throw insertError;
-        targetSchoolId = newTarget?.id;
-      }
-
-      // 3. 学校詳細情報を再取得して表示を更新
-      const { data: detailsData } = await supabase
-        .from('school_details')
-        .select('*')
-        .eq('school_id', schoolInfo.id)
-        .eq('workspace_id', workspaceId)
-        .single();
-
-      if (detailsData) {
-        setSchoolDetails(detailsData);
-        setIsEditing(false);
-        setIsAlreadyTarget(true); // 志望校登録済みフラグを更新
-      }
-
-      alert('学校情報を登録し、志望校として登録しました');
-
-      // 4. Home画面へ遷移（登録した志望校の位置にスクロール）
-      navigate(`/workspace/${workspaceId}?scrollTo=${targetSchoolId || ''}`);
+      // 2. Home画面へ遷移（志望校一覧セクションへスクロール）
+      navigate(`/workspace/${workspaceId}#school-list`);
 
     } catch (err) {
       console.error('登録エラー:', err);
@@ -457,7 +415,7 @@ const School: React.FC = () => {
             </div>
 
             <button type="submit" className="btn-submit" disabled={isSubmitting}>
-              {isSubmitting ? '登録中...' : '志望校登録'}
+              {isSubmitting ? '登録中...' : '学校情報登録'}
             </button>
             {schoolDetails && (
               <button
