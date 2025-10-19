@@ -447,48 +447,39 @@ const handleSearchInput = async (value: string) => {
             ) : (
               sortExams(exams).map((exam) => (
                 <div key={exam.id}>
-                  <div className="card-header">
-                    <h3 className="school-name">{exam.schoolName}</h3>
-                  <span className={`desire-badge ${getDesireBadgeClass(exam.desireLevel)}`}>
-                    志望度: {exam.desireLevel}
-                  </span>
-                </div>
-                <div className="card-body">
-                  <div className="card-info-row">
-                    <span className="label">受験日:</span>
-                    <span className="value">{exam.examDate}</span>
-                  </div>
-                  <div className="card-info-row">
-                    <span className="label">受験時間:</span>
-                    <span className="value">{exam.examTime}</span>
-                  </div>
-                  <div className="card-info-row">
-                    <span className="label">偏差値:</span>
-                    <span className="value">{exam.deviationValue}</span>
-                  </div>
-                  <div className="card-info-row">
-                    <span className="label">更新日:</span>
-                    <span className="value">{exam.updatedAt}</span>
-                  </div>
-                </div>
-                <div className="card-actions">
-                  <ActionButtons
-                    workspaceId={workspaceId!}
-                    buttons={[
-                      {
-                        label: '受験情報',
-                        variant: 'info'
-                      },
-                      {
-                        label: '受験管理',
-                        variant: 'exam'
-                      }
+                  <InfoCard
+                    className="exam-card"
+                    title={exam.schoolName}
+                    badge={
+                      <span className={`desire-badge ${getDesireBadgeClass(exam.desireLevel)}`}>
+                        志望度: {exam.desireLevel}
+                      </span>
+                    }
+                    rows={[
+                      { label: '受験日', value: exam.examDate },
+                      { label: '受験時間', value: exam.examTime },
+                      { label: '偏差値', value: exam.deviationValue },
+                      { label: '更新日', value: exam.updatedAt }
                     ]}
+                    actions={
+                      <ActionButtons
+                        workspaceId={workspaceId!}
+                        buttons={[
+                          {
+                            label: '受験情報',
+                            variant: 'info'
+                          },
+                          {
+                            label: '受験管理',
+                            variant: 'exam'
+                          }
+                        ]}
+                      />
+                    }
                   />
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
         </div>
       </section>
 
