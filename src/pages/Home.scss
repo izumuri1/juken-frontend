@@ -155,12 +155,17 @@
   
   .btn-info {
     @include home-button-info;
-    flex: 1;  // ← 追加
+    flex: 1;
+  }
+  
+  .btn-target {
+    @include home-button-target;
+    flex: 1;  // 追加
   }
   
   .btn-exam {
     @include home-button-exam;
-    flex: 1;  // ← 追加
+    flex: 1;
   }
 
   // 空メッセージ表示

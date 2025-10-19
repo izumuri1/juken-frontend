@@ -402,12 +402,17 @@ const handleSearchInput = async (value: string) => {
                         variant: 'info'
                       },
                       {
+                        label: '志望校情報',
+                        path: `/workspace/${workspaceId}/target/${school.schoolCode}`,
+                        variant: 'target'
+                      },
+                      {
                         label: '受験情報',
                         variant: 'exam'
                       }
                     ]}
                   />
-              }
+                }
               />
             </div>
             ))

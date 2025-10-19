@@ -34,8 +34,9 @@ $color-warning:       #d97706; // 警告
 // アクセントカラー
 $color-blue:          #3b82f6; // アクセント青
 $color-blue-light:    #dbeafe; // アクセント青（薄）
-$color-blue-info:     #5fbde5; // 情報ボタン用の明るい青色（新規追加）
-$color-orange-exam:   #c95a50; // 受験ボタン用のオレンジレッド（新規追加）
+$color-blue-info:     #5fbde5; // 情報ボタン用の明るい青色
+$color-green-target:  #97C5B0; // 志望校情報ボタン用の緑色（新規追加）
+$color-orange-exam:   #c95a50; // 受験ボタン用のオレンジレッド
 $color-orange:        #D97757; // アクセントオレンジ
 
 //////////////////////////////////////////////////////////////
@@ -113,6 +114,8 @@ $home-button-action-bg:        $color-black;         // アクションボタン
 $home-button-action-text:      $color-white;         // アクションボタンテキスト
 $home-button-info-bg:          $color-blue-info;     // 情報ボタン背景
 $home-button-info-text:        $color-white;         // 情報ボタンテキスト
+$home-button-target-bg:        $color-green-target;  // 志望校情報ボタン背景（新規追加）
+$home-button-target-text:      $color-white;         // 志望校情報ボタンテキスト（新規追加）
 $home-button-exam-bg:          $color-orange-exam;   // 受験ボタン背景
 $home-button-exam-text:        $color-white;         // 受験ボタンテキスト
 
@@ -724,6 +727,27 @@ $ease-in-out:             ease-in-out;
 
   &:hover {
     background-color: color.adjust($home-button-info-bg, $lightness: -10%);
+  }
+}
+
+@mixin home-button-target {
+  background-color: $home-button-target-bg;
+  color: $home-button-target-text;
+  border: none;
+  border-radius: $radius-button;
+  padding: $spacing-small $spacing-mobile;
+  font-size: $font-size-body;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 

@@ -7,7 +7,7 @@ interface ButtonConfig {
   label: string;
   onClick?: () => void;
   path?: string;
-  variant?: 'primary' | 'info' | 'exam' | 'home';
+  variant?: 'primary' | 'info' | 'target' | 'exam' | 'home';  // 'target'を追加
   disabled?: boolean;
 }
 

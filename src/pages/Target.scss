@@ -1,0 +1,368 @@
+// src/pages/Target.scss
+// Target画面のスタイル(Home画面・School画面と同一デザイン)
+
+@use '../styles/variables' as *;
+
+//////////////////////////////////////////////////////////////
+// Target画面全体
+//////////////////////////////////////////////////////////////
+
+.target-page {
+  width: 100%;
+  max-width: 100%;
+}
+
+//////////////////////////////////////////////////////////////
+// セクション共通
+//////////////////////////////////////////////////////////////
+
+.target-section {
+  @include home-section;
+}
+
+//////////////////////////////////////////////////////////////
+// 学校情報セクション (School画面と同一)
+//////////////////////////////////////////////////////////////
+
+.school-info-section {
+  .info-card {
+    @include home-card;
+    
+    &:hover {
+      transform: none;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+
+        a {
+          color: $color-blue-info;
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .map-container {
+    margin-top: $spacing-mobile;
+    background-color: $home-card-bg;
+    border: 1px solid $home-card-border;
+    border-radius: $radius-card;
+    overflow: hidden;
+    box-shadow: $home-card-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  .details-card {
+    @include home-card;
+    margin-top: $spacing-mobile;
+
+    .card-subtitle {
+      font-size: $font-size-large;
+      font-weight: $font-weight-bold;
+      color: $home-text-heading;
+      margin-bottom: $spacing-small;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 志望校情報入力セクション
+//////////////////////////////////////////////////////////////
+
+.target-input-section {
+  .target-form {
+    @include home-card;
+
+    .form-group {
+      margin-bottom: $spacing-mobile;
+
+      label {
+        display: block;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        color: $home-text-label;
+        margin-bottom: $spacing-xs;
+
+        .required {
+          color: $color-error;
+          margin-left: 0.25rem;
+        }
+      }
+
+      input[type="text"],
+      input[type="date"],
+      textarea {
+        width: 100%;
+        padding: $spacing-small;
+        border: 1px solid $home-card-border;
+        border-radius: $radius-input;
+        font-size: $font-size-body;
+        font-family: inherit;
+
+        &:focus {
+          outline: none;
+          border-color: $color-black;
+        }
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      input[type="range"] {
+        width: calc(100% - 50px);
+        margin-right: $spacing-small;
+      }
+
+      .range-value {
+        display: inline-block;
+        min-width: 30px;
+        text-align: center;
+        font-weight: $font-weight-bold;
+        color: $home-text-heading;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: $spacing-small;
+      margin-top: $spacing-mobile;
+
+      .btn {
+        flex: 1;
+        padding: $spacing-small $spacing-mobile;
+        border: none;
+        border-radius: $radius-button;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.btn-submit {
+          background-color: $home-button-action-bg;
+          color: $home-button-action-text;
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+
+        &.btn-cancel {
+          background-color: $color-gray-light;
+          color: $color-black;
+
+          &:hover {
+            background-color: $color-gray-medium;
+          }
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 志望校情報表示セクション
+//////////////////////////////////////////////////////////////
+
+.target-list-section {
+  .target-list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-mobile;
+  }
+
+  .target-card {
+    @include home-card;
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+
+      &:last-of-type {
+        margin-bottom: $spacing-mobile;
+      }
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+        min-width: 100px;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+        flex: 1;
+
+        &.impression {
+          text-align: left;
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+
+        &.desire-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: $radius-badge;
+          font-weight: $font-weight-bold;
+          min-width: 40px;
+          text-align: center;
+
+          &.badge-level-5,
+          &.badge-level-4 {
+            @include home-badge-high;
+          }
+
+          &.badge-level-3 {
+            @include home-badge-medium;
+          }
+
+          &.badge-level-2,
+          &.badge-level-1 {
+            @include home-badge-low;
+          }
+        }
+      }
+    }
+
+    .card-actions {
+      display: flex;
+      gap: $spacing-small;
+      padding-top: $spacing-small;
+      border-top: 1px solid $home-card-border;
+
+      .btn {
+        flex: 1;
+        padding: $spacing-small;
+        border: none;
+        border-radius: $radius-button;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.btn-edit {
+          background-color: $home-button-info-bg;
+          color: $home-button-info-text;
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+
+        &.btn-delete {
+          background-color: $color-error;
+          color: $color-white;
+
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-message {
+    text-align: center;
+    padding: $spacing-large $spacing-mobile;
+    color: $home-text-muted;
+    font-size: $font-size-body;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ボタンセクション
+//////////////////////////////////////////////////////////////
+
+.buttons-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-small;
+
+  .btn {
+    padding: $spacing-mobile;
+    border: none;
+    border-radius: $radius-button;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.btn-exam {
+      @include home-button-exam;
+    }
+
+    &.btn-home {
+      @include home-button-action;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// エラーメッセージ・読み込み中
+//////////////////////////////////////////////////////////////
+
+.error-message {
+  @include auth-error-message;
+  margin-bottom: $spacing-mobile;
+}
+
+.loading-message {
+  text-align: center;
+  padding: $spacing-large;
+  color: $home-text-muted;
+  font-size: $font-size-body;
+}

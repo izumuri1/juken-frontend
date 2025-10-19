@@ -38,6 +38,10 @@
     @include home-button-info;
   }
 
+  .btn-target {
+    @include home-button-target;
+  }
+
   .btn-exam {
     @include home-button-exam;
   }
