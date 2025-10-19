@@ -5,6 +5,25 @@
 @use '../../styles/variables' as *;
 
 //////////////////////////////////////////////////////////////
+// サイドメニュー（全ページ共通）
+//////////////////////////////////////////////////////////////
+
+.side-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  animation: fadeIn 0.2s ease-out;
+  
+  .side-menu {
+    @include side-menu-panel;
+  }
+}
+
+//////////////////////////////////////////////////////////////
 // ページ共通コンテナ
 // Home, School, Target, Exam, Comparison, Task画面で使用
 //////////////////////////////////////////////////////////////
@@ -32,4 +51,9 @@
   max-width: 100%;
   width: 100%;
   margin: 0 auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
