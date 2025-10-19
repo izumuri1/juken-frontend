@@ -1,3 +1,6 @@
+// src/App.tsx
+// 変更箇所: Examページのルートを追加
+
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Login } from './pages/Login'
 import { SignUp } from './pages/SignUp'
@@ -9,17 +12,17 @@ import { CreateWorkspace } from './pages/CreateWorkspace'
 import Home from './pages/Home'
 import School from './pages/School'
 import Target from './pages/Target'
+import Exam from './pages/Exam'  // ← 追加
 import { useAuth } from './contexts/AuthContext'
 
 function App() {
   const { user, loading } = useAuth()
 
-  // 認証状態の確認中は読み込み表示
   if (loading) {
     return <div>Loading...</div>
   }
 
-return (
+  return (
     <Routes>
       <Route 
         path="/" 
@@ -65,7 +68,11 @@ return (
         path="/workspace/:workspaceId/target/:schoolCode" 
         element={user ? <Target /> : <Navigate to="/login" replace />} 
       />
-      {/* 未定義のパスは/にリダイレクト */}
+      {/* ← Examページのルートを追加 */}
+      <Route 
+        path="/workspace/:workspaceId/school/:schoolId/exam" 
+        element={user ? <Exam /> : <Navigate to="/login" replace />} 
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

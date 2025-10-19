@@ -1,0 +1,195 @@
+// src/pages/Exam.scss
+@use '../styles/variables' as *;
+@use "sass:color";
+
+.exam-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-mobile;
+
+  .section-title {
+    font-size: $font-size-title;
+    font-weight: bold;
+    margin-bottom: $spacing-mobile;
+    color: $home-text-heading;
+  }
+
+  .exam-info-list {
+    margin-top: $spacing-large;
+
+    .no-data {
+      text-align: center;
+      color: $home-text-muted;
+      padding: $spacing-xlarge;
+    }
+
+    .exam-cards {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-mobile;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// セクション共通
+//////////////////////////////////////////////////////////////
+
+.exam-section {
+  @include home-section;
+}
+
+//////////////////////////////////////////////////////////////
+// 学校情報セクション
+//////////////////////////////////////////////////////////////
+
+.school-info-section {
+  .info-card {
+    @include home-card;
+    
+    &:hover {
+      transform: none;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+
+        a {
+          color: $color-blue;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .map-container {
+    margin-top: $spacing-mobile;
+    background-color: $home-card-bg;
+    border: 1px solid $home-card-border;
+    border-radius: $radius-card;
+    overflow: hidden;
+    box-shadow: $home-card-shadow;
+    position: relative;
+    z-index: 1;
+  }
+
+  .details-card {
+    @include home-card;
+    margin-top: $spacing-mobile;
+    
+    &:hover {
+      transform: none;
+    }
+
+    .card-subtitle {
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-small;
+      color: $home-text-heading;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ボタンセクション
+//////////////////////////////////////////////////////////////
+
+.buttons-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-small;
+  padding: $spacing-large $spacing-mobile;
+  max-width: $card-max-width;
+  margin: 0 auto;
+  width: 100%;
+
+  .btn {
+    width: 100%;
+    padding: $spacing-small $spacing-mobile;
+    font-size: $font-size-body;
+    font-weight: $font-weight-medium;
+    border: none;
+    border-radius: $radius-button;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-home {
+    background-color: $home-button-action-bg;
+    color: $home-button-action-text;
+    padding: 0.75rem $spacing-mobile;
+    min-height: $touch-target-min;
+    
+    &:hover:not(:disabled) {
+      background-color: color.adjust($home-button-action-bg, $lightness: -10%);
+    }
+    
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// ローディング・エラー表示
+//////////////////////////////////////////////////////////////
+
+.loading-container {
+  @include loading-container;
+}
+
+.error-container {
+  @include loading-container;
+  
+  .error-message {
+    background: $auth-error-bg;
+    color: $auth-error-text;
+    border: 1px solid $auth-error-border;
+    padding: $spacing-mobile;
+    border-radius: $radius-message;
+    margin-bottom: $spacing-mobile;
+  }
+}

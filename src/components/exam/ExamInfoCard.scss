@@ -1,0 +1,112 @@
+// src/components/exam/ExamInfoCard.scss
+@use '../../styles/variables' as *;
+
+.exam-info-card {
+  background: $home-card-bg;
+  border-radius: $radius-card;
+  padding: $spacing-large;
+  box-shadow: $home-card-shadow;
+
+  &.editing {
+    .tab-menu {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-small;
+      margin-bottom: $spacing-mobile;
+      border-bottom: 2px solid $color-gray-light;
+
+      .tab-button {
+        padding: $spacing-small $spacing-mobile;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: $home-text-body;
+        font-size: $font-size-small;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+
+        &:hover {
+          background: $color-gray-lighter;
+        }
+
+        &.active {
+          color: $home-button-action-bg;
+          border-bottom-color: $home-button-action-bg;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .tab-content {
+      .form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-mobile;
+        margin-bottom: $spacing-mobile;
+      }
+    }
+  }
+
+  .card-section {
+    margin-bottom: $spacing-large;
+    padding-bottom: $spacing-mobile;
+    border-bottom: 1px solid $color-gray-light;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: $font-size-title;
+      font-weight: bold;
+      margin-bottom: $spacing-small;
+      color: $home-text-heading;
+    }
+
+    .info-list {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: $spacing-small $spacing-mobile;
+
+      dt {
+        font-weight: bold;
+        color: $home-text-label;
+      }
+
+      dd {
+        color: $home-text-body;
+        margin: 0;
+      }
+    }
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-mobile;
+    margin-top: $spacing-mobile;
+    padding-top: $spacing-mobile;
+    border-top: 1px solid $color-gray-light;
+
+    .meta-item {
+      font-size: $font-size-small;
+      color: $home-text-muted;
+    }
+  }
+
+  .card-actions {
+    display: flex;
+    gap: $spacing-small;
+    margin-top: $spacing-mobile;
+  }
+
+  .error-message {
+    background: $auth-error-bg;
+    color: $auth-error-text;
+    border: 1px solid $auth-error-border;
+    padding: $spacing-small;
+    border-radius: $radius-message;
+    margin-bottom: $spacing-mobile;
+  }
+}
