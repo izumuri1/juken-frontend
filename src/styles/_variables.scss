@@ -884,18 +884,6 @@ $ease-in-out:             ease-in-out;
 /// 【共通Mixins】サイドメニュー
 //////////////////////////////////////////////////////////////
 
-// オーバーレイ本体用のmixin
-@mixin side-menu-overlay-base {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 200;
-  animation: fadeIn 0.2s ease-out;
-}
-
 // サイドメニュー本体用のmixin
 @mixin side-menu-panel {
   position: fixed;
