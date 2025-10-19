@@ -43,7 +43,7 @@ interface TargetInfo {
   event_name?: string;
   participants?: string;
   access_method?: string;
-  talked_to?: string;
+  talked_with?: string;
   child_aspiration?: number;
   child_impression?: string;
   parent_aspiration?: number;
@@ -183,7 +183,7 @@ function Target() {
         event_name: formData.eventName || null,
         participants: formData.participants || null,
         access_method: formData.accessMethod || null,
-        talked_to: formData.talkedTo || null,
+        talked_with: formData.talkedTo || null,
         child_aspiration: formData.childAspiration,
         child_impression: formData.childImpression,
         parent_aspiration: formData.parentAspiration,
@@ -241,7 +241,7 @@ function Target() {
       eventName: info.event_name || '',
       participants: info.participants || '',
       accessMethod: info.access_method || '',
-      talkedTo: info.talked_to || '',
+      talkedTo: info.talked_with || '',
       childAspiration: info.child_aspiration || 3,
       childImpression: info.child_impression || '',
       parentAspiration: info.parent_aspiration || 3,
@@ -269,10 +269,6 @@ function Target() {
     }
   };
 
-  // 受験情報登録画面へ遷移
-  const handleExamRegistration = () => {
-    navigate(`/workspace/${workspaceId}/exam/${schoolCode}`);
-  };
 
   if (loading) {
     return (
@@ -582,15 +578,15 @@ function Target() {
                       <span className="value">{info.access_method}</span>
                     </div>
                   )}
-                  {info.talked_to && (
+                  {info.talked_with && (
                     <div className="info-row">
                       <span className="label">相手</span>
-                      <span className="value">{info.talked_to}</span>
+                      <span className="value">{info.talked_with}</span>
                     </div>
                   )}
                   <div className="info-row">
                     <span className="label">志望度（子）</span>
-                    <span className="value desire-badge badge-level-{info.child_aspiration}">
+                    <span className={`value desire-badge badge-level-${info.child_aspiration}`}>
                       {info.child_aspiration}
                     </span>
                   </div>
@@ -600,7 +596,7 @@ function Target() {
                   </div>
                   <div className="info-row">
                     <span className="label">志望度（親）</span>
-                    <span className="value desire-badge badge-level-{info.parent_aspiration}">
+                    <span className={`value desire-badge badge-level-${info.parent_aspiration}`}>
                       {info.parent_aspiration}
                     </span>
                   </div>
@@ -640,16 +636,10 @@ function Target() {
         {/* ボタンセクション */}
         <section className="target-section buttons-section">
           <button
-            className="btn btn-exam"
-            onClick={handleExamRegistration}
-          >
-            受験情報登録
-          </button>
-          <button
             className="btn btn-home"
             onClick={() => navigate(`/workspace/${workspaceId}`)}
           >
-            Homeへ戻る
+            Home
           </button>
         </section>
       </div>

@@ -275,14 +275,22 @@
     }
 
     .card-actions {
-      display: flex;
-      gap: $spacing-small;
-      padding-top: $spacing-small;
-      border-top: 1px solid $home-card-border;
+    display: flex;
+    gap: $spacing-small;
+    margin-top: $spacing-mobile;
+    padding-top: $spacing-mobile;
+    border-top: 1px solid $home-card-border;
 
-      .btn {
+    .btn-edit {
+        @include home-button-info;
         flex: 1;
-        padding: $spacing-small;
+    }
+
+    .btn-delete {
+        background-color: $home-button-exam-bg;
+        color: $home-button-exam-text;
+        flex: 1;
+        padding: $spacing-small $spacing-mobile;
         border: none;
         border-radius: $radius-button;
         font-size: $font-size-body;
@@ -290,24 +298,10 @@
         cursor: pointer;
         transition: all 0.2s ease;
 
-        &.btn-edit {
-          background-color: $home-button-info-bg;
-          color: $home-button-info-text;
-
-          &:hover {
-            opacity: 0.9;
-          }
+        &:hover {
+        opacity: 0.9;
         }
-
-        &.btn-delete {
-          background-color: $color-error;
-          color: $color-white;
-
-          &:hover {
-            opacity: 0.9;
-          }
-        }
-      }
+    }
     }
   }
 
@@ -370,4 +364,15 @@
   padding: $spacing-large;
   color: $home-text-muted;
   font-size: $font-size-body;
+}
+
+//////////////////////////////////////////////////////////////
+// ボタンセクション
+//////////////////////////////////////////////////////////////
+
+.buttons-section {
+  .btn-home {
+    @include button-primary;
+    width: 100%;
+  }
 }
