@@ -534,7 +534,7 @@ function Target() {
                 </button>
               )}
               <button type="submit" className="btn btn-submit">
-                {editingId ? '更新' : '登録'}
+                {editingId ? '更新' : '志望校情報登録'}
               </button>
             </div>
           </form>
