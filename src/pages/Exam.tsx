@@ -328,13 +328,15 @@ return (
           )}
         </section>
 
+      <section className="exam-section">
         <ExamInfoForm
           workspaceId={workspaceId!}
           schoolId={schoolId!}
           onExamInfoCreated={handleExamInfoCreated}
         />
+      </section>
 
-        <section className="exam-section exam-info-list">
+      <section className="exam-section exam-info-list">
         <h2 className="section-title">登録済み受験情報</h2>
         {examInfos.length === 0 ? (
             <div className="empty-message">

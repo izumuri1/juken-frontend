@@ -65,6 +65,8 @@
   .btn-submit {
     @include button-primary;
     width: 100%;
+    max-width: 100%;  // 追加: 親要素を押し広げないようにする
+    box-sizing: border-box;  // 追加: paddingを含めた幅計算
     margin-top: $spacing-mobile;
   }
 }
