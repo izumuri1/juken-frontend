@@ -55,6 +55,44 @@
     min-height: 100px;
   }
 
+  &__select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #ffffff;
+    color: #000000;
+    min-height: 44px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: #000000;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    }
+
+    &:disabled {
+      background-color: #f9fafb;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+
+    &--error {
+      border-color: #dc2626;
+
+      &:focus {
+        border-color: #dc2626;
+        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+      }
+    }
+  }
+
+  &__required {
+    color: #dc2626;
+    margin-left: 0.25rem;
+  }
+
   &__error {
     font-size: 0.8rem;
     color: #dc2626;
