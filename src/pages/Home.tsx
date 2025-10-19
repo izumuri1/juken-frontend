@@ -92,75 +92,81 @@ const Home: React.FC = () => {
       try {
         console.log('=== 志望校データ取得開始 ===');
         
-        // target_schoolsとschoolsとschool_detailsを結合して取得
-        const { data, error } = await supabase
-        .from('target_schools')
-        .select(`
-          id,
-          child_aspiration,
-          parent_aspiration,
-          updated_at,
-          school_id,
-          schools!inner (
-            id,
-            school_code,
-            name
-          )
-        `)
-        .eq('workspace_id', workspaceId);
+        // school_detailsを基準にデータを取得
+        const { data: detailsData, error: detailsError } = await supabase
+          .from('school_details')
+          .select(`
+            school_id,
+            commute_time,
+            nearest_station,
+            updated_at,
+            schools!inner (
+              id,
+              school_code,
+              name
+            )
+          `)
+          .eq('workspace_id', workspaceId);
 
-      console.log('志望校データ取得結果:', data);
-      console.log('志望校データ取得エラー:', error);
+        console.log('school_detailsデータ取得結果:', detailsData);
+        console.log('school_detailsデータ取得エラー:', detailsError);
 
-      if (error) throw error;
+        if (detailsError) throw detailsError;
 
-      if (data && data.length > 0) {
-        // 各学校のschool_detailsを個別に取得
-        const schoolsWithDetails = await Promise.all(
-          data.map(async (item: any) => {
-            // school_detailsを取得
-            const { data: detailsData } = await supabase
-              .from('school_details')
-              .select('commute_time, nearest_station')
-              .eq('school_id', item.school_id)
-              .eq('workspace_id', workspaceId)
-              .maybeSingle();
+        if (detailsData && detailsData.length > 0) {
+          // 各学校のtarget_schoolsを個別に取得
+          const schoolsWithTargetInfo = await Promise.all(
+            detailsData.map(async (item: any) => {
+              // target_schoolsを取得
+              const { data: targetData } = await supabase
+                .from('target_schools')
+                .select('id, child_aspiration, parent_aspiration, updated_at')
+                .eq('school_id', item.school_id)
+                .eq('workspace_id', workspaceId)
+                .maybeSingle();
 
-            return {
-              id: item.id,
-              schoolId: item.schools.id,
-              schoolCode: item.schools.school_code,
-              name: item.schools.name,
-              desireLevel: item.child_aspiration || 0,
-              desireLevelParent: item.parent_aspiration || 0,
-              commuteTime: detailsData?.commute_time || 0,
-              nearestStation: detailsData?.nearest_station || '未設定',
-              updatedAt: new Date(item.updated_at).toLocaleDateString('ja-JP')
-            };
-          })
-        );
+              // target_schoolsのupdated_atとschool_detailsのupdated_atを比較して新しい方を使用
+              const targetUpdatedAt = targetData?.updated_at ? new Date(targetData.updated_at) : null;
+              const detailsUpdatedAt = new Date(item.updated_at);
+              const latestUpdatedAt = targetUpdatedAt && targetUpdatedAt > detailsUpdatedAt 
+                ? targetUpdatedAt 
+                : detailsUpdatedAt;
 
-        console.log('整形後の志望校データ:', schoolsWithDetails);
-        setSchools(schoolsWithDetails);
+              return {
+                id: targetData?.id || item.school_id, // target_schoolsのidがあればそれを使用、なければschool_idを使用
+                schoolId: item.schools.id,
+                schoolCode: item.schools.school_code,
+                name: item.schools.name,
+                desireLevel: targetData?.child_aspiration || 0, // target_schoolsがなければ0
+                desireLevelParent: targetData?.parent_aspiration || 0, // target_schoolsがなければ0
+                commuteTime: item.commute_time || 0,
+                nearestStation: item.nearest_station || '未設定',
+                updatedAt: latestUpdatedAt.toLocaleDateString('ja-JP')
+              };
+            })
+          );
 
-        // URLパラメータからscrollToを取得してスクロール
-        const params = new URLSearchParams(window.location.search);
-        const scrollToId = params.get('scrollTo');
-        if (scrollToId) {
-          // 少し遅延させてDOMレンダリング完了後にスクロール
-          setTimeout(() => {
-            const element = document.getElementById(`school-${scrollToId}`);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              // URLパラメータをクリーンアップ
-              window.history.replaceState({}, '', `/workspace/${workspaceId}`);
-            }
-          }, 300);
-        }
+          console.log('整形後の志望校データ:', schoolsWithTargetInfo);
+          setSchools(schoolsWithTargetInfo);
+
+          // URLパラメータからscrollToを取得してスクロール
+          const params = new URLSearchParams(window.location.search);
+          const scrollToId = params.get('scrollTo');
+          if (scrollToId) {
+            // 少し遅延させてDOMレンダリング完了後にスクロール
+            setTimeout(() => {
+              const element = document.getElementById(`school-${scrollToId}`);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // URLパラメータをクリーンアップ
+                window.history.replaceState({}, '', `/workspace/${workspaceId}`);
+              }
+            }, 300);
+          }
         } else {
-        console.log('志望校データが見つかりません');
-        setSchools([]);
-      }
+          console.log('志望校データが見つかりません');
+          setSchools([]);
+        }
       } catch (err) {
         console.error('志望校データ取得エラー:', err);
         setSchools([]);

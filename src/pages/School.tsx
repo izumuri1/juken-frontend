@@ -196,7 +196,7 @@ const School: React.FC = () => {
       alert('学校情報を登録しました');
 
       // 2. Home画面へ遷移（志望校一覧セクションへスクロール）
-      navigate(`/workspace/${workspaceId}#school-list`);
+      navigate(`/workspace/${workspaceId}?scrollTo=${schoolInfo.id}`);
 
     } catch (err) {
       console.error('登録エラー:', err);
