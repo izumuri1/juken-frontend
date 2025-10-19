@@ -33,6 +33,7 @@ interface School {
 
 interface Exam {
   id: string;
+  school_id: string;
   schoolName: string;
   desireLevel: number;
   examDate: string;
@@ -176,7 +177,71 @@ const Home: React.FC = () => {
     fetchTargetSchools();
   }, [workspaceId]);
 
-  // この useEffect は削除（useWorkspace フックで置き換え済み）
+// 受験情報を取得
+  useEffect(() => {
+    const fetchExamInfos = async () => {
+      if (!workspaceId) {
+        console.log('workspaceIdが未設定のため受験情報取得をスキップ');
+        return;
+      }
+
+      try {
+        console.log('=== 受験情報取得開始 ===');
+        
+        // exam_infoテーブルから受験情報を取得
+        // exam_info -> schools -> target_schools の経路でデータを取得
+        const { data: examData, error: examError } = await supabase
+          .from('exam_info')
+          .select(`
+            id,
+            school_id,
+            deviation_value,
+            exam_start,
+            exam_end,
+            updated_at,
+            schools!inner (
+              id,
+              name,
+              target_schools!inner (
+                child_aspiration,
+                workspace_id
+              )
+            )
+          `)
+          .eq('schools.target_schools.workspace_id', workspaceId)
+          .order('exam_start', { ascending: true });
+
+        console.log('受験情報取得結果:', examData);
+        console.log('受験情報取得エラー:', examError);
+
+        if (examError) throw examError;
+
+        if (examData && examData.length > 0) {
+          const formattedExams = examData.map((item: any) => ({
+            id: item.id,
+            school_id: item.school_id,
+            schoolName: item.schools.name,
+            desireLevel: item.schools.target_schools?.child_aspiration || 0,
+            examDate: new Date(item.exam_start).toLocaleDateString('ja-JP'),
+            examTime: `${new Date(item.exam_start).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })} ～ ${new Date(item.exam_end).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}`,
+            deviationValue: item.deviation_value,
+            updatedAt: new Date(item.updated_at).toLocaleDateString('ja-JP')
+          }));
+
+          console.log('整形後の受験情報:', formattedExams);
+          setExams(formattedExams);
+        } else {
+          console.log('受験情報が見つかりません');
+          setExams([]);
+        }
+      } catch (err) {
+        console.error('受験情報取得エラー:', err);
+        setExams([]);
+      }
+    };
+
+    fetchExamInfos();
+  }, [workspaceId]);
 
   // 検索処理（セキュリティ対策：バリデーション付き）
   // リアルタイム検索（入力中に候補を表示）
@@ -479,10 +544,12 @@ const handleSearchInput = async (value: string) => {
                         buttons={[
                           {
                             label: '受験情報',
+                            path: `/workspace/${workspaceId}/school/${exam.school_id}/exam`,
                             variant: 'info'
                           },
                           {
                             label: '受験管理',
+                            path: `/workspace/${workspaceId}/task`,
                             variant: 'exam'
                           }
                         ]}
