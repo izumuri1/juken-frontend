@@ -201,12 +201,12 @@
 
   .btn-delete {
     @include home-button-small;
-    background-color: $color-error;
+    background-color: $color-orange-exam;  // ← $color-errorから変更
     color: $color-white;
     flex: 1;
 
     &:hover {
-      background-color: $color-error-dark;
+      background-color: color.adjust($color-orange-exam, $lightness: -10%);  // ← $color-error-darkから変更
     }
   }
 }
