@@ -1,26 +1,8 @@
 // src/components/School.scss
-// School画面のスタイル（Home画面と同一デザイン）
+// School画面のスタイル(Home画面と同一デザイン)
 
 @use "sass:color";
 @use '../styles/variables' as *;
-
-//////////////////////////////////////////////////////////////
-// School画面コンテナ
-//////////////////////////////////////////////////////////////
-
-.school-container {
-  @include home-container;
-}
-
-//////////////////////////////////////////////////////////////
-// ヘッダー
-//////////////////////////////////////////////////////////////
-
-.school-header {
-  @include home-header;
-  // ヘッダーのスタイルは@include home-headerで全て適用されるため、
-  // 追加のスタイル指定は不要
-}
 
 //////////////////////////////////////////////////////////////
 // サイドメニュー
@@ -28,17 +10,6 @@
 
 .side-menu-overlay {
   @include side-menu-overlay;
-}
-
-//////////////////////////////////////////////////////////////
-// メインコンテンツ
-//////////////////////////////////////////////////////////////
-
-.school-main {
-  flex: 1;
-  max-width: 100%;
-  width: 100%;
-  margin: 0 auto;
 }
 
 //////////////////////////////////////////////////////////////
@@ -84,15 +55,15 @@
     }
   }
 
- .map-container {
+  .map-container {
     margin-top: $spacing-mobile;
     background-color: $home-card-bg;
     border: 1px solid $home-card-border;
     border-radius: $radius-card;
     overflow: hidden;
     box-shadow: $home-card-shadow;
-    position: relative;  // ← 追加
-    z-index: 1;          // ← 追加(ヘッダーのz-index: 100より低い値)
+    position: relative;
+    z-index: 1;
 
     .map-placeholder {
       height: 200px;
