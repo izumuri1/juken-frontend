@@ -52,9 +52,9 @@ const School: React.FC = () => {
   const [nearestStation, setNearestStation] = useState('');
   const [officialWebsite, setOfficialWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [isAlreadyTarget, setIsAlreadyTarget] = useState(false); // 志望校登録済みフラグ
-  const [isEditing, setIsEditing] = useState(false); // 編集モードの状態を追加
+  const [isAlreadyTarget, setIsAlreadyTarget] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  // isRegisteringは削除（使用しない）
 
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -168,40 +168,13 @@ const School: React.FC = () => {
       fetchSchoolData();
   }, [schoolCode, workspaceId]); // ← userからworkspaceIdに変更
           
-  // 学校情報登録・更新
+  // 学校詳細情報の登録 + 志望校登録 + Home画面遷移
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // === 認証状態デバッグ ===
-    console.log('=== 認証確認 ===');
-    console.log('AuthContext user:', user);
-    
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
-    console.log('Supabase getUser:', currentUser);
-    console.log('workspaceId:', workspaceId);
-    console.log('schoolInfo.id:', schoolInfo?.id);
-
-    // workspace_membersにレコードが存在するか確認
-    if (currentUser) {
-      const { data: memberCheck, error: memberError } = await supabase
-        .from('workspace_members')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .eq('workspace_id', workspaceId);
-      
-      console.log('workspace_members確認:', memberCheck);
-      console.log('workspace_membersエラー:', memberError);
-    }
-    // === デバッグ終了 ===
-
-    if (!workspaceId || !schoolInfo?.id) {
-      alert('ワークスペース情報または学校情報が取得できていません');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
+      // 1. 学校詳細情報を登録
       const { error } = await supabase
         .from('school_details')
         .upsert({
@@ -220,9 +193,35 @@ const School: React.FC = () => {
 
       if (error) throw error;
 
-      alert('学校情報を登録しました');
+      // 2. 志望校として登録（既に登録済みかチェック）
+      const { data: existing, error: checkError } = await supabase
+        .from('target_schools')
+        .select('id')
+        .eq('workspace_id', workspaceId)
+        .eq('school_id', schoolInfo.id)
+        .maybeSingle();
 
-      // データを再取得して表示を更新
+      if (checkError) throw checkError;
+
+      let targetSchoolId = existing?.id;
+
+      if (!existing) {
+        // まだ志望校登録されていない場合のみ登録
+        const { data: newTarget, error: insertError } = await supabase
+          .from('target_schools')
+          .insert({
+            workspace_id: workspaceId,
+            school_id: schoolInfo.id,
+            child_impression: '（未入力）', // 必須項目のため初期値設定
+          })
+          .select('id')
+          .single();
+
+        if (insertError) throw insertError;
+        targetSchoolId = newTarget?.id;
+      }
+
+      // 3. 学校詳細情報を再取得して表示を更新
       const { data: detailsData } = await supabase
         .from('school_details')
         .select('*')
@@ -232,8 +231,15 @@ const School: React.FC = () => {
 
       if (detailsData) {
         setSchoolDetails(detailsData);
-        setIsEditing(false); // 登録成功後は編集モードをOFFに
+        setIsEditing(false);
+        setIsAlreadyTarget(true); // 志望校登録済みフラグを更新
       }
+
+      alert('学校情報を登録し、志望校として登録しました');
+
+      // 4. Home画面へ遷移（登録した志望校の位置にスクロール）
+      navigate(`/workspace/${workspaceId}?scrollTo=${targetSchoolId || ''}`);
+
     } catch (err) {
       console.error('登録エラー:', err);
       alert('学校情報の登録に失敗しました');
@@ -287,61 +293,7 @@ const School: React.FC = () => {
     }
   };
 
-// 志望校登録処理
-const handleRegisterTarget = async () => {
-  if (!schoolInfo || !workspaceId) {
-    alert('学校情報が読み込まれていません');
-    return;
-  }
-
-  try {
-    setIsRegistering(true);
-    
-    // 既に志望校登録されているか確認
-    const { data: existing, error: checkError } = await supabase
-      .from('target_schools')
-      .select('id')
-      .eq('workspace_id', workspaceId)
-      .eq('school_id', schoolInfo.id)
-      .maybeSingle();
-
-    if (checkError) throw checkError;
-
-    if (existing) {
-      alert('この学校は既に志望校として登録されています');
-      return;
-    }
-
-    // 初期データを設定して志望校登録
-    const { error: insertError } = await supabase
-      .from('target_schools')
-      .insert({
-        workspace_id: workspaceId,
-        school_id: schoolInfo.id,
-        child_impression: '（未入力）', // 必須項目のため初期値設定
-      });
-
-    if (insertError) throw insertError;
-
-    // 登録成功後、target_schoolsのIDを取得
-    const { data: newTarget } = await supabase
-      .from('target_schools')
-      .select('id')
-      .eq('workspace_id', workspaceId)
-      .eq('school_id', schoolInfo.id)
-      .single();
-
-    alert('志望校として登録しました');
-    // Home画面へ遷移（登録したIDをURLパラメータで渡す）
-    navigate(`/workspace/${workspaceId}?scrollTo=${newTarget?.id || ''}`);
-    
-  } catch (err) {
-    console.error('志望校登録エラー:', err);
-    alert('志望校登録に失敗しました');
-  } finally {
-    setIsRegistering(false);
-  }
-};
+// この関数は削除（handleSubmitに統合）
 
   if (loading) {
     return (
@@ -505,7 +457,7 @@ const handleRegisterTarget = async () => {
             </div>
 
             <button type="submit" className="btn-submit" disabled={isSubmitting}>
-              {isSubmitting ? '登録中...' : '登録'}
+              {isSubmitting ? '登録中...' : '志望校登録'}
             </button>
             {schoolDetails && (
               <button
@@ -594,13 +546,6 @@ const handleRegisterTarget = async () => {
             workspaceId={workspaceId!}
             direction="vertical"
             buttons={[
-              // 志望校登録済みでない場合のみボタンを表示
-              ...(!isAlreadyTarget ? [{
-                label: isRegistering ? '登録中...' : '志望校登録',
-                onClick: handleRegisterTarget,
-                variant: 'primary' as const,
-                disabled: isRegistering
-              }] : []),
               {
                 label: 'Home',
                 path: `/workspace/${workspaceId}`,
