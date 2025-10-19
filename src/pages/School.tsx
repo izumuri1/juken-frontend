@@ -9,6 +9,7 @@ import { SchoolMap } from '../components/SchoolMap';
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
 import { LoadingError } from '../components/common/LoadingError'; // ← 追加
+import { PageLayout } from '../components/common/PageLayout';
 import './School.scss';
 
 // 型定義
@@ -362,20 +363,15 @@ const handleRegisterTarget = async () => {
   }
 
   return (
-    <div className="school-container">
-      {/* ヘッダー */}
-      <PageHeader
-        workspaceName={workspaceName}
-        workspaceOwner={workspaceOwner}
-        isMenuOpen={isMenuOpen}
-        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
-        onMenuClose={() => setIsMenuOpen(false)}
-        className="school-header"
-      />
-
-      <main className="school-main">
-        {/* 学校情報セクション */}
-        <section className="school-section school-info-section">
+    <PageLayout
+      workspaceName={workspaceName}
+      workspaceOwner={workspaceOwner}
+      isMenuOpen={isMenuOpen}
+      onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+      onMenuClose={() => setIsMenuOpen(false)}
+    >
+      {/* 学校情報セクション */}
+      <section className="school-section school-info-section">
           <h2 className="section-title">学校情報</h2>
           <div className="info-card">
             <div className="info-row">
@@ -613,9 +609,8 @@ const handleRegisterTarget = async () => {
             ]}
           />
         </section>
-      </main>
-    </div>
-  );
-};
+      </PageLayout>
+    );
+  };
 
 export default School;

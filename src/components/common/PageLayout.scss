@@ -1,0 +1,17 @@
+// src/components/common/PageLayout.scss (新規作成)
+@use '../../styles/variables' as *;
+
+.page-container {
+  @include home-container;
+}
+
+.page-header {
+  @include home-header;
+}
+
+.page-main {
+  flex: 1;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}

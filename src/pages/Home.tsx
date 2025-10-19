@@ -7,6 +7,7 @@ import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { WorkspaceMembers } from '../components/WorkspaceMembers'; // 追加
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
+import { PageLayout } from '../components/common/PageLayout';
 import './Home.scss';
 
 // 型定義
@@ -298,20 +299,15 @@ const handleSearchInput = async (value: string) => {
   };
 
   return (
-    <div className="home-container">
-      {/* ヘッダー */}
-      <PageHeader
-        workspaceName={workspaceName}
-        workspaceOwner={workspaceOwner}
-        isMenuOpen={isMenuOpen}
-        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
-        onMenuClose={() => setIsMenuOpen(false)}
-      />
-
-      {/* メインコンテンツ */}
-      <main className="home-content">
-        {/* 学校検索セクション */}
-        <section className="home-section search-section">
+    <PageLayout
+      workspaceName={workspaceName}
+      workspaceOwner={workspaceOwner}
+      isMenuOpen={isMenuOpen}
+      onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+      onMenuClose={() => setIsMenuOpen(false)}
+    >
+      {/* 学校検索セクション */}
+      <section className="home-section search-section">
           <h2 className="section-title">学校検索</h2>
           <div className="search-form">
         <div className="search-input-wrapper">
@@ -502,9 +498,8 @@ const handleSearchInput = async (value: string) => {
             <WorkspaceMembers workspaceId={workspaceId} />
           </section>
         )}
-      </main>
-    </div>
-  );
-};
+      </PageLayout>
+    );
+  };
 
 export default Home;
