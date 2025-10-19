@@ -19,8 +19,9 @@ L.Icon.Default.mergeOptions({
 });
 
 interface School {
+  id: string;  // ← 追加: データベースのid
   school_code: string;
-  school_name: string;
+  name: string;
   prefecture: string;
   address: string;
   website_url?: string;
@@ -98,7 +99,7 @@ function Target() {
           setWorkspaceName(workspaceData.name);
           
           const { data: ownerData } = await supabase
-            .from('profiles')
+            .from('users')
             .select('username')
             .eq('id', workspaceData.owner_id)
             .single();
@@ -109,32 +110,32 @@ function Target() {
         }
 
         // 学校基本情報
-        const { data: schoolData, error: schoolError } = await supabase
-          .from('schools')
-          .select('*')
-          .eq('school_code', schoolCode)
-          .single();
+            const { data: schoolData, error: schoolError } = await supabase
+            .from('schools')
+            .select('*')
+            .eq('school_code', schoolCode)
+            .single();
 
-        if (schoolError) throw schoolError;
-        setSchool(schoolData);
+            if (schoolError) throw schoolError;
+            setSchool(schoolData);
 
-        // school_details
-        const { data: detailsData } = await supabase
-          .from('school_details')
-          .select('*')
-          .eq('school_code', schoolCode)
-          .eq('workspace_id', workspaceId)
-          .single();
+            // school_details (school_idで検索)
+            const { data: detailsData } = await supabase
+            .from('school_details')
+            .select('*')
+            .eq('school_id', schoolData.id)
+            .eq('workspace_id', workspaceId)
+            .single();
 
-        setSchoolDetails(detailsData);
+            setSchoolDetails(detailsData);
 
-        // target_schools (志望校情報)
+        // target_schools (志望校情報) - school_idで検索
         const { data: targetData, error: targetError } = await supabase
-          .from('target_schools')
-          .select('*')
-          .eq('school_code', schoolCode)
-          .eq('workspace_id', workspaceId)
-          .order('event_date', { ascending: false });
+        .from('target_schools')
+        .select('*')
+        .eq('school_id', schoolData.id)
+        .eq('workspace_id', workspaceId)
+        .order('event_date', { ascending: false });
 
         if (targetError) throw targetError;
         setTargetInfos(targetData || []);
@@ -173,8 +174,10 @@ function Target() {
     }
 
     try {
-      const targetData = {
-        school_code: schoolCode,
+      if (!school) return;
+
+        const targetData = {
+        school_id: school.id,  // school_codeではなくschool_idを使用
         workspace_id: workspaceId,
         event_date: formData.eventDate || null,
         event_name: formData.eventName || null,
@@ -185,7 +188,7 @@ function Target() {
         child_impression: formData.childImpression,
         parent_aspiration: formData.parentAspiration,
         parent_impression: formData.parentImpression || null
-      };
+        };
 
       if (editingId) {
         // 更新
@@ -314,8 +317,8 @@ function Target() {
           
           <div className="info-card">
             <div className="info-row">
-              <span className="label">学校名</span>
-              <span className="value">{school.school_name}</span>
+            <span className="label">学校名</span>
+            <span className="value">{school.name}</span>
             </div>
             <div className="info-row">
               <span className="label">都道府県</span>
@@ -350,7 +353,7 @@ function Target() {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 />
                 <Marker position={[school.latitude, school.longitude]}>
-                  <Popup>{school.school_name}</Popup>
+                <Popup>{school.name}</Popup>
                 </Marker>
               </MapContainer>
             </div>
