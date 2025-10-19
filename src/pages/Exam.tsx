@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { PageLayout } from '../components/common/PageLayout'
 import { LoadingError } from '../components/common/LoadingError'
+import { ActionButtons } from '../components/common/ActionButtons'
 import ExamInfoForm from '../components/exam/ExamInfoForm'
 import ExamInfoCard from '../components/exam/ExamInfoCard'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
@@ -245,15 +246,8 @@ return (
     onMenuClose={() => setIsMenuOpen(false)}
   >
     <div className="exam-page">
-      <button 
-        onClick={() => navigate(`/workspace/${workspaceId}`)}
-        className="back-button"
-      >
-        Home
-      </button>
-
-        {/* 学校情報セクション */}
-        <section className="exam-section school-info-section">
+      {/* 学校情報セクション */}
+      <section className="exam-section school-info-section">
           <h2 className="section-title">学校情報</h2>
           
           <div className="info-card">
@@ -340,11 +334,13 @@ return (
           onExamInfoCreated={handleExamInfoCreated}
         />
 
-        <section className="exam-info-list">
-          <h2 className="section-title">登録済み受験情報</h2>
-          {examInfos.length === 0 ? (
-            <p className="no-data">受験情報はまだ登録されていません</p>
-          ) : (
+        <section className="exam-section exam-info-list">
+        <h2 className="section-title">登録済み受験情報</h2>
+        {examInfos.length === 0 ? (
+            <div className="empty-message">
+            <p>受験情報はまだ登録されていません</p>
+            </div>
+        ) : (
             <div className="exam-cards">
               {examInfos.map(examInfo => (
                 <ExamInfoCard
@@ -356,6 +352,21 @@ return (
               ))}
             </div>
           )}
+        </section>
+
+        {/* ボタンセクション */}
+        <section className="exam-section action-buttons-section">
+          <ActionButtons
+            workspaceId={workspaceId!}
+            direction="vertical"
+            buttons={[
+              {
+                label: 'Home',
+                path: `/workspace/${workspaceId}`,
+                variant: 'home' as const
+              }
+            ]}
+          />
         </section>
       </div>
     </PageLayout>

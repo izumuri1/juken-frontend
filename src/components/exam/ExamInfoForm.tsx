@@ -530,12 +530,12 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
       </div>
 
       <button
-        className="btn-primary submit-button"
+        className="btn-submit"
         onClick={handleSubmit}
         disabled={isSubmitting}
-      >
-        {isSubmitting ? '登録中...' : '受験情報を登録'}
-      </button>
+        >
+        {isSubmitting ? '登録中...' : '受験情報登録'}
+        </button>
     </section>
   )
 }
