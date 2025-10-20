@@ -189,7 +189,6 @@ const Home: React.FC = () => {
         console.log('=== 受験情報取得開始 ===');
         
         // exam_infoテーブルから受験情報を取得
-        // exam_info -> schools -> target_schools の経路でデータを取得
         const { data: examData, error: examError } = await supabase
           .from('exam_info')
           .select(`
@@ -201,14 +200,10 @@ const Home: React.FC = () => {
             updated_at,
             schools!inner (
               id,
-              name,
-              target_schools!inner (
-                child_aspiration,
-                workspace_id
-              )
+              name
             )
           `)
-          .eq('schools.target_schools.workspace_id', workspaceId)
+          .eq('workspace_id', workspaceId)
           .order('exam_start', { ascending: true });
 
         console.log('受験情報取得結果:', examData);
@@ -217,16 +212,31 @@ const Home: React.FC = () => {
         if (examError) throw examError;
 
         if (examData && examData.length > 0) {
-          const formattedExams = examData.map((item: any) => ({
-            id: item.id,
-            school_id: item.school_id,
-            schoolName: item.schools.name,
-            desireLevel: item.schools.target_schools?.child_aspiration || 0,
-            examDate: new Date(item.exam_start).toLocaleDateString('ja-JP'),
-            examTime: `${new Date(item.exam_start).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })} ～ ${new Date(item.exam_end).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}`,
-            deviationValue: item.deviation_value,
-            updatedAt: new Date(item.updated_at).toLocaleDateString('ja-JP')
-          }));
+          // 各受験情報に対して、対応する学校の最新志望度を個別に取得
+          const formattedExams = await Promise.all(
+            examData.map(async (item: any) => {
+              // target_schoolsから最新の志望度を取得(updated_atで降順ソート→最新を取得)
+              const { data: targetData } = await supabase
+                .from('target_schools')
+                .select('child_aspiration, updated_at')
+                .eq('school_id', item.school_id)
+                .eq('workspace_id', workspaceId)
+                .order('updated_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+              return {
+                id: item.id,
+                school_id: item.school_id,
+                schoolName: item.schools.name,
+                desireLevel: targetData?.child_aspiration || 0,  // ← 最新の志望度
+                examDate: new Date(item.exam_start).toLocaleDateString('ja-JP'),
+                examTime: `${new Date(item.exam_start).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })} ～ ${new Date(item.exam_end).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}`,
+                deviationValue: item.deviation_value,
+                updatedAt: new Date(item.updated_at).toLocaleDateString('ja-JP')
+              };
+            })
+          );
 
           console.log('整形後の受験情報:', formattedExams);
           setExams(formattedExams);
