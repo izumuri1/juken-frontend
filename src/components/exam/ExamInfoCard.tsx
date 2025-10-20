@@ -50,7 +50,6 @@ interface FormData {
   deviationValue: string
   judgmentDate: string
   judgmentResult: string
-  examCandidateSign: string
   applicationStart: string
   applicationEnd: string
   applicationDeadline: string
@@ -61,6 +60,7 @@ interface FormData {
   feePaymentMethod: string
   feeAmount: string
   feeNote: string
+  examCandidateSign: string  // ← 受験セクションに移動
   examStart: string
   examEnd: string
   examVenue: string
@@ -93,46 +93,47 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
 
   const form = useForm<FormData>({
     initialValues: {
-      deviationValue: examInfo.deviation_value.toString(),
-      judgmentDate: examInfo.judgment_date || '',
-      judgmentResult: examInfo.judgment_result || '',
-      examCandidateSign: examInfo.exam_candidate_sign || '',
-      applicationStart: examInfo.application_start || '',
-      applicationEnd: examInfo.application_end || '',
-      applicationDeadline: examInfo.application_deadline || '',
-      applicationMethod: examInfo.application_method || '',
-      applicationMaterials: examInfo.application_materials || '',
-      applicationNote: examInfo.application_note || '',
-      feeDeadline: examInfo.fee_deadline || '',
-      feePaymentMethod: examInfo.fee_payment_method || '',
-      feeAmount: examInfo.fee_amount?.toString() || '',
-      feeNote: examInfo.fee_note || '',
-      examStart: examInfo.exam_start,
-      examEnd: examInfo.exam_end,
-      examVenue: examInfo.exam_venue,
-      examSubjects: examInfo.exam_subjects,
-      parentWaitingArea: examInfo.parent_waiting_area || '',
-      examNote: examInfo.exam_note || '',
-      announcementTime: examInfo.announcement_time || '',
-      announcementMethod: examInfo.announcement_method || '',
-      announcementNote: examInfo.announcement_note || '',
-      enrollmentStart: examInfo.enrollment_start || '',
-      enrollmentEnd: examInfo.enrollment_end || '',
-      enrollmentMethod: examInfo.enrollment_method || '',
-      enrollmentNote: examInfo.enrollment_note || '',
-      admissionFeeDeadline: examInfo.admission_fee_deadline || '',
-      admissionFeePaymentMethod: examInfo.admission_fee_payment_method || '',
-      admissionFeeAmount: examInfo.admission_fee_amount?.toString() || '',
-      admissionFeeNote: examInfo.admission_fee_note || ''
+        deviationValue: examInfo.deviation_value.toString(),
+        judgmentDate: examInfo.judgment_date || '',
+        judgmentResult: examInfo.judgment_result || '',
+        applicationStart: examInfo.application_start || '',
+        applicationEnd: examInfo.application_end || '',
+        applicationDeadline: examInfo.application_deadline || '',
+        applicationMethod: examInfo.application_method || '',
+        applicationMaterials: examInfo.application_materials || '',
+        applicationNote: examInfo.application_note || '',
+        feeDeadline: examInfo.fee_deadline || '',
+        feePaymentMethod: examInfo.fee_payment_method || '',
+        feeAmount: examInfo.fee_amount?.toString() || '',
+        feeNote: examInfo.fee_note || '',
+        examCandidateSign: examInfo.exam_candidate_sign || '',  // ← 受験セクションに移動
+        examStart: examInfo.exam_start,
+        examEnd: examInfo.exam_end,
+        examVenue: examInfo.exam_venue,
+        examSubjects: examInfo.exam_subjects,
+        parentWaitingArea: examInfo.parent_waiting_area || '',
+        examNote: examInfo.exam_note || '',
+        announcementTime: examInfo.announcement_time || '',
+        announcementMethod: examInfo.announcement_method || '',
+        announcementNote: examInfo.announcement_note || '',
+        enrollmentStart: examInfo.enrollment_start || '',
+        enrollmentEnd: examInfo.enrollment_end || '',
+        enrollmentMethod: examInfo.enrollment_method || '',
+        enrollmentNote: examInfo.enrollment_note || '',
+        admissionFeeDeadline: examInfo.admission_fee_deadline || '',
+        admissionFeePaymentMethod: examInfo.admission_fee_payment_method || '',
+        admissionFeeAmount: examInfo.admission_fee_amount?.toString() || '',
+        admissionFeeNote: examInfo.admission_fee_note || ''
     },
     validationRules: {
-      deviationValue: { required: true, displayName: '偏差値' },
-      examStart: { required: true, displayName: '受験開始時刻' },
-      examEnd: { required: true, displayName: '受験終了時刻' },
-      examVenue: { required: true, displayName: '受験会場' },
-      examSubjects: { required: true, displayName: '受験科目' }
+        deviationValue: { required: true, displayName: '偏差値' },
+        examCandidateSign: { required: true, displayName: '受験候補サイン' },  // ← 追加
+        examStart: { required: true, displayName: '受験開始時刻' },
+        examEnd: { required: true, displayName: '受験終了時刻' },
+        examVenue: { required: true, displayName: '受験会場' },
+        examSubjects: { required: true, displayName: '受験科目' }
     }
-  })
+    })
 
   const formatDateTime = (dateTime: string | null) => {
     if (!dateTime) return '-'
@@ -270,24 +271,14 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
 
           {activeTab === 'application' && (
             <div className="form-fields">
-              <FormField
-                type="select"
-                label="受験候補サイン"
-                options={[
-                  { value: '', label: '選択してください' },
-                  { value: '受験', label: '受験' },
-                  { value: '見送り', label: '見送り' }
-                ]}
-                {...form.getFieldProps('examCandidateSign')}
-              />
-              <FormField type="date" label="受験申込期間（開始）" {...form.getFieldProps('applicationStart')} />
-              <FormField type="date" label="受験申込期間（終了）" {...form.getFieldProps('applicationEnd')} />
-              <FormField type="datetime-local" label="受験申込期限" {...form.getFieldProps('applicationDeadline')} />
-              <FormField type="textarea" label="受験申込方法" rows={3} {...form.getFieldProps('applicationMethod')} />
-              <FormField type="textarea" label="受験申込用資材" rows={3} {...form.getFieldProps('applicationMaterials')} />
-              <FormField type="textarea" label="備考" rows={3} {...form.getFieldProps('applicationNote')} />
+                <FormField type="date" label="受験申込期間（開始）" {...form.getFieldProps('applicationStart')} />
+                <FormField type="date" label="受験申込期間（終了）" {...form.getFieldProps('applicationEnd')} />
+                <FormField type="datetime-local" label="受験申込期限" {...form.getFieldProps('applicationDeadline')} />
+                <FormField type="textarea" label="受験申込方法" rows={3} {...form.getFieldProps('applicationMethod')} />
+                <FormField type="textarea" label="受験申込用資材" rows={3} {...form.getFieldProps('applicationMaterials')} />
+                <FormField type="textarea" label="備考" rows={3} {...form.getFieldProps('applicationNote')} />
             </div>
-          )}
+            )}
 
           {activeTab === 'fee' && (
             <div className="form-fields">
@@ -300,14 +291,25 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
 
           {activeTab === 'exam' && (
             <div className="form-fields">
-              <FormField type="datetime-local" label="受験時間（開始）" required {...form.getFieldProps('examStart')} />
-              <FormField type="datetime-local" label="受験時間（終了）" required {...form.getFieldProps('examEnd')} />
-              <FormField type="text" label="受験会場" required {...form.getFieldProps('examVenue')} />
-              <FormField type="textarea" label="受験科目" rows={3} required {...form.getFieldProps('examSubjects')} />
-              <FormField type="text" label="親の待機場所" {...form.getFieldProps('parentWaitingArea')} />
-              <FormField type="textarea" label="備考" rows={3} {...form.getFieldProps('examNote')} />
+                <FormField
+                type="select"
+                label="受験候補サイン"
+                required
+                options={[
+                    { value: '', label: '選択してください' },
+                    { value: '受験', label: '受験' },
+                    { value: '見送り', label: '見送り' }
+                ]}
+                {...form.getFieldProps('examCandidateSign')}
+                />
+                <FormField type="datetime-local" label="受験時間（開始）" required {...form.getFieldProps('examStart')} />
+                <FormField type="datetime-local" label="受験時間（終了）" required {...form.getFieldProps('examEnd')} />
+                <FormField type="text" label="受験会場" required {...form.getFieldProps('examVenue')} />
+                <FormField type="textarea" label="受験科目" rows={3} required {...form.getFieldProps('examSubjects')} />
+                <FormField type="text" label="親の待機場所" {...form.getFieldProps('parentWaitingArea')} />
+                <FormField type="textarea" label="備考" rows={3} {...form.getFieldProps('examNote')} />
             </div>
-          )}
+            )}
 
           {activeTab === 'announcement' && (
             <div className="form-fields">
@@ -362,27 +364,27 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
 
     {/* 2. 受験セクション ← ここに移動 */}
     <div className="card-section">
-      <h3 className="section-title">受験</h3>
-      <dl className="info-list">
+    <h3 className="section-title">受験</h3>
+    <dl className="info-list">
+        <dt>受験候補サイン</dt><dd>{examInfo.exam_candidate_sign || '-'}</dd>
         <dt>受験時間</dt><dd>{formatDateTime(examInfo.exam_start)} ～ {formatDateTime(examInfo.exam_end)}</dd>
         <dt>受験会場</dt><dd>{examInfo.exam_venue}</dd>
         <dt>受験科目</dt><dd>{examInfo.exam_subjects}</dd>
         <dt>親の待機場所</dt><dd>{examInfo.parent_waiting_area || '-'}</dd>
         {examInfo.exam_note && <><dt>備考</dt><dd>{examInfo.exam_note}</dd></>}
-      </dl>
+    </dl>
     </div>
 
     {/* 3. 受験申込セクション */}
     <div className="card-section">
-      <h3 className="section-title">受験申込</h3>
-      <dl className="info-list">
-        <dt>受験候補サイン</dt><dd>{examInfo.exam_candidate_sign || '-'}</dd>
+    <h3 className="section-title">受験申込</h3>
+    <dl className="info-list">
         <dt>申込期間</dt><dd>{formatDate(examInfo.application_start)} ～ {formatDate(examInfo.application_end)}</dd>
         <dt>申込期限</dt><dd>{formatDateTime(examInfo.application_deadline)}</dd>
         <dt>申込方法</dt><dd>{examInfo.application_method || '-'}</dd>
         <dt>必要資材</dt><dd>{examInfo.application_materials || '-'}</dd>
         {examInfo.application_note && <><dt>備考</dt><dd>{examInfo.application_note}</dd></>}
-      </dl>
+    </dl>
     </div>
 
     {/* 4. 受験料支払セクション */}

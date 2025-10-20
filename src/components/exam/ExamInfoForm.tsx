@@ -14,7 +14,6 @@ interface DifficultyFormData {
 }
 
 interface ApplicationFormData {
-  examCandidateSign: string
   applicationStart: string
   applicationEnd: string
   applicationDeadline: string
@@ -31,6 +30,7 @@ interface FeeFormData {
 }
 
 interface ExamFormData {
+  examCandidateSign: string  // ← 追加
   examStart: string
   examEnd: string
   examVenue: string
@@ -84,16 +84,15 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
   // 受験申込タブのフォーム
   const applicationForm = useForm<ApplicationFormData>({
     initialValues: {
-      examCandidateSign: '',
-      applicationStart: '',
-      applicationEnd: '',
-      applicationDeadline: '',
-      applicationMethod: '',
-      applicationMaterials: '',
-      applicationNote: ''
+        applicationStart: '',
+        applicationEnd: '',
+        applicationDeadline: '',
+        applicationMethod: '',
+        applicationMaterials: '',
+        applicationNote: ''
     },
     validationRules: {}
-  })
+    })
 
   // 受験料支払タブのフォーム
   const feeForm = useForm<FeeFormData>({
@@ -109,20 +108,22 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
   // 受験タブのフォーム
   const examForm = useForm<ExamFormData>({
     initialValues: {
-      examStart: '',
-      examEnd: '',
-      examVenue: '',
-      examSubjects: '',
-      parentWaitingArea: '',
-      examNote: ''
+        examCandidateSign: '',  // ← 追加
+        examStart: '',
+        examEnd: '',
+        examVenue: '',
+        examSubjects: '',
+        parentWaitingArea: '',
+        examNote: ''
     },
     validationRules: {
-      examStart: { required: true, displayName: '受験開始時刻' },
-      examEnd: { required: true, displayName: '受験終了時刻' },
-      examVenue: { required: true, displayName: '受験会場' },
-      examSubjects: { required: true, displayName: '受験科目' }
+        examCandidateSign: { required: true, displayName: '受験候補サイン' },  // ← 追加
+        examStart: { required: true, displayName: '受験開始時刻' },
+        examEnd: { required: true, displayName: '受験終了時刻' },
+        examVenue: { required: true, displayName: '受験会場' },
+        examSubjects: { required: true, displayName: '受験科目' }
     }
-  })
+    })
 
   // 合格発表タブのフォーム
   const announcementForm = useForm<AnnouncementFormData>({
@@ -198,49 +199,49 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
     setError(null)
 
     try {
-      const { error: insertError } = await supabase
+    const { error: insertError } = await supabase
         .from('exam_info')
         .insert([{
-          workspace_id: workspaceId,
-          school_id: schoolId,
-          // 難易度
-          deviation_value: parseFloat(difficultyForm.values.deviationValue),
-          judgment_date: difficultyForm.values.judgmentDate || null,
-          judgment_result: difficultyForm.values.judgmentResult || null,
-          // 受験申込
-          exam_candidate_sign: applicationForm.values.examCandidateSign || null,
-          application_start: applicationForm.values.applicationStart || null,
-          application_end: applicationForm.values.applicationEnd || null,
-          application_deadline: applicationForm.values.applicationDeadline || null,
-          application_method: applicationForm.values.applicationMethod || null,
-          application_materials: applicationForm.values.applicationMaterials || null,
-          application_note: applicationForm.values.applicationNote || null,
-          // 受験料支払
-          fee_deadline: feeForm.values.feeDeadline || null,
-          fee_payment_method: feeForm.values.feePaymentMethod || null,
-          fee_amount: feeForm.values.feeAmount ? parseInt(feeForm.values.feeAmount) : null,
-          fee_note: feeForm.values.feeNote || null,
-          // 受験
-          exam_start: examForm.values.examStart,
-          exam_end: examForm.values.examEnd,
-          exam_venue: examForm.values.examVenue,
-          exam_subjects: examForm.values.examSubjects,
-          parent_waiting_area: examForm.values.parentWaitingArea || null,
-          exam_note: examForm.values.examNote || null,
-          // 合格発表
-          announcement_time: announcementForm.values.announcementTime || null,
-          announcement_method: announcementForm.values.announcementMethod || null,
-          announcement_note: announcementForm.values.announcementNote || null,
-          // 入学申込
-          enrollment_start: enrollmentForm.values.enrollmentStart || null,
-          enrollment_end: enrollmentForm.values.enrollmentEnd || null,
-          enrollment_method: enrollmentForm.values.enrollmentMethod || null,
-          enrollment_note: enrollmentForm.values.enrollmentNote || null,
-          // 入学金支払
-          admission_fee_deadline: admissionFeeForm.values.admissionFeeDeadline || null,
-          admission_fee_payment_method: admissionFeeForm.values.admissionFeePaymentMethod || null,
-          admission_fee_amount: admissionFeeForm.values.admissionFeeAmount ? parseInt(admissionFeeForm.values.admissionFeeAmount) : null,
-          admission_fee_note: admissionFeeForm.values.admissionFeeNote || null
+        workspace_id: workspaceId,
+        school_id: schoolId,
+        // 難易度
+        deviation_value: parseFloat(difficultyForm.values.deviationValue),
+        judgment_date: difficultyForm.values.judgmentDate || null,
+        judgment_result: difficultyForm.values.judgmentResult || null,
+        // 受験申込
+        exam_candidate_sign: examForm.values.examCandidateSign || null,  // ← applicationForm → examForm に変更
+        application_start: applicationForm.values.applicationStart || null,
+        application_end: applicationForm.values.applicationEnd || null,
+        application_deadline: applicationForm.values.applicationDeadline || null,
+        application_method: applicationForm.values.applicationMethod || null,
+        application_materials: applicationForm.values.applicationMaterials || null,
+        application_note: applicationForm.values.applicationNote || null,
+        // 受験料支払
+        fee_deadline: feeForm.values.feeDeadline || null,
+        fee_payment_method: feeForm.values.feePaymentMethod || null,
+        fee_amount: feeForm.values.feeAmount ? parseInt(feeForm.values.feeAmount) : null,
+        fee_note: feeForm.values.feeNote || null,
+        // 受験
+        exam_start: examForm.values.examStart,
+        exam_end: examForm.values.examEnd,
+        exam_venue: examForm.values.examVenue,
+        exam_subjects: examForm.values.examSubjects,
+        parent_waiting_area: examForm.values.parentWaitingArea || null,
+        exam_note: examForm.values.examNote || null,
+        // 合格発表
+        announcement_time: announcementForm.values.announcementTime || null,
+        announcement_method: announcementForm.values.announcementMethod || null,
+        announcement_note: announcementForm.values.announcementNote || null,
+        // 入学申込
+        enrollment_start: enrollmentForm.values.enrollmentStart || null,
+        enrollment_end: enrollmentForm.values.enrollmentEnd || null,
+        enrollment_method: enrollmentForm.values.enrollmentMethod || null,
+        enrollment_note: enrollmentForm.values.enrollmentNote || null,
+        // 入学金支払
+        admission_fee_deadline: admissionFeeForm.values.admissionFeeDeadline || null,
+        admission_fee_payment_method: admissionFeeForm.values.admissionFeePaymentMethod || null,
+        admission_fee_amount: admissionFeeForm.values.admissionFeeAmount ? parseInt(admissionFeeForm.values.admissionFeeAmount) : null,
+        admission_fee_note: admissionFeeForm.values.admissionFeeNote || null
         }])
 
       if (insertError) throw insertError
@@ -346,21 +347,11 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
 
         {/* 受験申込タブ */}
         {activeTab === 'application' && (
-          <div className="form-fields">
+        <div className="form-fields">
             <FormField
-              type="select"
-              label="受験候補サイン"
-              options={[
-                { value: '', label: '選択してください' },
-                { value: '受験', label: '受験' },
-                { value: '見送り', label: '見送り' }
-              ]}
-              {...applicationForm.getFieldProps('examCandidateSign')}
-            />
-            <FormField
-              type="date"
-              label="受験申込期間（開始）"
-              {...applicationForm.getFieldProps('applicationStart')}
+            type="date"
+            label="受験申込期間（開始）"
+            {...applicationForm.getFieldProps('applicationStart')}
             />
             <FormField
               type="date"
@@ -426,12 +417,23 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
 
         {/* 受験タブ */}
         {activeTab === 'exam' && (
-          <div className="form-fields">
+        <div className="form-fields">
             <FormField
-              type="datetime-local"
-              label="受験時間（開始）"
-              required
-              {...examForm.getFieldProps('examStart')}
+            type="select"
+            label="受験候補サイン"
+            required
+            options={[
+                { value: '', label: '選択してください' },
+                { value: '受験', label: '受験' },
+                { value: '見送り', label: '見送り' }
+            ]}
+            {...examForm.getFieldProps('examCandidateSign')}
+            />
+            <FormField
+            type="datetime-local"
+            label="受験時間（開始）"
+            required
+            {...examForm.getFieldProps('examStart')}
             />
             <FormField
               type="datetime-local"

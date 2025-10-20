@@ -38,6 +38,7 @@ interface Exam {
   desireLevel: number;
   examDate: string;
   examTime: string;
+  examStart: string;  // ← 追加：並び替え用
   deviationValue: number;
   updatedAt: string;
 }
@@ -229,9 +230,10 @@ const Home: React.FC = () => {
                 id: item.id,
                 school_id: item.school_id,
                 schoolName: item.schools.name,
-                desireLevel: targetData?.child_aspiration || 0,  // ← 最新の志望度
+                desireLevel: targetData?.child_aspiration || 0,
                 examDate: new Date(item.exam_start).toLocaleDateString('ja-JP'),
                 examTime: `${new Date(item.exam_start).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })} ～ ${new Date(item.exam_end).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}`,
+                examStart: item.exam_start,  // ← 追加：並び替え用のタイムスタンプ
                 deviationValue: item.deviation_value,
                 updatedAt: new Date(item.updated_at).toLocaleDateString('ja-JP')
               };
@@ -370,7 +372,7 @@ const handleSearchInput = async (value: string) => {
       if (examSortBy === 'desire') {
         compareValue = a.desireLevel - b.desireLevel;
       } else if (examSortBy === 'date') {
-        compareValue = new Date(a.examDate).getTime() - new Date(b.examDate).getTime();
+        compareValue = new Date(a.examStart).getTime() - new Date(b.examStart).getTime();
       } else {
         compareValue = a.deviationValue - b.deviationValue;
       }
