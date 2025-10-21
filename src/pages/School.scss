@@ -154,29 +154,21 @@
 //////////////////////////////////////////////////////////////
 
 .school-display-section {
-  .info-card {
+  .school-details-wrapper {
     @include home-card;
     
     &:hover {
       transform: none;
     }
 
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.75rem;
-      font-size: $font-size-body;
-
-      .label {
-        color: $home-text-muted;
-        font-weight: $font-weight-medium;
-      }
-
-      .value {
-        color: $home-text-body;
-        font-weight: $font-weight-medium;
-        text-align: right;
-      }
+    // details-cardのスタイルをリセット（カード内にカードを入れ子にしないため）
+    .details-card {
+      background-color: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      margin-bottom: 0;
+      box-shadow: none;
     }
 
     .card-actions {
@@ -195,12 +187,12 @@
 
   .btn-delete {
     @include home-button-small;
-    background-color: $color-orange-exam;  // ← $color-errorから変更
+    background-color: $color-orange-exam;
     color: $color-white;
     flex: 1;
 
     &:hover {
-      background-color: color.adjust($color-orange-exam, $lightness: -10%);  // ← $color-error-darkから変更
+      background-color: color.adjust($color-orange-exam, $lightness: -10%);
     }
   }
 }

@@ -427,24 +427,24 @@ const School: React.FC = () => {
         {/* 学校情報表示セクション - 登録済みかつ編集モードでない場合のみ表示 */}
         {schoolDetails && !isEditing && (
           <section className="school-section school-display-section">
-            <h2 className="section-title">登録済み学校情報</h2>
-            
-            <SchoolDetailsInfo
-              hasCafeteria={schoolDetails.has_cafeteria}
-              hasUniform={schoolDetails.has_uniform}
-              commuteRoute={schoolDetails.commute_route}
-              commuteTime={schoolDetails.commute_time}
-              nearestStation={schoolDetails.nearest_station}
-              officialWebsite={schoolDetails.official_website}
-            />
-            
-            <div className="card-actions">
-              <button className="btn-edit" onClick={() => setIsEditing(true)}>
-                編集
-              </button>
-              <button className="btn-delete" onClick={handleDelete}>
-                削除
-              </button>
+            <div className="school-details-wrapper">
+              <SchoolDetailsInfo
+                hasCafeteria={schoolDetails.has_cafeteria}
+                hasUniform={schoolDetails.has_uniform}
+                commuteRoute={schoolDetails.commute_route}
+                commuteTime={schoolDetails.commute_time}
+                nearestStation={schoolDetails.nearest_station}
+                officialWebsite={schoolDetails.official_website}
+              />
+              
+              <div className="card-actions">
+                <button className="btn-edit" onClick={() => setIsEditing(true)}>
+                  編集
+                </button>
+                <button className="btn-delete" onClick={handleDelete}>
+                  削除
+                </button>
+              </div>
             </div>
           </section>
         )}
