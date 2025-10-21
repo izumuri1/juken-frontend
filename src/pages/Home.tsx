@@ -388,6 +388,7 @@ const handleSearchInput = async (value: string) => {
       isMenuOpen={isMenuOpen}
       onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
       onMenuClose={() => setIsMenuOpen(false)}
+      workspaceId={workspaceId}
     >
       {/* 学校検索セクション */}
       <section className="home-section search-section">

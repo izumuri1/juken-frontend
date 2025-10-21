@@ -9,6 +9,7 @@ interface PageHeaderProps {
   onMenuToggle: () => void;
   onMenuClose: () => void;
   className?: string;
+  workspaceId?: string;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ 
@@ -17,7 +18,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   isMenuOpen,
   onMenuToggle,
   onMenuClose,
-  className = 'home-header'
+  className = 'home-header',
+  workspaceId  // ← 追加
 }) => {
   return (
     <header className={className}>
@@ -25,6 +27,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         isOpen={isMenuOpen} 
         onToggle={onMenuToggle}
         onClose={onMenuClose}
+        workspaceId={workspaceId}  // ← 追加
       />
       
       <div className="header-center">

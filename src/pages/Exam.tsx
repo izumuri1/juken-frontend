@@ -215,12 +215,13 @@ export default function Exam() {
   if (loading || error || !school) {
   return (
     <PageLayout
-      workspaceName={workspaceName}
-      workspaceOwner={workspaceOwner}
-      isMenuOpen={isMenuOpen}
-      onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
-      onMenuClose={() => setIsMenuOpen(false)}
-    >
+        workspaceName={workspaceName}
+        workspaceOwner={workspaceOwner}
+        isMenuOpen={isMenuOpen}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onMenuClose={() => setIsMenuOpen(false)}
+        workspaceId={workspaceId}  // ← この行を追加
+        >
       <LoadingError
         loading={loading}
         error={error || (!school ? '学校が見つかりません' : null)}
@@ -236,7 +237,8 @@ return (
     isMenuOpen={isMenuOpen}
     onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
     onMenuClose={() => setIsMenuOpen(false)}
-  >
+    workspaceId={workspaceId}  // ← この行を追加
+    >
     <div className="exam-page">
       {/* 学校情報セクション */}
         <section className="exam-section school-info-section">

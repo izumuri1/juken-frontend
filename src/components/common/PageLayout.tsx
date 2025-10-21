@@ -11,6 +11,7 @@ interface PageLayoutProps {
   onMenuClose: () => void;
   children: ReactNode;
   className?: string;
+  workspaceId?: string;  // ← 追加
 }
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
@@ -20,7 +21,8 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   onMenuToggle,
   onMenuClose,
   children,
-  className = ''
+  className = '',
+  workspaceId  // ← 追加
 }) => {
   return (
     <div className={`page-container ${className}`}>
@@ -31,6 +33,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         onMenuToggle={onMenuToggle}
         onMenuClose={onMenuClose}
         className="page-header"
+        workspaceId={workspaceId}  // ← 追加
       />
       <main className="page-main">
         {children}

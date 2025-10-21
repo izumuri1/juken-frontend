@@ -281,6 +281,7 @@ const School: React.FC = () => {
       isMenuOpen={isMenuOpen}
       onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
       onMenuClose={() => setIsMenuOpen(false)}
+      workspaceId={workspaceId}  // ← この行を追加
     >
       {/* 学校情報セクション */}
       <section className="school-section school-info-section">

@@ -277,7 +277,8 @@ function Target() {
         isMenuOpen={isMenuOpen}
         onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
         onMenuClose={() => setIsMenuOpen(false)}
-      >
+        workspaceId={workspaceId}  // ← この行を追加
+        >
         <div className="loading-message">読み込み中...</div>
       </PageLayout>
     );
@@ -291,7 +292,8 @@ function Target() {
         isMenuOpen={isMenuOpen}
         onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
         onMenuClose={() => setIsMenuOpen(false)}
-      >
+        workspaceId={workspaceId}  // ← この行を追加
+        >
         <div className="error-message">学校情報が見つかりません</div>
       </PageLayout>
     );
@@ -299,12 +301,13 @@ function Target() {
 
   return (
     <PageLayout
-      workspaceName={workspaceName}
-      workspaceOwner={workspaceOwner}
-      isMenuOpen={isMenuOpen}
-      onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
-      onMenuClose={() => setIsMenuOpen(false)}
-    >
+        workspaceName={workspaceName}
+        workspaceOwner={workspaceOwner}
+        isMenuOpen={isMenuOpen}
+        onMenuToggle={() => setIsMenuOpen(!isMenuOpen)}
+        onMenuClose={() => setIsMenuOpen(false)}
+        workspaceId={workspaceId}  // ← この行を追加
+        >
       <div className="target-page">
         {/* 学校情報セクション */}
         <section className="target-section school-info-section">
