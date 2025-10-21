@@ -227,21 +227,28 @@ function Target() {
   };
 
   // 編集開始
-  const handleEdit = (info: TargetInfo) => {
-    setFormData({
-      eventDate: info.event_date || '',
-      eventName: info.event_name || '',
-      participants: info.participants || '',
-      accessMethod: info.access_method || '',
-      talkedTo: info.talked_with || '',
-      childAspiration: info.child_aspiration || 3,
-      childImpression: info.child_impression || '',
-      parentAspiration: info.parent_aspiration || 3,
-      parentImpression: info.parent_impression || ''
-    });
-    setEditingId(info.id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    const handleEdit = (info: TargetInfo) => {
+        setFormData({
+        eventDate: info.event_date || '',
+        eventName: info.event_name || '',
+        participants: info.participants || '',
+        accessMethod: info.access_method || '',
+        talkedTo: info.talked_with || '',
+        childAspiration: info.child_aspiration || 3,
+        childImpression: info.child_impression || '',
+        parentAspiration: info.parent_aspiration || 3,
+        parentImpression: info.parent_impression || ''
+        });
+        setEditingId(info.id);
+        
+        // 志望校情報入力セクションへスクロール
+        setTimeout(() => {
+        const formSection = document.querySelector('.target-input-section');
+        if (formSection) {
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        }, 100);
+    };
 
   // 削除
   const handleDelete = async (id: string) => {
