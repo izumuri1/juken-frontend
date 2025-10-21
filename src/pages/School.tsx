@@ -6,6 +6,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { SchoolMap } from '../components/SchoolMap';
+import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
+import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
 import { LoadingError } from '../components/common/LoadingError'; // ← 追加
@@ -282,24 +284,16 @@ const School: React.FC = () => {
     >
       {/* 学校情報セクション */}
       <section className="school-section school-info-section">
-          <h2 className="section-title">学校情報</h2>
-          <div className="info-card">
-            <div className="info-row">
-              <span className="label">学校名:</span>
-              <span className="value">{schoolInfo.name}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">都道府県:</span>
-              <span className="value">{schoolInfo.prefecture}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">学校所在地:</span>
-              <span className="value">{schoolInfo.address}</span>
-            </div>
-          </div>
+        <h2 className="section-title">学校情報</h2>
+        
+        <SchoolBasicInfo
+          name={schoolInfo.name}
+          prefecture={schoolInfo.prefecture}
+          address={schoolInfo.address}
+        />
 
-          {/* 地図表示エリア */}
-          <div className="map-container">
+        {/* 地図表示エリア */}
+        <div className="map-container">
             {schoolInfo.latitude && schoolInfo.longitude ? (
               <SchoolMap
                 latitude={schoolInfo.latitude}
@@ -434,66 +428,23 @@ const School: React.FC = () => {
         {schoolDetails && !isEditing && (
           <section className="school-section school-display-section">
             <h2 className="section-title">登録済み学校情報</h2>
-            <div className="info-card">
-              <div className="info-row">
-                <span className="label">学食・購買:</span>
-                <span className="value">
-                  {schoolDetails.has_cafeteria === null
-                    ? '未設定'
-                    : schoolDetails.has_cafeteria
-                    ? 'あり'
-                    : 'なし'}
-                </span>
-              </div>
-              <div className="info-row">
-                <span className="label">制服:</span>
-                <span className="value">
-                  {schoolDetails.has_uniform === null
-                    ? '未設定'
-                    : schoolDetails.has_uniform
-                    ? 'あり'
-                    : 'なし'}
-                </span>
-              </div>
-              <div className="info-row">
-                <span className="label">通学経路:</span>
-                <span className="value">{schoolDetails.commute_route || '未設定'}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">通学時間:</span>
-                <span className="value">
-                  {schoolDetails.commute_time ? `${schoolDetails.commute_time}分` : '未設定'}
-                </span>
-              </div>
-              <div className="info-row">
-                <span className="label">最寄駅:</span>
-                <span className="value">{schoolDetails.nearest_station || '未設定'}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">公式サイト:</span>
-                <span className="value">
-                  {schoolDetails.official_website ? (
-                    <a 
-                      href={schoolDetails.official_website} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="website-link"
-                    >
-                      {schoolDetails.official_website}
-                    </a>
-                  ) : (
-                    '未設定'
-                  )}
-                </span>
-              </div>
-              <div className="card-actions">
-                <button className="btn-edit" onClick={() => setIsEditing(true)}>
-                  編集
-                </button>
-                <button className="btn-delete" onClick={handleDelete}>
-                  削除
-                </button>
-              </div>
+            
+            <SchoolDetailsInfo
+              hasCafeteria={schoolDetails.has_cafeteria}
+              hasUniform={schoolDetails.has_uniform}
+              commuteRoute={schoolDetails.commute_route}
+              commuteTime={schoolDetails.commute_time}
+              nearestStation={schoolDetails.nearest_station}
+              officialWebsite={schoolDetails.official_website}
+            />
+            
+            <div className="card-actions">
+              <button className="btn-edit" onClick={() => setIsEditing(true)}>
+                編集
+              </button>
+              <button className="btn-delete" onClick={handleDelete}>
+                削除
+              </button>
             </div>
           </section>
         )}

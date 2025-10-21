@@ -1,0 +1,14 @@
+// src/components/school/SchoolMap.scss
+@import '../../styles/variables';
+
+.map-container {
+  margin: $spacing-mobile 0;
+  border-radius: $radius-card;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .leaflet-container {
+    height: 200px;
+    width: 100%;
+  }
+}

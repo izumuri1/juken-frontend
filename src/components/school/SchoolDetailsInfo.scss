@@ -1,0 +1,51 @@
+// src/components/school/SchoolDetailsInfo.scss
+@import '../../styles/variables';
+
+.details-card {
+  background-color: $home-card-bg;
+  border-radius: $radius-card;
+  padding: $spacing-mobile;
+  margin-bottom: $spacing-mobile;
+
+  .card-subtitle {
+    font-size: $font-size-title;
+    font-weight: $font-weight-bold;
+    color: $home-text-heading;
+    margin-bottom: $spacing-small;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    font-size: $font-size-body;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .label {
+      color: $home-text-muted;
+      font-weight: $font-weight-medium;
+      min-width: 100px;
+    }
+
+    .value {
+      color: $home-text-body;
+      font-weight: $font-weight-medium;
+      text-align: right;
+      flex: 1;
+
+      .website-link {
+        color: $color-blue-info;
+        text-decoration: none;
+        word-break: break-all;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

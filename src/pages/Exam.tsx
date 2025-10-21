@@ -8,18 +8,10 @@ import { LoadingError } from '../components/common/LoadingError'
 import { ActionButtons } from '../components/common/ActionButtons'
 import ExamInfoForm from '../components/exam/ExamInfoForm'
 import ExamInfoCard from '../components/exam/ExamInfoCard'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
+import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
+import { SchoolMap } from '../components/school/SchoolMap';
+import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
 import './Exam.scss'
-
-// Leafletアイコン設定
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-})
 
 interface School {
   id: string
@@ -247,85 +239,33 @@ return (
   >
     <div className="exam-page">
       {/* 学校情報セクション */}
-      <section className="exam-section school-info-section">
-          <h2 className="section-title">学校情報</h2>
-          
-          <div className="info-card">
-            <div className="info-row">
-              <span className="label">学校名</span>
-              <span className="value">{school.name}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">都道府県</span>
-              <span className="value">{school.prefecture}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">所在地</span>
-              <span className="value">{school.address}</span>
-            </div>
-            {school.official_website && (
-              <div className="info-row">
-                <span className="label">公式サイト</span>
-                <span className="value">
-                  <a href={school.official_website} target="_blank" rel="noopener noreferrer">
-                    {school.official_website}
-                  </a>
-                </span>
-              </div>
-            )}
-          </div>
+        <section className="exam-section school-info-section">
+        <h2 className="section-title">学校情報</h2>
+        
+        <SchoolBasicInfo
+            name={school.name}
+            prefecture={school.prefecture}
+            address={school.address}
+        />
 
-          {/* 地図 */}
-          {school.latitude && school.longitude && (
-            <div className="map-container">
-              <MapContainer
-                center={[school.latitude, school.longitude]}
-                zoom={15}
-                style={{ height: '200px', width: '100%' }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                />
-                <Marker position={[school.latitude, school.longitude]}>
-                  <Popup>{school.name}</Popup>
-                </Marker>
-              </MapContainer>
-            </div>
-          )}
+        {school.latitude && school.longitude && (
+            <SchoolMap
+            latitude={school.latitude}
+            longitude={school.longitude}
+            schoolName={school.name}
+            />
+        )}
 
-          {/* ユーザー入力の学校詳細情報 */}
-          {schoolDetail && (
-            <div className="details-card">
-              <h3 className="card-subtitle">登録済み情報</h3>
-              <div className="info-row">
-                <span className="label">学食・購買</span>
-                <span className="value">{schoolDetail.has_cafeteria ? 'あり' : 'なし'}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">制服</span>
-                <span className="value">{schoolDetail.has_uniform ? 'あり' : 'なし'}</span>
-              </div>
-              {schoolDetail.commute_route && (
-                <div className="info-row">
-                  <span className="label">通学経路</span>
-                  <span className="value">{schoolDetail.commute_route}</span>
-                </div>
-              )}
-              {schoolDetail.commute_time && (
-                <div className="info-row">
-                  <span className="label">通学時間</span>
-                  <span className="value">{schoolDetail.commute_time}分</span>
-                </div>
-              )}
-              {schoolDetail.nearest_station && (
-                <div className="info-row">
-                  <span className="label">最寄駅</span>
-                  <span className="value">{schoolDetail.nearest_station}</span>
-                </div>
-              )}
-            </div>
-          )}
+        {schoolDetail && (
+            <SchoolDetailsInfo
+            hasCafeteria={schoolDetail.has_cafeteria}
+            hasUniform={schoolDetail.has_uniform}
+            commuteRoute={schoolDetail.commute_route}
+            commuteTime={schoolDetail.commute_time}
+            nearestStation={schoolDetail.nearest_station}
+            officialWebsite={schoolDetail.official_website}
+            />
+        )}
         </section>
 
       <section className="exam-section">
