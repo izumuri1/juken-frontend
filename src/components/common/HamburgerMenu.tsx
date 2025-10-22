@@ -60,7 +60,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation('/exam-list')}>
+                <button onClick={() => handleNavigation(workspaceId ? `/workspace/${workspaceId}/comparison2` : '/workspaces')}>
                   受験情報一覧
                 </button>
               </li>

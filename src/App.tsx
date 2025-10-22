@@ -13,7 +13,8 @@ import Home from './pages/Home'
 import School from './pages/School'
 import Target from './pages/Target'
 import Exam from './pages/Exam'
-import Comparison1 from './pages/Comparison1'  // ← 追加
+import Comparison1 from './pages/Comparison1'
+import Comparison2 from './pages/Comparison2'
 import { useAuth } from './contexts/AuthContext'
 
 function App() {
@@ -78,6 +79,11 @@ function App() {
       <Route 
         path="/workspace/:workspaceId/comparison1" 
         element={user ? <Comparison1 /> : <Navigate to="/login" replace />} 
+      />
+      {/* ← Comparison2ページのルートを追加 */}
+      <Route 
+        path="/workspace/:workspaceId/comparison2" 
+        element={user ? <Comparison2 /> : <Navigate to="/login" replace />} 
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -1,0 +1,113 @@
+// src/pages/Comparison2.scss
+// 受験情報一覧画面のスタイル（Comparison1と同一デザイン）
+
+@use '../styles/variables' as *;
+
+//////////////////////////////////////////////////////////////
+// Comparison2画面全体
+//////////////////////////////////////////////////////////////
+
+.comparison2-page {
+  width: 100%;
+  max-width: 100%;
+}
+
+//////////////////////////////////////////////////////////////
+// セクション共通
+//////////////////////////////////////////////////////////////
+
+.comparison2-section {
+  @include home-section;
+}
+
+//////////////////////////////////////////////////////////////
+// セクションヘッダー（タイトル + 並び替えボタン）
+//////////////////////////////////////////////////////////////
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-mobile;
+  flex-wrap: wrap;
+  gap: $spacing-small;
+
+  .section-title {
+    font-size: $font-size-title;
+    font-weight: $font-weight-bold;
+    color: $home-text-heading;
+    margin: 0;
+  }
+
+  .sort-controls {
+    display: flex;
+    gap: $spacing-small;
+
+    .sort-btn {
+      padding: $spacing-small $spacing-mobile;
+      border: 1px solid $home-card-border;
+      border-radius: $radius-button;
+      background-color: $home-card-bg;
+      color: $home-text-body;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      &:hover {
+        background-color: $color-gray-lighter;
+      }
+
+      &.active {
+        background-color: $home-button-action-bg;
+        color: $home-button-action-text;
+        border-color: $home-button-action-bg;
+      }
+
+      .sort-icon {
+        font-size: 0.875rem;
+        font-weight: $font-weight-bold;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// カード一覧
+//////////////////////////////////////////////////////////////
+
+.comparison-cards {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-mobile;
+}
+
+//////////////////////////////////////////////////////////////
+// 空メッセージ
+//////////////////////////////////////////////////////////////
+
+.empty-message {
+  text-align: center;
+  padding: $spacing-large $spacing-mobile;
+  background-color: $home-card-bg;
+  border: 1px solid $home-card-border;
+  border-radius: $radius-card;
+  box-shadow: $home-card-shadow;
+
+  p {
+    color: $home-text-muted;
+    font-size: $font-size-body;
+    margin: 0;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// アクションボタンセクション
+//////////////////////////////////////////////////////////////
+
+.action-buttons-section {
+  margin-top: $spacing-mobile;
+}
