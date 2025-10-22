@@ -25,55 +25,28 @@
 //////////////////////////////////////////////////////////////
 
 .comparison1-section {
-  .section-header {
+  .section-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: $spacing-mobile;
-    flex-wrap: wrap;
-    gap: $spacing-small;
-
-    .section-title {
-      font-size: $font-size-title;
-      font-weight: $font-weight-bold;
-      color: $home-text-heading;
-      margin: 0;
-    }
+    font-size: $font-size-title;
+    font-weight: $font-weight-bold;
+    color: $home-text-heading;
 
     .sort-controls {
-      display: flex;
-      flex-direction: row;
-      gap: $spacing-small;
-      justify-content: flex-end;
-
-      .sort-btn {
-        padding: $spacing-small $spacing-mobile;
+      .sort-select {
+        padding: 0.5rem;
         border: 1px solid $home-card-border;
-        border-radius: $radius-button;
+        border-radius: $radius-input;
+        font-size: $font-size-small;
         background-color: $home-card-bg;
-        color: $home-text-body;
-        font-size: $font-size-body;
-        font-weight: $font-weight-medium;
         cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        white-space: nowrap;
-
-        &:hover {
-          background-color: $color-gray-lighter;
-        }
-
-        &.active {
-          background-color: $home-button-action-bg;
-          color: $home-button-action-text;
-          border-color: $home-button-action-bg;
-        }
-
-        .sort-icon {
-          font-size: 0.875rem;
-          font-weight: $font-weight-bold;
+        -webkit-appearance: none;
+        
+        &:focus {
+          outline: none;
+          border-color: $color-black;
         }
       }
     }

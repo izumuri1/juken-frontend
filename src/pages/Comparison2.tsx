@@ -192,60 +192,36 @@ const Comparison2: React.FC = () => {
       <div className="comparison2-page">
         {/* 受験情報一覧セクション */}
         <section className="comparison2-section">
-          <div className="section-header">
-            <h2 className="section-title">受験情報一覧</h2>
+          <div className="section-title">
+            <span>受験情報一覧</span>
             <div className="sort-controls">
-                <div className="filter-row">
-                    <button
-                    className={`sort-btn ${filterBy === 'all' ? 'active' : ''}`}
-                    onClick={() => setFilterBy('all')}
-                    >
-                    すべて
-                    </button>
-                    <button
-                    className={`sort-btn ${filterBy === 'exam' ? 'active' : ''}`}
-                    onClick={() => setFilterBy('exam')}
-                    >
-                    受験
-                    </button>
-                    <button
-                    className={`sort-btn ${filterBy === 'skip' ? 'active' : ''}`}
-                    onClick={() => setFilterBy('skip')}
-                    >
-                    見送り
-                    </button>
-                </div>
-                <div className="sort-row">
-                    <button
-                    className={`sort-btn ${sortBy === 'childAspiration' ? 'active' : ''}`}
-                    onClick={() => handleSort('childAspiration')}
-                    >
-                    志望度
-                    {sortBy === 'childAspiration' && (
-                        <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                    </button>
-                    <button
-                    className={`sort-btn ${sortBy === 'examStart' ? 'active' : ''}`}
-                    onClick={() => handleSort('examStart')}
-                    >
-                    受験時間
-                    {sortBy === 'examStart' && (
-                        <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                    </button>
-                    <button
-                    className={`sort-btn ${sortBy === 'deviationValue' ? 'active' : ''}`}
-                    onClick={() => handleSort('deviationValue')}
-                    >
-                    偏差値
-                    {sortBy === 'deviationValue' && (
-                        <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                    </button>
-                </div>
-                </div>
-          </div>
+                <select
+                value={filterBy}
+                onChange={(e) => setFilterBy(e.target.value as FilterBy)}
+                className="sort-select"
+                >
+                <option value="all">すべて</option>
+                <option value="exam">受験</option>
+                <option value="skip">見送り</option>
+                </select>
+                <select
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                    const [newSortBy, newSortOrder] = e.target.value.split('-') as [SortBy, SortOrder];
+                    setSortBy(newSortBy);
+                    setSortOrder(newSortOrder);
+                }}
+                className="sort-select"
+                >
+                <option value="childAspiration-desc">志望度（高→低）</option>
+                <option value="childAspiration-asc">志望度（低→高）</option>
+                <option value="examStart-asc">受験時間（早→遅）</option>
+                <option value="examStart-desc">受験時間（遅→早）</option>
+                <option value="deviationValue-desc">偏差値（高→低）</option>
+                <option value="deviationValue-asc">偏差値（低→高）</option>
+                </select>
+            </div>
+            </div>
 
           {loading && <LoadingError loading={true} />}
 

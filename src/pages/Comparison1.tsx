@@ -169,29 +169,25 @@ const Comparison1: React.FC = () => {
       <div className="comparison1-page">
         {/* 志望校一覧セクション */}
         <section className="comparison1-section">
-          <div className="section-header">
-            <h2 className="section-title">志望校情報一覧</h2>
+          <div className="section-title">
+            <span>志望校情報一覧</span>
             <div className="sort-controls">
-              <button
-                className={`sort-btn ${sortBy === 'childAspiration' ? 'active' : ''}`}
-                onClick={() => handleSort('childAspiration')}
-              >
-                志望度（子）
-                {sortBy === 'childAspiration' && (
-                  <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                )}
-              </button>
-              <button
-                className={`sort-btn ${sortBy === 'commuteTime' ? 'active' : ''}`}
-                onClick={() => handleSort('commuteTime')}
-              >
-                通学時間
-                {sortBy === 'commuteTime' && (
-                  <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                )}
-              </button>
+                <select 
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                    const [newSortBy, newSortOrder] = e.target.value.split('-') as [SortBy, SortOrder];
+                    setSortBy(newSortBy);
+                    setSortOrder(newSortOrder);
+                }}
+                className="sort-select"
+                >
+                <option value="childAspiration-desc">志望度（子）（高→低）</option>
+                <option value="childAspiration-asc">志望度（子）（低→高）</option>
+                <option value="commuteTime-asc">通学時間（短→長）</option>
+                <option value="commuteTime-desc">通学時間（長→短）</option>
+                </select>
             </div>
-          </div>
+            </div>
 
           {error && (
             <LoadingError
