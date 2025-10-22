@@ -24,52 +24,56 @@
 // セクションヘッダー（タイトル + 並び替えボタン）
 //////////////////////////////////////////////////////////////
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $spacing-mobile;
-  flex-wrap: wrap;
-  gap: $spacing-small;
-
-   .section-title {
-    font-size: $font-size-title;
-    font-weight: $font-weight-bold;
-    color: $home-text-heading;
-    margin: 0;
-  }
-
-  .sort-controls {
+.comparison1-section {
+  .section-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-mobile;
+    flex-wrap: wrap;
     gap: $spacing-small;
 
-    .sort-btn {
-      padding: $spacing-small $spacing-mobile;
-      border: 1px solid $home-card-border;
-      border-radius: $radius-button;
-      background-color: $home-card-bg;
-      color: $home-text-body;
-      font-size: $font-size-body;
-      font-weight: $font-weight-medium;
-      cursor: pointer;
-      transition: all 0.2s ease;
+    .section-title {
+      font-size: $font-size-title;
+      font-weight: $font-weight-bold;
+      color: $home-text-heading;
+      margin: 0;
+    }
+
+    .sort-controls {
       display: flex;
-      align-items: center;
-      gap: 0.25rem;
+      flex-direction: row;
+      gap: $spacing-small;
 
-      &:hover {
-        background-color: $color-gray-lighter;
-      }
+      .sort-btn {
+        padding: $spacing-small $spacing-mobile;
+        border: 1px solid $home-card-border;
+        border-radius: $radius-button;
+        background-color: $home-card-bg;
+        color: $home-text-body;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        white-space: nowrap;
 
-      &.active {
-        background-color: $home-button-action-bg;
-        color: $home-button-action-text;
-        border-color: $home-button-action-bg;
-      }
+        &:hover {
+          background-color: $color-gray-lighter;
+        }
 
-      .sort-icon {
-        font-size: 0.875rem;
-        font-weight: $font-weight-bold;
+        &.active {
+          background-color: $home-button-action-bg;
+          color: $home-button-action-text;
+          border-color: $home-button-action-bg;
+        }
+
+        .sort-icon {
+          font-size: 0.875rem;
+          font-weight: $font-weight-bold;
+        }
       }
     }
   }
