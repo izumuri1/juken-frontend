@@ -16,6 +16,7 @@ interface ExamSchedule {
   school_id: string;
   school_code: string;
   schoolName: string;
+  examCandidateSign: string | null;
   deviationValue: number;
   judgmentResult: string | null;
   childAspiration: number;
@@ -60,6 +61,7 @@ const Comparison2: React.FC = () => {
             school_id,
             deviation_value,
             judgment_result,
+            exam_candidate_sign,
             exam_start,
             exam_end,
             updated_at,
@@ -99,6 +101,7 @@ const Comparison2: React.FC = () => {
             school_id: exam.school_id,
             school_code: exam.schools.school_code,
             schoolName: exam.schools.name,
+            examCandidateSign: exam.exam_candidate_sign,
             deviationValue: exam.deviation_value,
             judgmentResult: exam.judgment_result,
             childAspiration: aspirationData?.child_aspiration || 0,
@@ -147,9 +150,9 @@ const Comparison2: React.FC = () => {
     }
   };
 
-  const handleNavigateToExam = (schoolCode: string) => {
-    navigate(`/workspace/${workspaceId}/exam/${schoolCode}`);
-  };
+  const handleNavigateToExam = (schoolId: string) => {
+    navigate(`/workspace/${workspaceId}/school/${schoolId}/exam`);
+    };
 
   const handleNavigateToTask = (examId: string) => {
     navigate(`/workspace/${workspaceId}/task/${examId}`);
@@ -222,12 +225,16 @@ const Comparison2: React.FC = () => {
             <div className="comparison-cards">
               {getSortedExams().map(exam => {
                 const fields: ComparisonCardField[] = [
-                  { label: '学校名', value: exam.schoolName },
-                  { label: '偏差値', value: exam.deviationValue },
-                  { 
+                { label: '学校名', value: exam.schoolName },
+                { 
+                    label: '受験候補', 
+                    value: exam.examCandidateSign || '未設定' 
+                },
+                { label: '偏差値', value: exam.deviationValue },
+                { 
                     label: '合否判定結果', 
                     value: exam.judgmentResult || '未実施' 
-                  },
+                },
                   { 
                     label: '志望度(子)', 
                     value: exam.childAspiration > 0 ? (
@@ -255,16 +262,16 @@ const Comparison2: React.FC = () => {
                 ];
 
                 const buttons: ComparisonCardButton[] = [
-                  {
+                {
                     label: '受験情報',
-                    onClick: () => handleNavigateToExam(exam.school_code),
+                    onClick: () => handleNavigateToExam(exam.school_id),
                     variant: 'exam'
-                  },
-                  {
+                },
+                {
                     label: '受験管理',
                     onClick: () => handleNavigateToTask(exam.id),
                     variant: 'info'
-                  }
+                }
                 ];
 
                 return (
