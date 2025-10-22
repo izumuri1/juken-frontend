@@ -220,7 +220,13 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
             className={`tab-button ${activeTab === 'difficulty' ? 'active' : ''}`}
             onClick={() => setActiveTab('difficulty')}
           >
-            難易度
+            難易度（必須）
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'exam' ? 'active' : ''}`}
+            onClick={() => setActiveTab('exam')}
+          >
+            受験（必須）
           </button>
           <button
             className={`tab-button ${activeTab === 'application' ? 'active' : ''}`}
@@ -233,12 +239,6 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
             onClick={() => setActiveTab('fee')}
           >
             受験料支払
-          </button>
-          <button
-            className={`tab-button ${activeTab === 'exam' ? 'active' : ''}`}
-            onClick={() => setActiveTab('exam')}
-          >
-            受験
           </button>
           <button
             className={`tab-button ${activeTab === 'announcement' ? 'active' : ''}`}
