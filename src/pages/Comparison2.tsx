@@ -195,51 +195,55 @@ const Comparison2: React.FC = () => {
           <div className="section-header">
             <h2 className="section-title">受験情報一覧</h2>
             <div className="sort-controls">
-                <button
+                <div className="filter-row">
+                    <button
                     className={`sort-btn ${filterBy === 'all' ? 'active' : ''}`}
                     onClick={() => setFilterBy('all')}
-                >
+                    >
                     すべて
-                </button>
-                <button
+                    </button>
+                    <button
                     className={`sort-btn ${filterBy === 'exam' ? 'active' : ''}`}
                     onClick={() => setFilterBy('exam')}
-                >
+                    >
                     受験
-                </button>
-                <button
+                    </button>
+                    <button
                     className={`sort-btn ${filterBy === 'skip' ? 'active' : ''}`}
                     onClick={() => setFilterBy('skip')}
-                >
+                    >
                     見送り
-                </button>
-                <button
+                    </button>
+                </div>
+                <div className="sort-row">
+                    <button
                     className={`sort-btn ${sortBy === 'childAspiration' ? 'active' : ''}`}
                     onClick={() => handleSort('childAspiration')}
-                >
+                    >
                     志望度
                     {sortBy === 'childAspiration' && (
-                    <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                        <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
                     )}
-                </button>
-                <button
+                    </button>
+                    <button
                     className={`sort-btn ${sortBy === 'examStart' ? 'active' : ''}`}
                     onClick={() => handleSort('examStart')}
-                >
+                    >
                     受験時間
                     {sortBy === 'examStart' && (
-                    <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                        <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
                     )}
-                </button>
-                <button
+                    </button>
+                    <button
                     className={`sort-btn ${sortBy === 'deviationValue' ? 'active' : ''}`}
                     onClick={() => handleSort('deviationValue')}
-                >
+                    >
                     偏差値
                     {sortBy === 'deviationValue' && (
-                    <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                        <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
                     )}
-                </button>
+                    </button>
+                </div>
                 </div>
           </div>
 

@@ -41,38 +41,48 @@
 
   .sort-controls {
     display: flex;
+    flex-direction: column;
     gap: $spacing-small;
+    width: 100%;
+
+    .filter-row,
+    .sort-row {
+        display: flex;
+        gap: $spacing-small;
+        justify-content: flex-end;
+    }
 
     .sort-btn {
-      padding: $spacing-small $spacing-mobile;
-      border: 1px solid $home-card-border;
-      border-radius: $radius-button;
-      background-color: $home-card-bg;
-      color: $home-text-body;
-      font-size: $font-size-body;
-      font-weight: $font-weight-medium;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
+        padding: $spacing-small $spacing-mobile;
+        border: 1px solid $home-card-border;
+        border-radius: $radius-button;
+        background-color: $home-card-bg;
+        color: $home-text-body;
+        font-size: $font-size-body;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        white-space: nowrap;
 
-      &:hover {
+        &:hover {
         background-color: $color-gray-lighter;
-      }
+        }
 
-      &.active {
+        &.active {
         background-color: $home-button-action-bg;
         color: $home-button-action-text;
         border-color: $home-button-action-bg;
-      }
+        }
 
-      .sort-icon {
+        .sort-icon {
         font-size: 0.875rem;
         font-weight: $font-weight-bold;
-      }
+        }
     }
-  }
+    }
 }
 
 //////////////////////////////////////////////////////////////
