@@ -44,6 +44,7 @@
       display: flex;
       flex-direction: row;
       gap: $spacing-small;
+      justify-content: flex-end;
 
       .sort-btn {
         padding: $spacing-small $spacing-mobile;
