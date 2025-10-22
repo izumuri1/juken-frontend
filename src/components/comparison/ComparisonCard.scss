@@ -1,0 +1,97 @@
+// src/components/comparison/ComparisonCard.scss
+// Comparison1とComparison2の両方で使える共通カードスタイル
+
+@use '../../styles/variables' as *;
+
+.comparison-card {
+  @include home-card;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $home-card-hover-shadow;
+  }
+
+  .comparison-card-content {
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: $font-size-body;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+      }
+      
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+
+        a {
+          color: $color-blue-info;
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      // 志望度バッジのスタイル
+      .desire-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: $radius-button;
+        font-weight: $font-weight-bold;
+        text-align: center;
+        min-width: 2.5rem;
+
+        &.badge-level-1 { background-color: #fee; color: #c00; }
+        &.badge-level-2 { background-color: #ffe; color: #c60; }
+        &.badge-level-3 { background-color: #ffc; color: #960; }
+        &.badge-level-4 { background-color: #cfc; color: #060; }
+        &.badge-level-5 { background-color: #9f9; color: #030; }
+      }
+    }
+  }
+
+  .comparison-card-actions {
+    display: flex;
+    gap: $spacing-small;
+    margin-top: $spacing-mobile;
+    padding-top: $spacing-mobile;
+    border-top: 1px solid $home-card-border;
+
+    .btn {
+      flex: 1;
+      padding: $spacing-small $spacing-mobile;
+      border: none;
+      border-radius: $radius-button;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        opacity: 0.9;
+      }
+
+      &.btn-info {
+        @include home-button-info;
+      }
+
+      &.btn-target {
+        @include home-button-target;
+      }
+
+      &.btn-exam {
+        @include home-button-exam;
+      }
+    }
+  }
+}

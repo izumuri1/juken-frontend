@@ -12,7 +12,8 @@ import { CreateWorkspace } from './pages/CreateWorkspace'
 import Home from './pages/Home'
 import School from './pages/School'
 import Target from './pages/Target'
-import Exam from './pages/Exam'  // ← 追加
+import Exam from './pages/Exam'
+import Comparison1 from './pages/Comparison1'  // ← 追加
 import { useAuth } from './contexts/AuthContext'
 
 function App() {
@@ -68,10 +69,15 @@ function App() {
         path="/workspace/:workspaceId/target/:schoolCode" 
         element={user ? <Target /> : <Navigate to="/login" replace />} 
       />
-      {/* ← Examページのルートを追加 */}
+       {/* ← Examページのルートを追加 */}
       <Route 
         path="/workspace/:workspaceId/school/:schoolId/exam" 
         element={user ? <Exam /> : <Navigate to="/login" replace />} 
+      />
+      {/* ← Comparison1ページのルートを追加 */}
+      <Route 
+        path="/workspace/:workspaceId/comparison1" 
+        element={user ? <Comparison1 /> : <Navigate to="/login" replace />} 
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
