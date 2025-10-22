@@ -29,6 +29,7 @@ interface ExamSchedule {
 
 type SortBy = 'childAspiration' | 'examStart' | 'deviationValue';
 type SortOrder = 'asc' | 'desc';
+type FilterBy = 'all' | 'exam' | 'skip';  // 追加
 
 const Comparison2: React.FC = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -36,9 +37,10 @@ const Comparison2: React.FC = () => {
   const { workspaceName, workspaceOwner } = useWorkspace(workspaceId);
   
   const [exams, setExams] = useState<ExamSchedule[]>([]);
-  const [sortBy, setSortBy] = useState<SortBy>('childAspiration');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [loading, setLoading] = useState(true);
+    const [sortBy, setSortBy] = useState<SortBy>('childAspiration');
+    const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+    const [filterBy, setFilterBy] = useState<FilterBy>('all');  // 追加
+    const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -124,22 +126,31 @@ const Comparison2: React.FC = () => {
     };
 
   const getSortedExams = () => {
-    const sorted = [...exams].sort((a, b) => {
-      let compareValue = 0;
-      
-      if (sortBy === 'childAspiration') {
+    // フィルタリング処理を追加
+    let filtered = exams;
+    if (filterBy === 'exam') {
+        filtered = exams.filter(exam => exam.examCandidateSign === '受験');
+    } else if (filterBy === 'skip') {
+        filtered = exams.filter(exam => exam.examCandidateSign === '見送り');
+    }
+    
+    // ソート処理
+    const sorted = [...filtered].sort((a, b) => {
+        let compareValue = 0;
+        
+        if (sortBy === 'childAspiration') {
         compareValue = a.childAspiration - b.childAspiration;
-      } else if (sortBy === 'examStart') {
+        } else if (sortBy === 'examStart') {
         compareValue = new Date(a.examStart).getTime() - new Date(b.examStart).getTime();
-      } else if (sortBy === 'deviationValue') {
+        } else if (sortBy === 'deviationValue') {
         compareValue = a.deviationValue - b.deviationValue;
-      }
-      
-      return sortOrder === 'asc' ? compareValue : -compareValue;
+        }
+        
+        return sortOrder === 'asc' ? compareValue : -compareValue;
     });
 
     return sorted;
-  };
+    };
 
   const handleSort = (newSortBy: SortBy) => {
     if (sortBy === newSortBy) {
@@ -161,7 +172,13 @@ const Comparison2: React.FC = () => {
   const formatDateTime = (datetime: string) => {
     const date = new Date(datetime);
     return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  };
+    };
+
+    // 時刻のみをフォーマットする関数を追加
+    const formatTime = (datetime: string) => {
+    const date = new Date(datetime);
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    };
 
   return (
     <PageLayout
@@ -178,34 +195,52 @@ const Comparison2: React.FC = () => {
           <div className="section-header">
             <h2 className="section-title">受験情報一覧</h2>
             <div className="sort-controls">
-              <button
-                className={`sort-btn ${sortBy === 'childAspiration' ? 'active' : ''}`}
-                onClick={() => handleSort('childAspiration')}
-              >
-                志望度
-                {sortBy === 'childAspiration' && (
-                  <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                )}
-              </button>
-              <button
-                className={`sort-btn ${sortBy === 'examStart' ? 'active' : ''}`}
-                onClick={() => handleSort('examStart')}
-              >
-                受験時間
-                {sortBy === 'examStart' && (
-                  <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                )}
-              </button>
-              <button
-                className={`sort-btn ${sortBy === 'deviationValue' ? 'active' : ''}`}
-                onClick={() => handleSort('deviationValue')}
-              >
-                偏差値
-                {sortBy === 'deviationValue' && (
-                  <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                )}
-              </button>
-            </div>
+                <button
+                    className={`sort-btn ${filterBy === 'all' ? 'active' : ''}`}
+                    onClick={() => setFilterBy('all')}
+                >
+                    すべて
+                </button>
+                <button
+                    className={`sort-btn ${filterBy === 'exam' ? 'active' : ''}`}
+                    onClick={() => setFilterBy('exam')}
+                >
+                    受験
+                </button>
+                <button
+                    className={`sort-btn ${filterBy === 'skip' ? 'active' : ''}`}
+                    onClick={() => setFilterBy('skip')}
+                >
+                    見送り
+                </button>
+                <button
+                    className={`sort-btn ${sortBy === 'childAspiration' ? 'active' : ''}`}
+                    onClick={() => handleSort('childAspiration')}
+                >
+                    志望度
+                    {sortBy === 'childAspiration' && (
+                    <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                </button>
+                <button
+                    className={`sort-btn ${sortBy === 'examStart' ? 'active' : ''}`}
+                    onClick={() => handleSort('examStart')}
+                >
+                    受験時間
+                    {sortBy === 'examStart' && (
+                    <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                </button>
+                <button
+                    className={`sort-btn ${sortBy === 'deviationValue' ? 'active' : ''}`}
+                    onClick={() => handleSort('deviationValue')}
+                >
+                    偏差値
+                    {sortBy === 'deviationValue' && (
+                    <span className="sort-icon">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                </button>
+                </div>
           </div>
 
           {loading && <LoadingError loading={true} />}
@@ -245,8 +280,8 @@ const Comparison2: React.FC = () => {
                   },
                   { 
                     label: '受験時間', 
-                    value: `${formatDateTime(exam.examStart)} ～ ${formatDateTime(exam.examEnd)}` 
-                  },
+                    value: `${formatDateTime(exam.examStart)} ～ ${formatTime(exam.examEnd)}` 
+                    },
                   { 
                     label: '最寄駅', 
                     value: exam.nearestStation || '未登録' 
