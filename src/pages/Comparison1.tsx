@@ -14,6 +14,7 @@ import './Comparison1.scss';
 interface TargetSchool {
   id: string;
   school_id: string;
+  school_code: string;  // ← 追加
   schoolName: string;
   childAspiration: number;
   parentAspiration: number;
@@ -60,6 +61,7 @@ const Comparison1: React.FC = () => {
           updated_at,
           schools!inner (
             name,
+            school_code,
             school_details (
                 commute_time,
                 nearest_station,
@@ -82,6 +84,7 @@ const Comparison1: React.FC = () => {
           schoolMap.set(schoolId, {
             id: item.id,
             school_id: schoolId,
+            school_code: item.schools.school_code,
             schoolName: item.schools.name,
             childAspiration: item.child_aspiration,
             parentAspiration: item.parent_aspiration,
@@ -127,9 +130,9 @@ const Comparison1: React.FC = () => {
     });
   };
 
-  const handleNavigateToTarget = (schoolId: string) => {
-    navigate(`/workspace/${workspaceId}/school/${schoolId}/target`);
-  };
+  const handleNavigateToTarget = (schoolCode: string) => {
+    navigate(`/workspace/${workspaceId}/target/${schoolCode}`);
+    };
 
   const handleNavigateToExam = (schoolId: string) => {
     navigate(`/workspace/${workspaceId}/school/${schoolId}/exam`);
@@ -235,7 +238,7 @@ const Comparison1: React.FC = () => {
                 const buttons: ComparisonCardButton[] = [
                   {
                     label: '志望校情報',
-                    onClick: () => handleNavigateToTarget(school.school_id),
+                    onClick: () => handleNavigateToTarget(school.school_code),
                     variant: 'target'
                   },
                   {
