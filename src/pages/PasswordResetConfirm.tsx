@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
+import { validationRules } from '../utils/validationRules'
 import type { PasswordUpdateFormData } from '../types/auth'
 import './Auth.scss'
 
@@ -35,50 +36,78 @@ export function PasswordResetConfirm() {
 })
 
     useEffect(() => {
-            // パスワードリセット用のセッション処理
-            const handlePasswordReset = async () => {
-            const hash = window.location.hash.substring(1)
-            
-            if (hash) {
-                try {
-                // URLハッシュから直接トークンを取得してセッション設定
-                if (hash.includes('access_token')) {
-                    // 古い形式の処理
-                    const params = new URLSearchParams(hash)
-                    const accessToken = params.get('access_token')
-                    const refreshToken = params.get('refresh_token')
-                    
-                    if (accessToken && refreshToken) {
-                    await supabase.auth.setSession({
-                        access_token: accessToken,
-                        refresh_token: refreshToken
-                    })
-                    }
-                } else {
-                // 新しい形式：ハッシュがトークンそのもの
-                const { error } = await supabase.auth.verifyOtp({
-                  token_hash: hash,
-                  type: 'recovery'
-                })
-                
-                if (error) {
-                  console.error('トークン検証エラー:', error)
-                  setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
-                } else {
-                  console.log('パスワードリセットトークンが検証されました')
-                }
-                }
-                } catch (error) {
-                console.error('パスワードリセット処理エラー:', error)
-                setSubmitError('パスワードリセット処理中にエラーが発生しました。')
-                }
-            } else {
-                setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
-            }
-            }
-            
-            handlePasswordReset()
-        }, [])
+      // パスワードリセット用のセッション処理
+      const handlePasswordReset = async () => {
+      // URLハッシュとクエリパラメータの両方をチェック
+      const hash = window.location.hash.substring(1)
+      const searchParams = new URLSearchParams(window.location.search)
+      const tokenHash = searchParams.get('token_hash')
+      const type = searchParams.get('type')
+      
+      console.log('=== パスワードリセット初期化 ===')
+      console.log('hash:', hash)
+      console.log('tokenHash:', tokenHash)
+      console.log('type:', type)
+      
+      try {
+          // クエリパラメータ形式（ConfirmationURL使用時）
+          if (tokenHash && type === 'recovery') {
+          console.log('クエリパラメータ形式で処理します')
+          const { error } = await supabase.auth.verifyOtp({
+              token_hash: tokenHash,
+              type: 'recovery'
+          })
+          
+          if (error) {
+              console.error('トークン検証エラー:', error)
+              setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
+          } else {
+              console.log('パスワードリセットトークンが検証されました')
+          }
+          }
+          // URLハッシュ形式（従来の形式）
+          else if (hash) {
+          console.log('URLハッシュ形式で処理します')
+          
+          if (hash.includes('access_token')) {
+              // 古い形式: access_token + refresh_token
+              const params = new URLSearchParams(hash)
+              const accessToken = params.get('access_token')
+              const refreshToken = params.get('refresh_token')
+              
+              if (accessToken && refreshToken) {
+              await supabase.auth.setSession({
+                  access_token: accessToken,
+                  refresh_token: refreshToken
+              })
+              console.log('セッション設定完了')
+              }
+          } else {
+              // 新しい形式：ハッシュがトークンそのもの
+              const { error } = await supabase.auth.verifyOtp({
+              token_hash: hash,
+              type: 'recovery'
+              })
+              
+              if (error) {
+              console.error('トークン検証エラー:', error)
+              setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
+              } else {
+              console.log('パスワードリセットトークンが検証されました')
+              }
+          }
+          } else {
+          console.error('トークンが見つかりません')
+          setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
+          }
+      } catch (error) {
+          console.error('パスワードリセット処理エラー:', error)
+          setSubmitError('パスワードリセット処理中にエラーが発生しました。')
+      }
+      }
+      
+      handlePasswordReset()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,13 +120,31 @@ export function PasswordResetConfirm() {
     passwordForm.setSubmitting(true)
 
     try {
+      // 現在のユーザー情報を取得
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        setSubmitError('セッションが無効です。再度パスワードリセットを行ってください。')
+        return
+      }
+
+      // パスワードを更新
       const { error } = await supabase.auth.updateUser({
         password: passwordForm.values.password
       })
 
       if (error) {
+        console.error('パスワード更新エラー:', error)
         setSubmitError('パスワードの更新に失敗しました。再度お試しください。')
       } else {
+        // パスワード更新成功
+        // ローカルストレージとセッションストレージをクリア
+        localStorage.clear()
+        sessionStorage.clear()
+        
+        // すべてのセッションをサインアウト
+        await supabase.auth.signOut({ scope: 'global' })
+        
         setIsCompleted(true)
       }
     } catch (error) {
