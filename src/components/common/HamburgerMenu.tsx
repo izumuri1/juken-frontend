@@ -8,13 +8,15 @@ interface HamburgerMenuProps {
   onToggle: () => void;
   onClose: () => void;
   workspaceId?: string;
+  onTutorialOpen?: () => void;  // ← 追加
 }
 
 export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({ 
   isOpen, 
   onToggle,
   onClose,
-  workspaceId 
+  workspaceId,
+  onTutorialOpen  // ← 追加
 }) => {
   const navigate = useNavigate();
   const { signOut } = useAuth();
@@ -22,6 +24,13 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
   const handleNavigation = (path: string) => {
     onClose();
     navigate(path);
+  };
+  
+  const handleTutorialClick = () => {  // ← 追加
+    onClose();
+    if (onTutorialOpen) {
+      onTutorialOpen();
+    }
   };
 
   const handleLogout = async () => {
@@ -76,7 +85,7 @@ export const HamburgerMenu: React.FC<HamburgerMenuProps> = ({
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavigation('/tutorial')}>
+                <button onClick={handleTutorialClick}>
                   チュートリアル
                 </button>
               </li>

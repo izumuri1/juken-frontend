@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { ChevronRight, X, Home, Search, List, Calendar, CheckSquare } from 'lucide-react';
+import { ChevronRight, X, Home, List, Calendar, CheckSquare } from 'lucide-react';
 
-const Tutorial = () => {
+interface TutorialProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const Tutorial: React.FC<TutorialProps> = ({ isOpen, onClose }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isOpen, setIsOpen] = useState(true);
 
   const tutorialSteps = [
     {
@@ -84,7 +88,8 @@ const Tutorial = () => {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
+    setCurrentStep(0); // ステップをリセット
+    onClose();
   };
 
   if (!isOpen) {
@@ -94,31 +99,37 @@ const Tutorial = () => {
   const currentTutorial = tutorialSteps[currentStep];
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      backgroundColor: '#F4C14E',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1rem',
-      zIndex: 1000,
-      overflowY: 'auto'
-    }}>
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+        animation: 'fadeIn 0.2s ease-out'
+      }}
+      onClick={handleClose}
+    >
       {/* チュートリアルカード */}
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '12px',
-        padding: '1.5rem',
-        maxWidth: '400px',
-        width: '100%',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        position: 'relative'
-      }}>
+      <div 
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '12px',
+          padding: '1.5rem',
+          maxWidth: '400px',
+          width: '100%',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          position: 'relative',
+          animation: 'slideInUp 0.3s ease-out'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* 閉じるボタン */}
         <button
           onClick={handleClose}
@@ -298,9 +309,25 @@ const Tutorial = () => {
             {currentStep < tutorialSteps.length - 1 && <ChevronRight size={20} />}
           </button>
         </div>
-
-
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes slideInUp {
+          from { 
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };

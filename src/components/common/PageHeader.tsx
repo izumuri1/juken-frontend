@@ -10,6 +10,7 @@ interface PageHeaderProps {
   onMenuClose: () => void;
   className?: string;
   workspaceId?: string;
+  onTutorialOpen?: () => void;  // ← 追加
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ 
@@ -19,7 +20,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   onMenuToggle,
   onMenuClose,
   className = 'home-header',
-  workspaceId  // ← 追加
+  workspaceId,
+  onTutorialOpen  // ← 追加
 }) => {
   return (
     <header className={className}>
@@ -27,10 +29,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         isOpen={isMenuOpen} 
         onToggle={onMenuToggle}
         onClose={onMenuClose}
-        workspaceId={workspaceId}  // ← 追加
+        workspaceId={workspaceId}
+        onTutorialOpen={onTutorialOpen}  // ← 追加
       />
       
-      <div className="header-center">
+      <div className="workspace-info">
         <h1 className="workspace-name">{workspaceName}</h1>
         <p className="workspace-owner">オーナー: {workspaceOwner}</p>
       </div>

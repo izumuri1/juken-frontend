@@ -15,7 +15,6 @@ import Target from './pages/Target'
 import Exam from './pages/Exam'
 import Comparison1 from './pages/Comparison1'
 import Comparison2 from './pages/Comparison2'
-import Tutorial from './components/Tutorial'
 import { useAuth } from './contexts/AuthContext'
 
 function App() {
@@ -85,11 +84,6 @@ function App() {
       <Route 
         path="/workspace/:workspaceId/comparison2" 
         element={user ? <Comparison2 /> : <Navigate to="/login" replace />} 
-      />
-      {/* ← チュートリアルページのルートを追加 */}
-      <Route 
-        path="/tutorial" 
-        element={user ? <Tutorial /> : <Navigate to="/login" replace />} 
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
