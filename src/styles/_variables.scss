@@ -572,14 +572,14 @@ $ease-in-out:             ease-in-out;
     text-align: center;
 
     .workspace-name {
-      font-size: $font-size-title;
+      font-size: $font-size-logo;
       font-weight: $font-weight-bold;
       color: $home-header-text;
       margin: 0;
     }
 
     .workspace-owner {
-      font-size: $font-size-small;
+      font-size: $font-size-title;
       color: $home-text-muted;
       margin: 0;
     }
