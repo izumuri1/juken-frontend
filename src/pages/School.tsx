@@ -9,9 +9,10 @@ import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { SchoolMap } from '../components/SchoolMap';
 import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
 import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
-import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
-import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
-import { LoadingError } from '../components/common/LoadingError'; // ← 追加
+import { useWorkspace } from '../hooks/useWorkspace';
+import { useSchoolInfo } from '../hooks/useSchoolInfo';
+import { ActionButtons } from '../components/common/ActionButtons';
+import { LoadingError } from '../components/common/LoadingError';
 import { PageLayout } from '../components/common/PageLayout';
 import type { SchoolInfo, SchoolDetails } from '../types/school';
 import { handleDatabaseError } from '../utils/errorHandler';
@@ -23,11 +24,14 @@ const School: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // データ
-  const [schoolInfo, setSchoolInfo] = useState<SchoolInfo | null>(null);
-  const [schoolDetails, setSchoolDetails] = useState<SchoolDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // ワークスペース情報
+  const { workspaceName, workspaceOwner } = useWorkspace(workspaceId);
+  
+  // 学校情報取得（カスタムフックで簡略化）
+  const { school: schoolInfo, schoolDetails, loading, error, refetch } = useSchoolInfo({
+    schoolCode,
+    workspaceId
+  });
 
   // フォーム入力状態
   const [hasCafeteria, setHasCafeteria] = useState<boolean | null>(null);
@@ -39,80 +43,26 @@ const School: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAlreadyTarget, setIsAlreadyTarget] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  // isRegisteringは削除（使用しない）
 
   // メニュー表示状態
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // ワークスペース情報（カスタムフックに置き換え）
-  const { workspaceName, workspaceOwner } = useWorkspace(workspaceId);
-
-  // データ取得
-    useEffect(() => {
-  const fetchSchoolData = async () => {
-    logger.log('=== School画面データ取得開始 ===');
-    logger.log('workspaceId:', workspaceId);
-    logger.log('schoolCode:', schoolCode);
-    logger.log('user:', user);
-
-    if (!schoolCode) {
-      logger.error('学校コードが未指定');
-      setError('学校コードが指定されていません');
-      setLoading(false);
-      return;
+  // フォーム初期値の設定（schoolDetailsが取得されたら）
+  useEffect(() => {
+    if (schoolDetails) {
+      setHasCafeteria(schoolDetails.has_cafeteria);
+      setHasUniform(schoolDetails.has_uniform);
+      setCommuteRoute(schoolDetails.commute_route || '');
+      setCommuteTime(schoolDetails.commute_time);
+      setNearestStation(schoolDetails.nearest_station || '');
+      setOfficialWebsite(schoolDetails.official_website || '');
+      setIsEditing(false);
+      setIsAlreadyTarget(true);
+    } else {
+      setIsEditing(true);
+      setIsAlreadyTarget(false);
     }
-
-    if (!workspaceId) {
-      logger.error('ワークスペースIDが未指定');
-      setError('ワークスペースIDが指定されていません');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // 1. 学校基礎情報を取得
-      logger.log('ステップ1: 学校基礎情報取得中...');
-      const { data: schoolData, error: schoolError } = await supabase
-        .from('schools')
-        .select('id, school_code, name, prefecture, address, latitude, longitude')
-        .eq('school_code', schoolCode)
-        .single();
-
-      logger.log('学校情報取得結果:', schoolData);
-      logger.log('学校情報取得エラー:', schoolError);
-
-      if (schoolError) {
-        logger.error('学校情報取得でエラー:', schoolError);
-        throw schoolError;
-      }
-      if (!schoolData) {
-        logger.error('学校が見つかりません');
-        throw new Error('学校が見つかりません');
-      }
-
-      setSchoolInfo(schoolData);
-      logger.log('学校情報設定完了:', schoolData);
-
-      // 2. 学校詳細情報を取得
-      logger.log('ステップ2: 学校詳細情報取得中...');
-      logger.log('検索条件 - school_id:', schoolData.id);
-      logger.log('検索条件 - workspace_id:', workspaceId);
-      
-      // ...以下、同様のログもloggerに置き換え
-      
-    } catch (err) {
-      logger.error('=== データ取得エラー ===');
-      logger.error('エラー詳細:', err);
-      logger.error('エラーメッセージ:', (err as Error).message);
-      setError('学校情報の取得に失敗しました');
-    } finally {
-      setLoading(false);
-      logger.log('=== School画面データ取得完了 ===');
-    }
-  };
-
-  fetchSchoolData();
-}, [schoolCode, workspaceId]);
+  }, [schoolDetails]);
           
   // 学校詳細情報の登録
   const handleSubmit = async (e: React.FormEvent) => {
@@ -125,7 +75,7 @@ const School: React.FC = () => {
         .from('school_details')
         .upsert({
           workspace_id: workspaceId,
-          school_id: schoolInfo.id,
+          school_id: schoolInfo!.id,
           has_cafeteria: hasCafeteria,
           has_uniform: hasUniform,
           commute_route: commuteRoute,
@@ -140,9 +90,13 @@ const School: React.FC = () => {
       if (error) throw error;
 
       alert('学校情報を登録しました');
+      
+      // データを再取得
+      await refetch();
+      setIsEditing(false);
 
       // 2. Home画面へ遷移（志望校一覧セクションへスクロール）
-      navigate(`/workspace/${workspaceId}?scrollTo=${schoolInfo.id}`);
+      navigate(`/workspace/${workspaceId}?scrollTo=${schoolInfo!.id}`);
 
     } catch (err) {
       logger.error('登録エラー:', err);
@@ -184,7 +138,11 @@ const School: React.FC = () => {
       if (error) throw error;
 
       alert('学校情報を削除しました');
-      setSchoolDetails(null);
+      
+      // データを再取得（schoolDetailsがnullになる）
+      await refetch();
+      
+      // フォームをリセット
       setHasCafeteria(null);
       setHasUniform(null);
       setCommuteRoute('');

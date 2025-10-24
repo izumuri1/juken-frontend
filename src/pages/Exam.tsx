@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { logger } from '../utils/logger' // ← 追加
+import { logger } from '../utils/logger'
+import { useWorkspace } from '../hooks/useWorkspace'
+import { useSchoolInfo } from '../hooks/useSchoolInfo'
 import { PageLayout } from '../components/common/PageLayout'
 import { LoadingError } from '../components/common/LoadingError'
 import { ActionButtons } from '../components/common/ActionButtons'
@@ -22,16 +24,17 @@ export default function Exam() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  const [school, setSchool] = useState<SchoolInfo | null>(null)
-  const [schoolDetail, setSchoolDetail] = useState<SchoolDetails | null>(null)
   const [examInfos, setExamInfos] = useState<ExamInfo[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  
-  // PageLayout用の状態
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [workspaceName, setWorkspaceName] = useState('')
-  const [workspaceOwner, setWorkspaceOwner] = useState('')
+
+  // ワークスペース情報取得
+  const { workspaceName, workspaceOwner } = useWorkspace(workspaceId)
+  
+  // 学校情報取得
+  const { school, schoolDetails: schoolDetail, loading, error } = useSchoolInfo({
+    schoolId,
+    workspaceId
+  })
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -39,88 +42,8 @@ export default function Exam() {
 
   useEffect(() => {
     if (!user || !workspaceId || !schoolId) return
-    loadData()
-    fetchWorkspaceInfo()
+    fetchExamInfos()
   }, [user, workspaceId, schoolId])
-
-  const fetchWorkspaceInfo = async () => {
-    if (!workspaceId) return
-
-    try {
-      const { data: workspaceData, error: workspaceError } = await supabase
-        .from('workspaces')
-        .select('name, owner_id')
-        .eq('id', workspaceId)
-        .single()
-
-      if (workspaceError) throw workspaceError
-
-      setWorkspaceName(workspaceData.name)
-
-      const { data: ownerData, error: ownerError } = await supabase
-        .from('users')
-        .select('username')
-        .eq('id', workspaceData.owner_id)
-        .single()
-
-      if (ownerError) throw ownerError
-
-      setWorkspaceOwner(ownerData.username)
-    } catch (err) {
-      logger.error('Error fetching workspace info:', err)
-    }
-  }
-
-  const loadData = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      await Promise.all([
-        fetchSchool(),
-        fetchSchoolDetail(),
-        fetchExamInfos()
-      ])
-    } catch (err) {
-      logger.error('Error loading data:', err)
-      setError('データの読み込みに失敗しました')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchSchool = async () => {
-  logger.log('=== fetchSchool開始 ===')
-  logger.log('schoolId:', schoolId)
-  logger.log('workspaceId:', workspaceId)
-  
-  const { data, error } = await supabase
-    .from('schools')
-    .select('*')
-    .eq('id', schoolId)
-    .single()
-
-  logger.log('学校データ取得結果:', data)
-  logger.log('学校データ取得エラー:', error)
-
-  if (error) {
-    logger.error('fetchSchoolでエラー:', error)
-    throw error
-  }
-    setSchool(data)
-    }
-
-  const fetchSchoolDetail = async () => {
-    const { data, error } = await supabase
-      .from('school_details')
-      .select('*')
-      .eq('workspace_id', workspaceId)
-      .eq('school_id', schoolId)
-      .single()
-
-    if (error && error.code !== 'PGRST116') throw error
-    setSchoolDetail(data)
-  }
 
   const fetchExamInfos = async () => {
     const { data, error } = await supabase

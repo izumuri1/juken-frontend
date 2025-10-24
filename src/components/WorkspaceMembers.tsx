@@ -1,49 +1,13 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
-
-interface WorkspaceMember {
-  id: string;
-  user_id: string;
-  role: string;
-  joined_at: string;
-  username: string;
-}
+import { useWorkspaceMembers } from '../hooks/useWorkspaceMembers';
 
 interface WorkspaceMembersProps {
   workspaceId: string;
 }
 
 export function WorkspaceMembers({ workspaceId }: WorkspaceMembersProps) {
-  const [members, setMembers] = useState<WorkspaceMember[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { members, loading, error } = useWorkspaceMembers(workspaceId);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-        try {
-        setIsLoading(true);
-        setError('');
-
-        const { data, error } = await supabase
-            .rpc('get_workspace_members_safe', {
-            workspace_id_param: workspaceId
-            });
-
-        if (error) throw error;
-
-        setMembers(data || []);
-        } catch (err: any) {
-        console.error('メンバー取得エラー:', err);
-        setError('メンバー情報の取得に失敗しました');
-        } finally {
-        setIsLoading(false);
-        }
-    };
-
-    fetchMembers();
-    }, [workspaceId]);
-
-  if (isLoading) {
+  if (loading) {
     return <div className="workspace-members-loading">読み込み中...</div>;
   }
 

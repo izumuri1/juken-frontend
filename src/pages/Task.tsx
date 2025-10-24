@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useWorkspace } from '../hooks/useWorkspace';
+import { useWorkspaceMembers } from '../hooks/useWorkspaceMembers';
 import { PageLayout } from '../components/common/PageLayout';
 import { LoadingError } from '../components/common/LoadingError';
 import { ActionButtons } from '../components/common/ActionButtons';
@@ -18,45 +19,22 @@ const Task: React.FC = () => {
   const { workspaceName, workspaceOwner } = useWorkspace(workspaceId);
 
   const [examTasks, setExamTasks] = useState<ExamTaskInfo[]>([]);
-  const [workspaceMembers, setWorkspaceMembers] = useState<{ id: string; username: string }[]>([]);
   const [filterBy, setFilterBy] = useState<FilterBy>('all');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // ワークスペースメンバー取得
+  const { members: workspaceMembers } = useWorkspaceMembers(workspaceId);
 
-  useEffect(() => {
-    if (!workspaceId) return;
-    loadData();
-  }, [workspaceId]);
+  // ...
 
   const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // ワークスペースメンバーを取得
-      const { data: membersData, error: membersError } = await supabase
-        .from('workspace_members')
-        .select(`
-          user_id,
-          users!inner(username)
-        `)
-        .eq('workspace_id', workspaceId);
-
-      if (membersError) throw membersError;
-
-      const members = membersData.map((m: any) => ({
-        id: m.user_id,
-        username: m.users.username
-      }));
-      setWorkspaceMembers(members);
-
-      // 受験情報を取得
       // 受験情報を取得
 const { data: examData, error: examError } = await supabase
     .from('exam_info')
