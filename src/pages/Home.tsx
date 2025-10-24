@@ -12,6 +12,7 @@ import { PageLayout } from '../components/common/PageLayout';
 import type { SchoolMaster, SchoolListItem } from '../types/school';
 import type { ExamListItem } from '../types/exam';
 import type { WorkspaceMember } from '../types/workspace';
+import { SEARCH, ALLOWED_PATTERNS, DATE_FORMAT } from '../constants/appConstants'
 import './Home.scss';
 
 const Home: React.FC = () => {
@@ -196,11 +197,11 @@ const Home: React.FC = () => {
                 school_id: item.school_id,
                 schoolName: item.schools.name,
                 desireLevel: targetData?.child_aspiration || 0,
-                examDate: new Date(item.exam_start).toLocaleDateString('ja-JP'),
-                examTime: `${new Date(item.exam_start).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })} ～ ${new Date(item.exam_end).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}`,
+                examDate: new Date(item.exam_start).toLocaleDateString(DATE_FORMAT.LOCALE),
+                examTime: `${new Date(item.exam_start).toLocaleTimeString(DATE_FORMAT.LOCALE, DATE_FORMAT.OPTIONS.TIME)} ～ ${new Date(item.exam_end).toLocaleTimeString(DATE_FORMAT.LOCALE, DATE_FORMAT.OPTIONS.TIME)}`,
                 examStart: item.exam_start,  // ← 追加：並び替え用のタイムスタンプ
                 deviationValue: item.deviation_value,
-                updatedAt: new Date(item.updated_at).toLocaleDateString('ja-JP')
+                updatedAt: new Date(item.updated_at).toLocaleDateString(DATE_FORMAT.LOCALE)
               };
             })
           );
@@ -237,23 +238,22 @@ const handleSearchInput = async (value: string) => {
   logger.log('入力値:', value);
   logger.log('検索クエリ:', sanitizedQuery);
   
-  // 入力が空または2文字未満の場合は候補を非表示
-  if (!sanitizedQuery || sanitizedQuery.length < 2) {
-    logger.log('2文字未満のため検索スキップ');
+  // 入力が空または最小文字数未満の場合は候補を非表示
+  if (!sanitizedQuery || sanitizedQuery.length < SEARCH.QUERY.MIN_LENGTH) {
+    logger.log(`${SEARCH.QUERY.MIN_LENGTH}文字未満のため検索スキップ`);
     setSearchSuggestions([]);
     setShowSuggestions(false);
     return;
   }
   
   // 文字数制限
-  if (sanitizedQuery.length > 50) {
-    logger.log('50文字を超えているため検索スキップ');
+  if (sanitizedQuery.length > SEARCH.QUERY.MAX_LENGTH) {
+    logger.log(`${SEARCH.QUERY.MAX_LENGTH}文字を超えているため検索スキップ`);
     return;
   }
   
   // 特殊文字チェック
-  const allowedPattern = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBFa-zA-Z0-9\s\-ー]+$/;
-  if (!allowedPattern.test(sanitizedQuery)) {
+  if (!ALLOWED_PATTERNS.SEARCH.test(sanitizedQuery)) {
     logger.log('使用できない文字が含まれています');
     return;
   }

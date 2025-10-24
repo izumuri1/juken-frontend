@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useForm } from '../../hooks/useForm'
 import FormField from '../common/FormField'
+import { DATE_FORMAT } from '../../constants/appConstants'
 import './ExamInfoCard.scss'
 
 type TabType = 'difficulty' | 'application' | 'fee' | 'exam' | 'announcement' | 'enrollment' | 'admissionFee'
@@ -137,12 +138,12 @@ export default function ExamInfoCard({ examInfo, onUpdated, onDeleted }: Props) 
 
   const formatDateTime = (dateTime: string | null) => {
     if (!dateTime) return '-'
-    return new Date(dateTime).toLocaleString('ja-JP')
+    return new Date(dateTime).toLocaleString(DATE_FORMAT.LOCALE, DATE_FORMAT.OPTIONS.DATE_TIME)
   }
 
   const formatDate = (date: string | null) => {
     if (!date) return '-'
-    return new Date(date).toLocaleDateString('ja-JP')
+    return new Date(date).toLocaleDateString(DATE_FORMAT.LOCALE, DATE_FORMAT.OPTIONS.DATE)
   }
 
   const handleUpdate = async () => {

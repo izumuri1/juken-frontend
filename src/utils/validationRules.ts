@@ -2,6 +2,7 @@
 // フォームバリデーションルールを共通化
 
 import { AUTH_ERROR_MESSAGES } from '../constants/errorMessages'
+import { VALIDATION } from '../constants/appConstants'
 
 export const validationRules = {
   email: {
@@ -17,7 +18,7 @@ export const validationRules = {
   password: {
     custom: (value: string) => {
       if (!value.trim()) return AUTH_ERROR_MESSAGES.PASSWORD_REQUIRED
-      if (value.length < 8) return AUTH_ERROR_MESSAGES.PASSWORD_TOO_SHORT
+      if (value.length < VALIDATION.PASSWORD.MIN_LENGTH) return AUTH_ERROR_MESSAGES.PASSWORD_TOO_SHORT
       return undefined
     }
   },
@@ -25,8 +26,8 @@ export const validationRules = {
   username: {
     custom: (value: string) => {
       if (!value.trim()) return AUTH_ERROR_MESSAGES.USERNAME_REQUIRED
-      if (value.length < 2) return AUTH_ERROR_MESSAGES.USERNAME_TOO_SHORT
-      if (value.length > 20) return AUTH_ERROR_MESSAGES.USERNAME_TOO_LONG
+      if (value.length < VALIDATION.USERNAME.MIN_LENGTH) return AUTH_ERROR_MESSAGES.USERNAME_TOO_SHORT
+      if (value.length > VALIDATION.USERNAME.MAX_LENGTH) return AUTH_ERROR_MESSAGES.USERNAME_TOO_LONG
       return undefined
     }
   },
