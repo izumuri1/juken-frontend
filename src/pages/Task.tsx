@@ -26,11 +26,16 @@ const Task: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // ワークスペースメンバー取得
-  const { members: workspaceMembers } = useWorkspaceMembers(workspaceId);
+    const { members: workspaceMembers } = useWorkspaceMembers(workspaceId);
 
-  // ...
+    // データ取得のuseEffect
+    useEffect(() => {
+    if (workspaceId && workspaceMembers.length > 0) {
+        loadData();
+    }
+    }, [workspaceId, workspaceMembers]);
 
-  const loadData = async () => {
+    const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -79,13 +84,13 @@ const { data: examData, error: examError } = await supabase
       if (tasksError) throw tasksError;
 
       // タスクに担当者名を追加
-      const tasksWithUsername = tasksData.map((task: any) => {
-        const member = members.find(m => m.id === task.assigned_to);
+        const tasksWithUsername = tasksData.map((task: any) => {
+        const member = workspaceMembers.find(m => m.user_id === task.assigned_to);
         return {
-          ...task,
-          assigned_username: member ? member.username : null
+            ...task,
+            assigned_username: member ? member.username : null
         };
-      });
+        });
 
       // 受験情報とタスクを結合
       const examTasksData: ExamTaskInfo[] = examData.map((exam: any) => {
@@ -126,7 +131,7 @@ const { data: examData, error: examError } = await supabase
     try {
         // 担当者のユーザー名を取得
         const assignedUsername = userId 
-        ? workspaceMembers.find(m => m.id === userId)?.username || null
+        ? workspaceMembers.find(m => m.user_id === userId)?.username || null
         : null;
 
         // 既存のタスクを確認
@@ -444,15 +449,15 @@ const { data: examData, error: examError } = await supabase
                       <h4 className="subsection-title">受験申込</h4>
                       <div className="task-controls">
                         <select
-                          value={getTaskForType(exam.tasks, 'application')?.assigned_to || ''}
-                          onChange={(e) => handleAssignTask(exam.id, 'application', e.target.value || null)}
-                          className="assign-select"
-                        >
-                          <option value="">担当者未設定</option>
-                          {workspaceMembers.map(member => (
-                            <option key={member.id} value={member.id}>{member.username}</option>
-                          ))}
-                        </select>
+                            value={getTaskForType(exam.tasks, 'application')?.assigned_to || ''}
+                            onChange={(e) => handleAssignTask(exam.id, 'application', e.target.value || null)}
+                            className="assign-select"
+                            >
+                            <option value="">担当者未設定</option>
+                            {workspaceMembers.map(member => (
+                                <option key={member.user_id} value={member.user_id}>{member.username}</option>
+                            ))}
+                            </select>
                         <button
                           className={`complete-btn ${getTaskForType(exam.tasks, 'application')?.is_completed ? 'completed' : ''}`}
                           onClick={() => handleToggleComplete(
@@ -493,15 +498,15 @@ const { data: examData, error: examError } = await supabase
                       <h4 className="subsection-title">受験料支払</h4>
                       <div className="task-controls">
                         <select
-                          value={getTaskForType(exam.tasks, 'fee_payment')?.assigned_to || ''}
-                          onChange={(e) => handleAssignTask(exam.id, 'fee_payment', e.target.value || null)}
-                          className="assign-select"
-                        >
-                          <option value="">担当者未設定</option>
-                          {workspaceMembers.map(member => (
-                            <option key={member.id} value={member.id}>{member.username}</option>
-                          ))}
-                        </select>
+                            value={getTaskForType(exam.tasks, 'fee_payment')?.assigned_to || ''}
+                            onChange={(e) => handleAssignTask(exam.id, 'fee_payment', e.target.value || null)}
+                            className="assign-select"
+                            >
+                            <option value="">担当者未設定</option>
+                            {workspaceMembers.map(member => (
+                                <option key={member.user_id} value={member.user_id}>{member.username}</option>
+                            ))}
+                            </select>
                         <button
                           className={`complete-btn ${getTaskForType(exam.tasks, 'fee_payment')?.is_completed ? 'completed' : ''}`}
                           onClick={() => handleToggleComplete(
@@ -530,14 +535,14 @@ const { data: examData, error: examError } = await supabase
                       <h4 className="subsection-title">合格発表</h4>
                       <div className="task-controls">
                         <select
-                          value={getTaskForType(exam.tasks, 'announcement')?.assigned_to || ''}
-                          onChange={(e) => handleAssignTask(exam.id, 'announcement', e.target.value || null)}
-                          className="assign-select"
+                        value={getTaskForType(exam.tasks, 'announcement')?.assigned_to || ''}
+                        onChange={(e) => handleAssignTask(exam.id, 'announcement', e.target.value || null)}
+                        className="assign-select"
                         >
-                          <option value="">担当者未設定</option>
-                          {workspaceMembers.map(member => (
-                            <option key={member.id} value={member.id}>{member.username}</option>
-                          ))}
+                        <option value="">担当者未設定</option>
+                        {workspaceMembers.map(member => (
+                            <option key={member.user_id} value={member.user_id}>{member.username}</option>
+                        ))}
                         </select>
                         <button
                           className={`complete-btn ${getTaskForType(exam.tasks, 'announcement')?.is_completed ? 'completed' : ''}`}
@@ -567,14 +572,14 @@ const { data: examData, error: examError } = await supabase
                       <h4 className="subsection-title">入学申込</h4>
                       <div className="task-controls">
                         <select
-                          value={getTaskForType(exam.tasks, 'enrollment')?.assigned_to || ''}
-                          onChange={(e) => handleAssignTask(exam.id, 'enrollment', e.target.value || null)}
-                          className="assign-select"
+                        value={getTaskForType(exam.tasks, 'enrollment')?.assigned_to || ''}
+                        onChange={(e) => handleAssignTask(exam.id, 'enrollment', e.target.value || null)}
+                        className="assign-select"
                         >
-                          <option value="">担当者未設定</option>
-                          {workspaceMembers.map(member => (
-                            <option key={member.id} value={member.id}>{member.username}</option>
-                          ))}
+                        <option value="">担当者未設定</option>
+                        {workspaceMembers.map(member => (
+                            <option key={member.user_id} value={member.user_id}>{member.username}</option>
+                        ))}
                         </select>
                         <button
                           className={`complete-btn ${getTaskForType(exam.tasks, 'enrollment')?.is_completed ? 'completed' : ''}`}
@@ -606,14 +611,14 @@ const { data: examData, error: examError } = await supabase
                       <h4 className="subsection-title">入学金支払</h4>
                       <div className="task-controls">
                         <select
-                          value={getTaskForType(exam.tasks, 'admission_fee')?.assigned_to || ''}
-                          onChange={(e) => handleAssignTask(exam.id, 'admission_fee', e.target.value || null)}
-                          className="assign-select"
+                        value={getTaskForType(exam.tasks, 'admission_fee')?.assigned_to || ''}
+                        onChange={(e) => handleAssignTask(exam.id, 'admission_fee', e.target.value || null)}
+                        className="assign-select"
                         >
-                          <option value="">担当者未設定</option>
-                          {workspaceMembers.map(member => (
-                            <option key={member.id} value={member.id}>{member.username}</option>
-                          ))}
+                        <option value="">担当者未設定</option>
+                        {workspaceMembers.map(member => (
+                            <option key={member.user_id} value={member.user_id}>{member.username}</option>
+                        ))}
                         </select>
                         <button
                           className={`complete-btn ${getTaskForType(exam.tasks, 'admission_fee')?.is_completed ? 'completed' : ''}`}

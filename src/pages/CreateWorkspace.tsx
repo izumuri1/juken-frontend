@@ -61,18 +61,43 @@ export function CreateWorkspace() {
         logger.error("オーナークエリエラー:", ownerError);
       }
 
-      // メンバーとして参加しているワークスペースを取得
-      const { data: memberWorkspaces, error: memberError } = await supabase
+      // メンバーとして参加しているワークスペースIDを取得
+      const { data: memberData, error: memberError } = await supabase
         .from("workspace_members")
-        .select("workspace_id, workspaces(id, name, owner_id, created_at)")
+        .select("workspace_id")
         .eq("user_id", user.id);
 
-      logger.log("メンバーワークスペース:", memberWorkspaces);
+      logger.log("メンバーワークスペース:", memberData);
       if (memberError) {
         logger.error("メンバークエリエラー:", memberError);
       }
-      
-      // ...以下略
+
+      // メンバーワークスペースの詳細を取得
+      const memberWorkspaces: Workspace[] = [];
+      if (memberData && memberData.length > 0) {
+        const workspaceIds = memberData.map(m => m.workspace_id);
+        const { data: workspaceDetails, error: detailsError } = await supabase
+          .from("workspaces")
+          .select("*")
+          .in("id", workspaceIds);
+        
+        if (detailsError) {
+          logger.error("ワークスペース詳細取得エラー:", detailsError);
+        } else if (workspaceDetails) {
+          memberWorkspaces.push(...workspaceDetails);
+        }
+      }
+
+      // 重複を除いて結合
+      const allWorkspaces: Workspace[] = [...(ownerWorkspaces || [])];
+
+      // メンバーワークスペースから、既にオーナーワークスペースに含まれていないものを追加
+      memberWorkspaces.forEach((workspace: Workspace) => {
+        if (!allWorkspaces.find((w) => w.id === workspace.id)) {
+          allWorkspaces.push(workspace);
+        }
+      });
+
       logger.log("全ワークスペース:", allWorkspaces);
       setWorkspaces(allWorkspaces);
     } catch (error) {
