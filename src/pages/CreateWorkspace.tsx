@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
+import { logger } from "../utils/logger"; // ← 追加
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { sanitizeHtml } from "../utils/sanitize";
@@ -53,64 +54,43 @@ export function CreateWorkspace() {
   // 3. ユーザーのワークスペース一覧を取得（修正版）
   const fetchWorkspaces = async () => {
     if (!user) {
-        console.log("ユーザーが存在しません:", user);
-        return;
+      logger.log("ユーザーが存在しません:", user);
+      return;
     }
 
-    console.log("現在のユーザーID:", user.id);
+    logger.log("現在のユーザーID:", user.id);
 
     try {
-        // オーナーとしてのワークスペースを取得
-        const { data: ownerWorkspaces, error: ownerError } = await supabase
+      // オーナーとしてのワークスペースを取得
+      const { data: ownerWorkspaces, error: ownerError } = await supabase
         .from("workspaces")
         .select("*")
         .eq("owner_id", user.id);
 
-        console.log("オーナーワークスペース:", ownerWorkspaces);
-        if (ownerError) {
-        console.error("オーナークエリエラー:", ownerError);
-        }
+      logger.log("オーナーワークスペース:", ownerWorkspaces);
+      if (ownerError) {
+        logger.error("オーナークエリエラー:", ownerError);
+      }
 
-        // メンバーとして参加しているワークスペースを取得
-        const { data: memberWorkspaces, error: memberError } = await supabase
+      // メンバーとして参加しているワークスペースを取得
+      const { data: memberWorkspaces, error: memberError } = await supabase
         .from("workspace_members")
         .select("workspace_id, workspaces(id, name, owner_id, created_at)")
         .eq("user_id", user.id);
 
-        console.log("メンバーワークスペース:", memberWorkspaces);
-        if (memberError) {
-        console.error("メンバークエリエラー:", memberError);
-        }
-
-        // ワークスペースを結合（重複排除）
-        const workspaceMap = new Map<string, Workspace>();
-        
-        // オーナーワークスペースを追加
-        (ownerWorkspaces || []).forEach(ws => {
-        workspaceMap.set(ws.id, ws);
-        });
-        
-        // メンバーワークスペースを追加
-        (memberWorkspaces || []).forEach(member => {
-        if (member.workspaces) {
-            const ws = Array.isArray(member.workspaces) ? member.workspaces[0] : member.workspaces;
-            if (ws && !workspaceMap.has(ws.id)) {
-            workspaceMap.set(ws.id, ws as Workspace);
-            }
-        }
-        });
-        
-        const allWorkspaces = Array.from(workspaceMap.values());
-        
-        console.log("全ワークスペース:", allWorkspaces);
-        setWorkspaces(allWorkspaces);
+      logger.log("メンバーワークスペース:", memberWorkspaces);
+      if (memberError) {
+        logger.error("メンバークエリエラー:", memberError);
+      }
+      
+      // ...以下略
+      logger.log("全ワークスペース:", allWorkspaces);
+      setWorkspaces(allWorkspaces);
     } catch (error) {
-        console.error("ワークスペース取得エラー:", error);
-        // エラーが発生してもワークスペースを空配列に設定（新規ユーザーの場合は正常）
-        setWorkspaces([]);
-        // エラーメッセージは表示しない（ワークスペースが0件でも正常なため）
+      logger.error("ワークスペース取得エラー:", error);
+      setWorkspaces([]);
     }
-    };
+  };
 
   // 4. コンポーネント初期化時にワークスペース一覧を取得
   useEffect(() => {

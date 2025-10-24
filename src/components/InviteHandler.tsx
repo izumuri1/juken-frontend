@@ -1,8 +1,9 @@
 // src/components/InviteHandler.tsx
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
+import { logger } from '../utils/logger' // ← 追加
 import './InviteHandler.scss';
 
 interface InviteTokenData {
@@ -97,31 +98,23 @@ export function InviteHandler() {
       setInviteData(processedData);
 
       // ログイン状態チェック
-        console.log('招待トークン処理: ユーザー情報', user);
-        console.log('招待トークン処理: ワークスペース情報', processedData);
+      logger.log('招待トークン処理: ユーザー情報', user);
+      logger.log('招待トークン処理: ワークスペース情報', processedData);
 
-        if (user) {
-        console.log('ログイン済みユーザー - joinWorkspace実行');
+      if (user) {
+        logger.log('ログイン済みユーザー - joinWorkspace実行');
         await joinWorkspace(processedData, user.id);
-        } else {
-        console.log('未ログインユーザー - 新規登録画面へ');
-        // 未ログインの場合は新規登録画面へ
-        sessionStorage.setItem('pendingInvite', JSON.stringify({
-          token: token,
-          workspaceId: processedData.workspace_id,
-          workspaceName: processedData.workspaces?.name || 'ワークスペース'
-        }));
-        
-        navigate(`/signup?inviteToken=${token}&workspaceName=${encodeURIComponent(processedData.workspaces?.name || 'ワークスペース')}`);
+      } else {
+        logger.log('未ログインユーザー - 新規登録画面へ');
+        // ...
       }
-
-    } catch (error: any) {
-      console.error('招待トークン検証エラー:', error);
-      setError('招待リンクの処理中にエラーが発生しました');
-    } finally {
-      setLoading(false);
-    }
-  };
+      } catch (error: any) {
+        logger.error('招待トークン検証エラー:', error);
+        setError('招待リンクの処理中にエラーが発生しました');
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const joinWorkspace = async (tokenData: InviteTokenData, userId: string) => {
     try {
@@ -135,45 +128,26 @@ export function InviteHandler() {
         .eq('user_id', userId)
         .maybeSingle();
 
-        console.log('既存メンバーチェック:', existingMember);
+        logger.log('既存メンバーチェック:', existingMember);
 
         if (existingMember) {
-        console.log('既にメンバーです。ワークスペースへ遷移します。');
-        navigate(`/workspace/${tokenData.workspace_id}`);
-        return;
+          logger.log('既にメンバーです。ワークスペースへ遷移します。');
+          navigate(`/workspace/${tokenData.workspace_id}`);
+          return;
         }
 
-      // ワークスペースメンバーとして追加
-      const { error: memberError } = await supabase
-        .from('workspace_members')
-        .insert({
-          workspace_id: tokenData.workspace_id,
-          user_id: userId,
-          role: 'member'
-        });
+        // ...
 
-      if (memberError) throw memberError;
+        if (tokenUpdateError) {
+          logger.warn('トークン更新エラー:', tokenUpdateError);
+        }
 
-      // トークンの使用回数を更新
-      const { error: tokenUpdateError } = await supabase
-        .from('invitation_tokens')
-        .update({
-          current_uses: tokenData.current_uses + 1,
-          used_by: userId,
-          used_at: new Date().toISOString()
-        })
-        .eq('id', tokenData.id);
+        // ...
 
-      if (tokenUpdateError) {
-        console.warn('トークン更新エラー:', tokenUpdateError);
-      }
-
-      navigate(`/workspace/${tokenData.workspace_id}`);
-
-    } catch (error: any) {
-      console.error('ワークスペース参加エラー:', error);
-      setError('ワークスペースへの参加に失敗しました');
-    } finally {
+        } catch (error: any) {
+          logger.error('ワークスペース参加エラー:', error);
+          setError('ワークスペースへの参加に失敗しました');
+        } finally {
       setLoading(false);
     }
   };

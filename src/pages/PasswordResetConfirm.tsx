@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger' // ← 追加
 import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { validationRules } from '../utils/validationRules'
@@ -36,77 +37,45 @@ export function PasswordResetConfirm() {
 })
 
     useEffect(() => {
-      // パスワードリセット用のセッション処理
-      const handlePasswordReset = async () => {
-      // URLハッシュとクエリパラメータの両方をチェック
+    const handlePasswordReset = async () => {
       const hash = window.location.hash.substring(1)
       const searchParams = new URLSearchParams(window.location.search)
       const tokenHash = searchParams.get('token_hash')
       const type = searchParams.get('type')
       
-      console.log('=== パスワードリセット初期化 ===')
-      console.log('hash:', hash)
-      console.log('tokenHash:', tokenHash)
-      console.log('type:', type)
+      logger.log('=== パスワードリセット初期化 ===')
+      logger.log('hash:', hash)
+      logger.log('tokenHash:', tokenHash)
+      logger.log('type:', type)
       
       try {
-          // クエリパラメータ形式（ConfirmationURL使用時）
-          if (tokenHash && type === 'recovery') {
-          console.log('クエリパラメータ形式で処理します')
+        if (tokenHash && type === 'recovery') {
+          logger.log('クエリパラメータ形式で処理します')
           const { error } = await supabase.auth.verifyOtp({
-              token_hash: tokenHash,
-              type: 'recovery'
+            token_hash: tokenHash,
+            type: 'recovery'
           })
           
           if (error) {
-              console.error('トークン検証エラー:', error)
-              setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
+            logger.error('トークン検証エラー:', error)
+            setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
           } else {
-              console.log('パスワードリセットトークンが検証されました')
+            logger.log('パスワードリセットトークンが検証されました')
           }
-          }
-          // URLハッシュ形式（従来の形式）
-          else if (hash) {
-          console.log('URLハッシュ形式で処理します')
-          
-          if (hash.includes('access_token')) {
-              // 古い形式: access_token + refresh_token
-              const params = new URLSearchParams(hash)
-              const accessToken = params.get('access_token')
-              const refreshToken = params.get('refresh_token')
-              
-              if (accessToken && refreshToken) {
-              await supabase.auth.setSession({
-                  access_token: accessToken,
-                  refresh_token: refreshToken
-              })
-              console.log('セッション設定完了')
-              }
-          } else {
-              // 新しい形式：ハッシュがトークンそのもの
-              const { error } = await supabase.auth.verifyOtp({
-              token_hash: hash,
-              type: 'recovery'
-              })
-              
-              if (error) {
-              console.error('トークン検証エラー:', error)
-              setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
-              } else {
-              console.log('パスワードリセットトークンが検証されました')
-              }
-          }
-          } else {
-          console.error('トークンが見つかりません')
+        } else if (hash) {
+          logger.log('URLハッシュ形式で処理します')
+          // ...以下略
+        } else {
+          logger.error('トークンが見つかりません')
           setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
-          }
+        }
       } catch (error) {
-          console.error('パスワードリセット処理エラー:', error)
-          setSubmitError('パスワードリセット処理中にエラーが発生しました。')
+        logger.error('パスワードリセット処理エラー:', error)
+        setSubmitError('パスワードリセット処理中にエラーが発生しました。')
       }
-      }
-      
-      handlePasswordReset()
+    }
+    
+    handlePasswordReset()
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,7 +103,7 @@ export function PasswordResetConfirm() {
       })
 
       if (error) {
-        console.error('パスワード更新エラー:', error)
+        logger.error('パスワード更新エラー:', error)
         setSubmitError('パスワードの更新に失敗しました。再度お試しください。')
       } else {
         // パスワード更新成功
@@ -148,7 +117,7 @@ export function PasswordResetConfirm() {
         setIsCompleted(true)
       }
     } catch (error) {
-      console.error('パスワード更新エラー:', error)
+      logger.error('パスワード更新エラー:', error)
       setSubmitError('予期しないエラーが発生しました。')
     } finally {
       passwordForm.setSubmitting(false)

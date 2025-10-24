@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../lib/supabase' // ← 追加
+import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger'; // ← 追加
 import { useNavigate, useParams } from 'react-router-dom'; // ← useParamsを追加
 import { getDesireBadgeClass } from '../utils/helpers'; // 追加
 import { PageHeader } from '../components/common/PageHeader'; // 追加
@@ -53,9 +54,9 @@ const Home: React.FC = () => {
   // URLパラメータからworkspaceIdを取得
   const { workspaceId } = useParams<{ workspaceId: string }>();
 
-  // デバッグログを追加（← ここに追加）
+  // デバッグログを追加
   useEffect(() => {
-    console.log('Home画面: workspaceId =', workspaceId);
+    logger.log('Home画面: workspaceId =', workspaceId);
   }, [workspaceId]);
   
   // 検索関連
@@ -87,12 +88,12 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchTargetSchools = async () => {
       if (!workspaceId) {
-        console.log('workspaceIdが未設定のため志望校データ取得をスキップ');
+        logger.log('workspaceIdが未設定のため志望校データ取得をスキップ');
         return;
       }
 
       try {
-        console.log('=== 志望校データ取得開始 ===');
+        logger.log('=== 志望校データ取得開始 ===');
         
         // school_detailsを基準にデータを取得
         const { data: detailsData, error: detailsError } = await supabase
@@ -110,8 +111,8 @@ const Home: React.FC = () => {
           `)
           .eq('workspace_id', workspaceId);
 
-        console.log('school_detailsデータ取得結果:', detailsData);
-        console.log('school_detailsデータ取得エラー:', detailsError);
+        logger.log('school_detailsデータ取得結果:', detailsData);
+        logger.log('school_detailsデータ取得エラー:', detailsError);
 
         if (detailsError) throw detailsError;
 
@@ -148,7 +149,7 @@ const Home: React.FC = () => {
             })
           );
 
-          console.log('整形後の志望校データ:', schoolsWithTargetInfo);
+          logger.log('整形後の志望校データ:', schoolsWithTargetInfo);
           setSchools(schoolsWithTargetInfo);
 
           // URLパラメータからscrollToを取得してスクロール
@@ -166,11 +167,11 @@ const Home: React.FC = () => {
             }, 300);
           }
         } else {
-          console.log('志望校データが見つかりません');
+          logger.log('志望校データが見つかりません');
           setSchools([]);
         }
       } catch (err) {
-        console.error('志望校データ取得エラー:', err);
+        logger.error('志望校データ取得エラー:', err);
         setSchools([]);
       }
     };
@@ -178,16 +179,16 @@ const Home: React.FC = () => {
     fetchTargetSchools();
   }, [workspaceId]);
 
-// 受験情報を取得
+  // 受験情報を取得
   useEffect(() => {
     const fetchExamInfos = async () => {
       if (!workspaceId) {
-        console.log('workspaceIdが未設定のため受験情報取得をスキップ');
+        logger.log('workspaceIdが未設定のため受験情報取得をスキップ');
         return;
       }
 
       try {
-        console.log('=== 受験情報取得開始 ===');
+        logger.log('=== 受験情報取得開始 ===');
         
         // exam_infoテーブルから受験情報を取得
         const { data: examData, error: examError } = await supabase
@@ -207,8 +208,8 @@ const Home: React.FC = () => {
           .eq('workspace_id', workspaceId)
           .order('exam_start', { ascending: true });
 
-        console.log('受験情報取得結果:', examData);
-        console.log('受験情報取得エラー:', examError);
+        logger.log('受験情報取得結果:', examData);
+        logger.log('受験情報取得エラー:', examError);
 
         if (examError) throw examError;
 
@@ -240,14 +241,14 @@ const Home: React.FC = () => {
             })
           );
 
-          console.log('整形後の受験情報:', formattedExams);
+          logger.log('整形後の受験情報:', formattedExams);
           setExams(formattedExams);
         } else {
-          console.log('受験情報が見つかりません');
+          logger.log('受験情報が見つかりません');
           setExams([]);
         }
       } catch (err) {
-        console.error('受験情報取得エラー:', err);
+        logger.error('受験情報取得エラー:', err);
         setExams([]);
       }
     };
@@ -262,19 +263,19 @@ const handleSearchInput = async (value: string) => {
   setSearchQuery(value);
   
   if (isComposingRef.current) {
-    console.log('IME変換中のため検索スキップ');
+    logger.log('IME変換中のため検索スキップ');
     return;
   }
   
   const sanitizedQuery = value.trim();
   
-  console.log('=== 検索デバッグ ===');
-  console.log('入力値:', value);
-  console.log('検索クエリ:', sanitizedQuery);
+  logger.log('=== 検索デバッグ ===');
+  logger.log('入力値:', value);
+  logger.log('検索クエリ:', sanitizedQuery);
   
   // 入力が空または2文字未満の場合は候補を非表示
   if (!sanitizedQuery || sanitizedQuery.length < 2) {
-    console.log('2文字未満のため検索スキップ');
+    logger.log('2文字未満のため検索スキップ');
     setSearchSuggestions([]);
     setShowSuggestions(false);
     return;
@@ -282,20 +283,20 @@ const handleSearchInput = async (value: string) => {
   
   // 文字数制限
   if (sanitizedQuery.length > 50) {
-    console.log('50文字を超えているため検索スキップ');
+    logger.log('50文字を超えているため検索スキップ');
     return;
   }
   
   // 特殊文字チェック
   const allowedPattern = /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\u3400-\u4DBFa-zA-Z0-9\s\-ー]+$/;
   if (!allowedPattern.test(sanitizedQuery)) {
-    console.log('使用できない文字が含まれています');
+    logger.log('使用できない文字が含まれています');
     return;
   }
   
   try {
     setIsSearching(true);
-    console.log('Supabase検索開始...');
+    logger.log('Supabase検索開始...');
     
     // Supabaseから学校名を部分一致検索（ILIKE使用）
     const { data, error } = await supabase
@@ -304,25 +305,25 @@ const handleSearchInput = async (value: string) => {
       .ilike('name', `%${sanitizedQuery}%`)
       .limit(10);
     
-    console.log('検索結果:', data);
-    console.log('エラー:', error);
+    logger.log('検索結果:', data);
+    logger.log('エラー:', error);
     
     if (error) {
-      console.error('Supabaseエラー詳細:', error);
+      logger.error('Supabaseエラー詳細:', error);
       throw error;
     }
     
     if (data && data.length > 0) {
-      console.log(`${data.length}件の候補を表示`);
+      logger.log(`${data.length}件の候補を表示`);
       setSearchSuggestions(data);
       setShowSuggestions(true);
     } else {
-      console.log('該当する学校が見つかりませんでした');
+      logger.log('該当する学校が見つかりませんでした');
       setSearchSuggestions([]);
       setShowSuggestions(false);
     }
   } catch (error) {
-    console.error('検索エラー:', error);
+    logger.error('検索エラー:', error);
     setSearchSuggestions([]);
     setShowSuggestions(false);
   } finally {
@@ -342,7 +343,7 @@ const handleSearchInput = async (value: string) => {
 
     const handleSearch = () => {
       // 検索ボタンクリック時の処理（現状は入力時に自動検索されるため空実装）
-      console.log('検索ボタンがクリックされました');
+      logger.log('検索ボタンがクリックされました');
     };
 
   // Enterキーでの検索対応

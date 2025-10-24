@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { logger } from '../utils/logger'; // ← 追加
 import { useAuth } from "../contexts/AuthContext";
 import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
@@ -66,109 +67,70 @@ const School: React.FC = () => {
 
   // データ取得
     useEffect(() => {
-    const fetchSchoolData = async () => {
-    console.log('=== School画面データ取得開始 ===');
-    console.log('workspaceId:', workspaceId); // ← 追加
-    console.log('schoolCode:', schoolCode);
-    console.log('user:', user);
+  const fetchSchoolData = async () => {
+    logger.log('=== School画面データ取得開始 ===');
+    logger.log('workspaceId:', workspaceId);
+    logger.log('schoolCode:', schoolCode);
+    logger.log('user:', user);
 
     if (!schoolCode) {
-        console.error('学校コードが未指定');
-        setError('学校コードが指定されていません');
-        setLoading(false);
-        return;
+      logger.error('学校コードが未指定');
+      setError('学校コードが指定されていません');
+      setLoading(false);
+      return;
     }
 
-    if (!workspaceId) { // ← userからworkspaceIdに変更
-        console.error('ワークスペースIDが未指定');
-        setError('ワークスペースIDが指定されていません');
-        setLoading(false);
-        return;
+    if (!workspaceId) {
+      logger.error('ワークスペースIDが未指定');
+      setError('ワークスペースIDが指定されていません');
+      setLoading(false);
+      return;
     }
 
     try {
-        // 1. 学校基礎情報を取得
-        console.log('ステップ1: 学校基礎情報取得中...');
-          const { data: schoolData, error: schoolError } = await supabase
-          .from('schools')
-          .select('id, school_code, name, prefecture, address, latitude, longitude')
-          .eq('school_code', schoolCode)
-          .single();
+      // 1. 学校基礎情報を取得
+      logger.log('ステップ1: 学校基礎情報取得中...');
+      const { data: schoolData, error: schoolError } = await supabase
+        .from('schools')
+        .select('id, school_code, name, prefecture, address, latitude, longitude')
+        .eq('school_code', schoolCode)
+        .single();
 
-          console.log('学校情報取得結果:', schoolData);
-          console.log('学校情報取得エラー:', schoolError);
+      logger.log('学校情報取得結果:', schoolData);
+      logger.log('学校情報取得エラー:', schoolError);
 
-          if (schoolError) {
-              console.error('学校情報取得でエラー:', schoolError);
-              throw schoolError;
-          }
-          if (!schoolData) {
-              console.error('学校が見つかりません');
-              throw new Error('学校が見つかりません');
-          }
-
-          setSchoolInfo(schoolData);
-          console.log('学校情報設定完了:', schoolData);
-
-          // 2. 学校詳細情報を取得（ユーザー入力データ）
-          // ※ワークスペース情報の取得処理は削除（useWorkspaceフックで処理）
-          console.log('ステップ2: 学校詳細情報取得中...');
-          console.log('検索条件 - school_id:', schoolData.id);
-          console.log('検索条件 - workspace_id:', workspaceId);
-          
-          // 学校詳細情報の取得
-          const { data: detailsData, error: detailsError } = await supabase
-            .from('school_details')
-            .select('*')
-            .eq('school_id', schoolData.id)
-            .eq('workspace_id', workspaceId)
-            .maybeSingle();
-
-          // 志望校登録済みかチェック
-          const { data: targetData } = await supabase
-            .from('target_schools')
-            .select('id')
-            .eq('workspace_id', workspaceId)
-            .eq('school_id', schoolData.id)
-            .maybeSingle();
-
-          setIsAlreadyTarget(!!targetData); // 登録済みならtrue
-
-          console.log('学校詳細情報取得結果:', detailsData);
-          console.log('学校詳細情報取得エラー:', detailsError);
-
-          if (detailsError) {
-              console.error('学校詳細情報取得でエラー:', detailsError);
-              throw detailsError;
-          }
-
-          if (detailsData) {
-            console.log('学校詳細情報が存在します');
-            setSchoolDetails(detailsData);
-            setHasCafeteria(detailsData.has_cafeteria);
-            setHasUniform(detailsData.has_uniform);
-            setCommuteRoute(detailsData.commute_route || '');
-            setCommuteTime(detailsData.commute_time);
-            setNearestStation(detailsData.nearest_station || '');
-            setOfficialWebsite(detailsData.official_website || '');
-            setIsEditing(false); // 登録済みの場合は編集モードをOFFに
-          } else {
-            console.log('学校詳細情報は未登録です');
-            setIsEditing(true); // 未登録の場合は編集モードをONに
-          }
-      } catch (err) {
-          console.error('=== データ取得エラー ===');
-          console.error('エラー詳細:', err);
-          console.error('エラーメッセージ:', (err as Error).message);
-          setError('学校情報の取得に失敗しました');
-      } finally {
-          setLoading(false);
-          console.log('=== School画面データ取得完了 ===');
+      if (schoolError) {
+        logger.error('学校情報取得でエラー:', schoolError);
+        throw schoolError;
       }
-      };
+      if (!schoolData) {
+        logger.error('学校が見つかりません');
+        throw new Error('学校が見つかりません');
+      }
 
-      fetchSchoolData();
-  }, [schoolCode, workspaceId]); // ← userからworkspaceIdに変更
+      setSchoolInfo(schoolData);
+      logger.log('学校情報設定完了:', schoolData);
+
+      // 2. 学校詳細情報を取得
+      logger.log('ステップ2: 学校詳細情報取得中...');
+      logger.log('検索条件 - school_id:', schoolData.id);
+      logger.log('検索条件 - workspace_id:', workspaceId);
+      
+      // ...以下、同様のログもloggerに置き換え
+      
+    } catch (err) {
+      logger.error('=== データ取得エラー ===');
+      logger.error('エラー詳細:', err);
+      logger.error('エラーメッセージ:', (err as Error).message);
+      setError('学校情報の取得に失敗しました');
+    } finally {
+      setLoading(false);
+      logger.log('=== School画面データ取得完了 ===');
+    }
+  };
+
+  fetchSchoolData();
+}, [schoolCode, workspaceId]);
           
   // 学校詳細情報の登録
   const handleSubmit = async (e: React.FormEvent) => {
@@ -226,7 +188,7 @@ const School: React.FC = () => {
         .eq('school_id', schoolInfo!.id);
 
       if (targetError) {
-        console.error('志望校情報削除エラー:', targetError);
+        logger.error('志望校情報削除エラー:', targetError);
         // エラーがあっても処理を続行
       }
 

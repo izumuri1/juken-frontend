@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger' // ← 追加
 import { PageLayout } from '../components/common/PageLayout'
 import { LoadingError } from '../components/common/LoadingError'
 import { ActionButtons } from '../components/common/ActionButtons'
@@ -122,7 +123,7 @@ export default function Exam() {
 
       setWorkspaceOwner(ownerData.username)
     } catch (err) {
-      console.error('Error fetching workspace info:', err)
+      logger.error('Error fetching workspace info:', err)
     }
   }
 
@@ -137,7 +138,7 @@ export default function Exam() {
         fetchExamInfos()
       ])
     } catch (err) {
-      console.error('Error loading data:', err)
+      logger.error('Error loading data:', err)
       setError('データの読み込みに失敗しました')
     } finally {
       setLoading(false)
@@ -145,23 +146,23 @@ export default function Exam() {
   }
 
   const fetchSchool = async () => {
-    console.log('=== fetchSchool開始 ===')
-    console.log('schoolId:', schoolId)
-    console.log('workspaceId:', workspaceId)
-    
-    const { data, error } = await supabase
-        .from('schools')
-        .select('*')
-        .eq('id', schoolId)
-        .single()
+  logger.log('=== fetchSchool開始 ===')
+  logger.log('schoolId:', schoolId)
+  logger.log('workspaceId:', workspaceId)
+  
+  const { data, error } = await supabase
+    .from('schools')
+    .select('*')
+    .eq('id', schoolId)
+    .single()
 
-    console.log('学校データ取得結果:', data)
-    console.log('学校データ取得エラー:', error)
+  logger.log('学校データ取得結果:', data)
+  logger.log('学校データ取得エラー:', error)
 
-    if (error) {
-        console.error('fetchSchoolでエラー:', error)
-        throw error
-    }
+  if (error) {
+    logger.error('fetchSchoolでエラー:', error)
+    throw error
+  }
     setSchool(data)
     }
 
