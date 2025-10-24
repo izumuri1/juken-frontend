@@ -165,9 +165,9 @@ const Comparison2: React.FC = () => {
     navigate(`/workspace/${workspaceId}/school/${schoolId}/exam`);
     };
 
-  const handleNavigateToTask = (examId: string) => {
-    navigate(`/workspace/${workspaceId}/task/${examId}`);
-  };
+  const handleNavigateToTask = () => {
+    navigate(`/workspace/${workspaceId}/task`);
+    };
 
   const formatDateTime = (datetime: string) => {
     const date = new Date(datetime);
@@ -284,7 +284,7 @@ const Comparison2: React.FC = () => {
                 },
                 {
                     label: '受験管理',
-                    onClick: () => handleNavigateToTask(exam.id),
+                    onClick: () => handleNavigateToTask(),
                     variant: 'info'
                 }
                 ];
@@ -307,7 +307,7 @@ const Comparison2: React.FC = () => {
             workspaceId={workspaceId!}
             buttons={[
               {
-                label: 'Homeに戻る',
+                label: 'Home',
                 path: `/workspace/${workspaceId}`,
                 variant: 'home'
               }

@@ -1,0 +1,273 @@
+// src/pages/Task.scss
+// 受験管理画面のスタイル
+
+@use '../styles/variables' as *;
+
+//////////////////////////////////////////////////////////////
+// Task画面全体
+//////////////////////////////////////////////////////////////
+
+.task-page {
+  width: 100%;
+  max-width: 100%;
+}
+
+//////////////////////////////////////////////////////////////
+// セクション共通
+//////////////////////////////////////////////////////////////
+
+.task-section {
+  @include home-section;
+}
+
+//////////////////////////////////////////////////////////////
+// セクションヘッダー（タイトル + コントロール）
+//////////////////////////////////////////////////////////////
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-mobile;
+  font-size: $font-size-title;
+  font-weight: $font-weight-bold;
+  color: $home-text-heading;
+
+  .controls {
+    display: flex;
+    gap: $spacing-small;
+
+    .filter-select,
+    .sort-select {
+      padding: 0.5rem;
+      border: 1px solid $home-card-border;
+      border-radius: $radius-input;
+      font-size: $font-size-small;
+      background-color: $home-card-bg;
+      cursor: pointer;
+      -webkit-appearance: none;
+      
+      &:focus {
+        outline: none;
+        border-color: $color-black;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// タスクカード一覧
+//////////////////////////////////////////////////////////////
+
+.task-cards {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-mobile;
+}
+
+.task-card {
+  @include home-card;
+  padding: $spacing-large;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $home-card-hover-shadow;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-mobile;
+    padding-bottom: $spacing-mobile;
+    border-bottom: 2px solid $home-card-border;
+
+    .school-name {
+      font-size: $font-size-subtitle;
+      font-weight: $font-weight-bold;
+      color: $home-text-heading;
+      margin: 0;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: $radius-button;
+      font-size: $font-size-small;
+      font-weight: $font-weight-bold;
+
+      &.status-exam {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+
+      &.status-skip {
+        background-color: #f5f5f5;
+        color: #757575;
+      }
+    }
+  }
+
+  .exam-info-section {
+    margin-bottom: $spacing-mobile;
+    padding: $spacing-mobile;
+    background-color: #fafafa;
+    border-radius: $radius-card;
+
+    .subsection-title {
+      font-size: $font-size-body;
+      font-weight: $font-weight-bold;
+      color: $home-text-heading;
+      margin: 0 0 $spacing-small 0;
+    }
+  }
+
+  .task-section-item {
+    margin-bottom: $spacing-mobile;
+    padding: $spacing-mobile;
+    border: 1px solid $home-card-border;
+    border-radius: $radius-card;
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: $spacing-small;
+
+      .subsection-title {
+        font-size: $font-size-body;
+        font-weight: $font-weight-bold;
+        color: $home-text-heading;
+        margin: 0;
+      }
+
+      .task-controls {
+        display: flex;
+        gap: $spacing-small;
+        align-items: center;
+
+        .assign-select {
+          padding: 0.4rem 0.6rem;
+          border: 1px solid $home-card-border;
+          border-radius: $radius-input;
+          font-size: $font-size-small;
+          background-color: $home-card-bg;
+          cursor: pointer;
+          -webkit-appearance: none;
+          min-width: 120px;
+
+          &:focus {
+            outline: none;
+            border-color: $color-black;
+          }
+        }
+
+        .complete-btn {
+          padding: 0.4rem 0.8rem;
+          border: 1px solid $home-card-border;
+          border-radius: $radius-button;
+          font-size: $font-size-small;
+          font-weight: $font-weight-medium;
+          background-color: $home-card-bg;
+          color: $home-text-body;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+
+          &:hover {
+            background-color: #f5f5f5;
+          }
+
+          &.completed {
+            background-color: #4caf50;
+            color: white;
+            border-color: #4caf50;
+
+            &:hover {
+              background-color: #45a049;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-small;
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: $font-size-body;
+
+      .label {
+        color: $home-text-muted;
+        font-weight: $font-weight-medium;
+        flex-shrink: 0;
+        margin-right: $spacing-small;
+      }
+
+      .value {
+        color: $home-text-body;
+        font-weight: $font-weight-medium;
+        text-align: right;
+      }
+    }
+  }
+
+  .card-actions {
+    display: flex;
+    gap: $spacing-small;
+    margin-top: $spacing-mobile;
+    padding-top: $spacing-mobile;
+    border-top: 1px solid $home-card-border;
+
+    .btn {
+      flex: 1;
+      padding: $spacing-small $spacing-mobile;
+      border: none;
+      border-radius: $radius-button;
+      font-size: $font-size-body;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        opacity: 0.9;
+      }
+
+      &.btn-exam {
+        @include home-button-exam;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// 空メッセージ
+//////////////////////////////////////////////////////////////
+
+.empty-message {
+  text-align: center;
+  padding: $spacing-large $spacing-mobile;
+  background-color: $home-card-bg;
+  border: 1px solid $home-card-border;
+  border-radius: $radius-card;
+  box-shadow: $home-card-shadow;
+
+  p {
+    color: $home-text-muted;
+    font-size: $font-size-body;
+    margin: 0;
+  }
+}
+
+//////////////////////////////////////////////////////////////
+// アクションボタンセクション
+//////////////////////////////////////////////////////////////
+
+.action-buttons-section {
+  margin-top: $spacing-mobile;
+}
