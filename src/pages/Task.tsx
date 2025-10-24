@@ -88,29 +88,30 @@ const Task: React.FC = () => {
       setWorkspaceMembers(members);
 
       // 受験情報を取得
-      const { data: examData, error: examError } = await supabase
-        .from('exam_info')
-        .select(`
-          id,
-          school_id,
-          schools!inner(code, name),
-          exam_candidate_sign,
-          exam_start,
-          exam_end,
-          exam_venue,
-          exam_subjects,
-          application_start,
-          application_end,
-          application_deadline,
-          application_materials,
-          fee_deadline,
-          announcement_time,
-          enrollment_start,
-          enrollment_end,
-          admission_fee_deadline
-        `)
-        .eq('workspace_id', workspaceId)
-        .order('exam_start', { ascending: true });
+      // 受験情報を取得
+const { data: examData, error: examError } = await supabase
+    .from('exam_info')
+    .select(`
+        id,
+        school_id,
+        schools!inner(school_code, name),
+        exam_candidate_sign,
+        exam_start,
+        exam_end,
+        exam_venue,
+        exam_subjects,
+        application_start,
+        application_end,
+        application_deadline,
+        application_materials,
+        fee_deadline,
+        announcement_time,
+        enrollment_start,
+        enrollment_end,
+        admission_fee_deadline
+    `)
+    .eq('workspace_id', workspaceId)
+    .order('exam_start', { ascending: true });
 
       if (examError) throw examError;
 
@@ -176,87 +177,168 @@ const Task: React.FC = () => {
 
   const handleAssignTask = async (examInfoId: string, taskType: string, userId: string | null) => {
     try {
-      // 既存のタスクを確認
-      const { data: existingTask, error: fetchError } = await supabase
+        // 担当者のユーザー名を取得
+        const assignedUsername = userId 
+        ? workspaceMembers.find(m => m.id === userId)?.username || null
+        : null;
+
+        // 既存のタスクを確認
+        const { data: existingTask, error: fetchError } = await supabase
         .from('tasks')
         .select('id')
         .eq('exam_info_id', examInfoId)
         .eq('task_type', taskType)
         .single();
 
-      if (existingTask) {
+        let taskId: string;
+
+        if (existingTask) {
         // 更新
         const { error: updateError } = await supabase
-          .from('tasks')
-          .update({ assigned_to: userId })
-          .eq('id', existingTask.id);
+            .from('tasks')
+            .update({ assigned_to: userId })
+            .eq('id', existingTask.id);
 
         if (updateError) throw updateError;
-      } else {
+        taskId = existingTask.id;
+        } else {
         // 新規作成
-        const { error: insertError } = await supabase
-          .from('tasks')
-          .insert({
+        const { data: newTask, error: insertError } = await supabase
+            .from('tasks')
+            .insert({
             exam_info_id: examInfoId,
             task_type: taskType,
             assigned_to: userId,
             is_completed: false
-          });
+            })
+            .select('id')
+            .single();
 
         if (insertError) throw insertError;
-      }
+        taskId = newTask.id;
+        }
 
-      await loadData();
+        // ローカル状態を更新（画面全体を再取得しない）
+        setExamTasks(prevExams => 
+        prevExams.map(exam => {
+            if (exam.id === examInfoId) {
+            // 該当するexamのtasksを更新
+            const existingTaskIndex = exam.tasks.findIndex(t => t.task_type === taskType);
+            
+            if (existingTaskIndex >= 0) {
+                // 既存タスクを更新
+                const updatedTasks = [...exam.tasks];
+                updatedTasks[existingTaskIndex] = {
+                ...updatedTasks[existingTaskIndex],
+                assigned_to: userId,
+                assigned_username: assignedUsername
+                };
+                return { ...exam, tasks: updatedTasks };
+            } else {
+                // 新規タスクを追加
+                const newTask: Task = {
+                id: taskId,
+                exam_info_id: examInfoId,
+                task_type: taskType as Task['task_type'],
+                assigned_to: userId,
+                assigned_username: assignedUsername,
+                is_completed: false,
+                completed_at: null
+                };
+                return { ...exam, tasks: [...exam.tasks, newTask] };
+            }
+            }
+            return exam;
+        })
+        );
     } catch (err: any) {
-      console.error('担当者設定エラー:', err);
-      alert('担当者の設定に失敗しました');
+        console.error('担当者設定エラー:', err);
+        alert('担当者の設定に失敗しました');
     }
-  };
+    };
 
   const handleToggleComplete = async (examInfoId: string, taskType: string, currentStatus: boolean) => {
     try {
-      const newStatus = !currentStatus;
-      const completedAt = newStatus ? new Date().toISOString() : null;
+        const newStatus = !currentStatus;
+        const completedAt = newStatus ? new Date().toISOString() : null;
 
-      // 既存のタスクを確認
-      const { data: existingTask, error: fetchError } = await supabase
+        // 既存のタスクを確認
+        const { data: existingTask, error: fetchError } = await supabase
         .from('tasks')
         .select('id')
         .eq('exam_info_id', examInfoId)
         .eq('task_type', taskType)
         .single();
 
-      if (existingTask) {
+        let taskId: string;
+
+        if (existingTask) {
         // 更新
         const { error: updateError } = await supabase
-          .from('tasks')
-          .update({
+            .from('tasks')
+            .update({
             is_completed: newStatus,
             completed_at: completedAt
-          })
-          .eq('id', existingTask.id);
+            })
+            .eq('id', existingTask.id);
 
         if (updateError) throw updateError;
-      } else {
+        taskId = existingTask.id;
+        } else {
         // 新規作成
-        const { error: insertError } = await supabase
-          .from('tasks')
-          .insert({
+        const { data: newTask, error: insertError } = await supabase
+            .from('tasks')
+            .insert({
             exam_info_id: examInfoId,
             task_type: taskType,
             is_completed: newStatus,
             completed_at: completedAt
-          });
+            })
+            .select('id')
+            .single();
 
         if (insertError) throw insertError;
-      }
+        taskId = newTask.id;
+        }
 
-      await loadData();
+        // ローカル状態を更新（画面全体を再取得しない）
+        setExamTasks(prevExams => 
+        prevExams.map(exam => {
+            if (exam.id === examInfoId) {
+            // 該当するexamのtasksを更新
+            const existingTaskIndex = exam.tasks.findIndex(t => t.task_type === taskType);
+            
+            if (existingTaskIndex >= 0) {
+                // 既存タスクを更新
+                const updatedTasks = [...exam.tasks];
+                updatedTasks[existingTaskIndex] = {
+                ...updatedTasks[existingTaskIndex],
+                is_completed: newStatus,
+                completed_at: completedAt
+                };
+                return { ...exam, tasks: updatedTasks };
+            } else {
+                // 新規タスクを追加
+                const newTask: Task = {
+                id: taskId,
+                exam_info_id: examInfoId,
+                task_type: taskType as Task['task_type'],
+                assigned_to: null,
+                assigned_username: null,
+                is_completed: newStatus,
+                completed_at: completedAt
+                };
+                return { ...exam, tasks: [...exam.tasks, newTask] };
+            }
+            }
+            return exam;
+        })
+        );
     } catch (err: any) {
-      console.error('完了状態更新エラー:', err);
-      alert('完了状態の更新に失敗しました');
+        console.error('完了状態更新エラー:', err);
+        alert('完了状態の更新に失敗しました');
     }
-  };
+    };
 
   const getFilteredAndSortedExams = () => {
     let filtered = examTasks;
