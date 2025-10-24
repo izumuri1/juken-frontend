@@ -6,6 +6,7 @@ import { logger } from "../utils/logger"; // ← 追加
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { sanitizeHtml } from "../utils/sanitize";
+import type { Workspace, CreateWorkspaceFormData } from "../types/workspace";
 import "./CreateWorkspace.scss";
 
 ////////////////////////////////////////////////////////////////
@@ -16,21 +17,7 @@ import "./CreateWorkspace.scss";
 // ワークスペース選択 → Home画面に遷移
 ////////////////////////////////////////////////////////////////
 
-// 1. 準備・設定
-// ワークスペース作成フォームの型定義
-interface CreateWorkspaceFormData {
-  workspaceName: string;
-}
-
-// ワークスペース型定義（Supabaseのテーブル構造に対応）
-interface Workspace {
-  id: string;
-  name: string;
-  owner_id: string;
-  created_at: string;
-}
-
-// 2. 状態管理・フック初期化
+// 状態管理・フック初期化
 export function CreateWorkspace() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();

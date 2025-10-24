@@ -13,28 +13,8 @@ import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
 import { LoadingError } from '../components/common/LoadingError'; // ← 追加
 import { PageLayout } from '../components/common/PageLayout';
+import type { SchoolInfo, SchoolDetails } from '../types/school';
 import './School.scss';
-
-// 型定義
-interface SchoolInfo {
-  id: string;  // ← 追加
-  school_code: string;
-  name: string;
-  prefecture: string;
-  address: string;
-  latitude: number | null;
-  longitude: number | null;
-}
-
-interface SchoolDetails {
-  id: string;
-  has_cafeteria: boolean | null;
-  has_uniform: boolean | null;
-  commute_route: string;
-  commute_time: number | null;
-  nearest_station: string;
-  official_website: string;
-}
 
 const School: React.FC = () => {
   const { workspaceId, schoolCode } = useParams<{ workspaceId: string; schoolCode: string }>();

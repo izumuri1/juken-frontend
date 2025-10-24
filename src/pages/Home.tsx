@@ -9,46 +9,10 @@ import { WorkspaceMembers } from '../components/WorkspaceMembers'; // 追加
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
 import { ActionButtons } from '../components/common/ActionButtons'; // ← 追加
 import { PageLayout } from '../components/common/PageLayout';
+import type { SchoolMaster, SchoolListItem } from '../types/school';
+import type { ExamListItem } from '../types/exam';
+import type { WorkspaceMember } from '../types/workspace';
 import './Home.scss';
-
-// 型定義
-// 学校マスタ用のインターフェースを追加
-interface SchoolMaster {
-  school_code: string;
-  name: string;
-  prefecture: string;
-  address: string;
-}
-
-interface School {
-  id: string;
-  schoolId: string;  // 追加: schools.id
-  schoolCode: string; // 追加: schools.school_code
-  name: string;
-  desireLevel: number;
-  desireLevelParent: number;
-  commuteTime: number;
-  nearestStation: string;
-  updatedAt: string;
-}
-
-interface Exam {
-  id: string;
-  school_id: string;
-  schoolName: string;
-  desireLevel: number;
-  examDate: string;
-  examTime: string;
-  examStart: string;  // ← 追加：並び替え用
-  deviationValue: number;
-  updatedAt: string;
-}
-
-interface Member {
-  id: string;
-  name: string;
-  role: 'owner' | 'member';
-}
 
 const Home: React.FC = () => {
   // URLパラメータからworkspaceIdを取得
@@ -68,9 +32,9 @@ const Home: React.FC = () => {
     const navigate = useNavigate();
 
   // データ
-  const [schools, setSchools] = useState<School[]>([]);
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [members, setMembers] = useState<Member[]>([]);
+  const [schools, setSchools] = useState<SchoolListItem[]>([]);
+  const [exams, setExams] = useState<ExamListItem[]>([]);
+  const [members, setMembers] = useState<WorkspaceMember[]>([]);
 
   // ソート
   const [schoolSortBy, setSchoolSortBy] = useState<'desire' | 'time'>('desire');
@@ -118,7 +82,7 @@ const Home: React.FC = () => {
 
         if (detailsData && detailsData.length > 0) {
           // 各学校のtarget_schoolsを個別に取得
-          const schoolsWithTargetInfo = await Promise.all(
+          const schoolsWithTargetInfo: SchoolListItem[] = await Promise.all(
             detailsData.map(async (item: any) => {
               // target_schoolsを取得
               const { data: targetData } = await supabase
@@ -215,7 +179,7 @@ const Home: React.FC = () => {
 
         if (examData && examData.length > 0) {
           // 各受験情報に対して、対応する学校の最新志望度を個別に取得
-          const formattedExams = await Promise.all(
+          const formattedExams: ExamListItem[] = await Promise.all(
             examData.map(async (item: any) => {
               // target_schoolsから最新の志望度を取得(updated_atで降順ソート→最新を取得)
               const { data: targetData } = await supabase
@@ -354,7 +318,7 @@ const handleSearchInput = async (value: string) => {
   };
 
   // ソート処理
-  const sortSchools = (schools: School[]) => {
+  const sortSchools = (schools: SchoolListItem[]) => {
     const sorted = [...schools].sort((a, b) => {
       let compareValue = 0;
       if (schoolSortBy === 'desire') {
@@ -367,7 +331,7 @@ const handleSearchInput = async (value: string) => {
     return sorted;
   };
 
-  const sortExams = (exams: Exam[]) => {
+  const sortExams = (exams: ExamListItem[]) => {
     const sorted = [...exams].sort((a, b) => {
       let compareValue = 0;
       if (examSortBy === 'desire') {

@@ -12,74 +12,17 @@ import ExamInfoCard from '../components/exam/ExamInfoCard'
 import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
 import { SchoolMap } from '../components/school/SchoolMap';
 import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
+import type { SchoolInfo, SchoolDetails } from '../types/school';
+import type { ExamInfo } from '../types/exam';
 import './Exam.scss'
-
-interface School {
-  id: string
-  school_code: string
-  name: string
-  prefecture: string
-  address: string
-  official_website: string | null
-  latitude: number | null
-  longitude: number | null
-}
-
-interface SchoolDetail {
-  has_cafeteria: boolean | null
-  has_uniform: boolean | null
-  commute_route: string | null
-  commute_time: number | null
-  nearest_station: string | null
-  official_website: string | null
-}
-
-interface ExamInfo {
-  id: string
-  workspace_id: string
-  school_id: string
-  deviation_value: number
-  judgment_date: string | null
-  judgment_result: string | null
-  exam_candidate_sign: string | null
-  application_start: string | null
-  application_end: string | null
-  application_deadline: string | null
-  application_method: string | null
-  application_materials: string | null
-  application_note: string | null
-  fee_deadline: string | null
-  fee_payment_method: string | null
-  fee_amount: number | null
-  fee_note: string | null
-  exam_start: string
-  exam_end: string
-  exam_venue: string
-  exam_subjects: string
-  parent_waiting_area: string | null
-  exam_note: string | null
-  announcement_time: string | null
-  announcement_method: string | null
-  announcement_note: string | null
-  enrollment_start: string | null
-  enrollment_end: string | null
-  enrollment_method: string | null
-  enrollment_note: string | null
-  admission_fee_deadline: string | null
-  admission_fee_payment_method: string | null
-  admission_fee_amount: number | null
-  admission_fee_note: string | null
-  created_at: string
-  updated_at: string
-}
 
 export default function Exam() {
   const { workspaceId, schoolId } = useParams<{ workspaceId: string; schoolId: string }>()
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  const [school, setSchool] = useState<School | null>(null)
-  const [schoolDetail, setSchoolDetail] = useState<SchoolDetail | null>(null)
+  const [school, setSchool] = useState<SchoolInfo | null>(null)
+  const [schoolDetail, setSchoolDetail] = useState<SchoolDetails | null>(null)
   const [examInfos, setExamInfos] = useState<ExamInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

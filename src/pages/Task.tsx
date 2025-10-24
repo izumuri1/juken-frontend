@@ -7,39 +7,8 @@ import { useWorkspace } from '../hooks/useWorkspace';
 import { PageLayout } from '../components/common/PageLayout';
 import { LoadingError } from '../components/common/LoadingError';
 import { ActionButtons } from '../components/common/ActionButtons';
+import type { Task as TaskType, ExamTaskInfo } from '../types/task';
 import './Task.scss';
-
-interface Task {
-  id: string;
-  exam_info_id: string;
-  task_type: 'application' | 'fee_payment' | 'announcement' | 'enrollment' | 'admission_fee';
-  assigned_to: string | null;
-  assigned_username: string | null;
-  is_completed: boolean;
-  completed_at: string | null;
-}
-
-interface ExamTaskInfo {
-  id: string;
-  school_id: string;
-  school_code: string;
-  school_name: string;
-  exam_candidate_sign: string | null;
-  exam_start: string;
-  exam_end: string;
-  exam_venue: string;
-  exam_subjects: string;
-  application_start: string | null;
-  application_end: string | null;
-  application_deadline: string | null;
-  application_materials: string | null;
-  fee_deadline: string | null;
-  announcement_time: string | null;
-  enrollment_start: string | null;
-  enrollment_end: string | null;
-  admission_fee_deadline: string | null;
-  tasks: Task[];
-}
 
 type FilterBy = 'all' | '受験' | '見送り';
 type SortOrder = 'asc' | 'desc';
@@ -236,10 +205,10 @@ const { data: examData, error: examError } = await supabase
                 return { ...exam, tasks: updatedTasks };
             } else {
                 // 新規タスクを追加
-                const newTask: Task = {
+                const newTask: TaskType = {
                 id: taskId,
                 exam_info_id: examInfoId,
-                task_type: taskType as Task['task_type'],
+                task_type: taskType as TaskType['task_type'],
                 assigned_to: userId,
                 assigned_username: assignedUsername,
                 is_completed: false,
@@ -319,10 +288,10 @@ const { data: examData, error: examError } = await supabase
                 return { ...exam, tasks: updatedTasks };
             } else {
                 // 新規タスクを追加
-                const newTask: Task = {
+                const newTask: TaskType = {
                 id: taskId,
                 exam_info_id: examInfoId,
-                task_type: taskType as Task['task_type'],
+                task_type: taskType as TaskType['task_type'],
                 assigned_to: null,
                 assigned_username: null,
                 is_completed: newStatus,
@@ -358,7 +327,7 @@ const { data: examData, error: examError } = await supabase
     return sorted;
   };
 
-  const getTaskForType = (tasks: Task[], taskType: string): Task | undefined => {
+  const getTaskForType = (tasks: TaskType[], taskType: string): TaskType | undefined => {
     return tasks.find(task => task.task_type === taskType);
   };
 
