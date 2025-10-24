@@ -1,6 +1,7 @@
 // src/components/InvitationTokenGenerator.tsx
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { logger } from '../utils/logger';
 import './InvitationTokenGenerator.scss';
 
 interface InvitationTokenGeneratorProps {
@@ -48,7 +49,7 @@ export function InvitationTokenGenerator({
       const url = `${window.location.origin}/invite/${data.token}`;
       setInviteUrl(url);
     } catch (err: any) {
-      console.error('招待トークン生成エラー:', err);
+      logger.error('招待トークン生成エラー:', err);
       setError('招待リンクの生成に失敗しました');
     } finally {
       setIsGenerating(false);
@@ -60,7 +61,7 @@ export function InvitationTokenGenerator({
       await navigator.clipboard.writeText(inviteUrl);
       alert('招待リンクをコピーしました');
     } catch (err) {
-      console.error('コピー失敗:', err);
+      logger.error('コピー失敗:', err);
       alert('コピーに失敗しました');
     }
   };

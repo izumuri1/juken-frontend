@@ -1,6 +1,7 @@
 // src/constants/errorMessages.ts
-// 認証関連のエラーメッセージを一元管理
+// エラーメッセージを一元管理
 
+// 認証関連のエラーメッセージ
 export const AUTH_ERROR_MESSAGES = {
   // メールアドレス
   EMAIL_REQUIRED: 'メールアドレスは必須です',
@@ -27,4 +28,55 @@ export const AUTH_ERROR_MESSAGES = {
   
   // 一般エラー
   UNEXPECTED_ERROR: '予期しないエラーが発生しました。'
-} as const
+} as const;
+
+// データベースエラーメッセージ
+export const DB_ERROR_MESSAGES = {
+  FETCH_FAILED: 'データの取得に失敗しました',
+  CREATE_FAILED: 'データの作成に失敗しました',
+  UPDATE_FAILED: 'データの更新に失敗しました',
+  DELETE_FAILED: 'データの削除に失敗しました',
+  NOT_FOUND: 'データが見つかりません',
+  DUPLICATE: '既に登録されています',
+  CONSTRAINT_VIOLATION: '入力内容が正しくありません',
+} as const;
+
+// ワークスペースエラーメッセージ
+export const WORKSPACE_ERROR_MESSAGES = {
+  CREATE_FAILED: 'ワークスペースの作成に失敗しました',
+  FETCH_FAILED: 'ワークスペース情報の取得に失敗しました',
+  DUPLICATE_NAME: '同じ名前のワークスペースが既に存在します',
+  INVALID_NAME: 'ワークスペース名が無効です',
+} as const;
+
+// 学校情報エラーメッセージ
+export const SCHOOL_ERROR_MESSAGES = {
+  FETCH_FAILED: '学校情報の取得に失敗しました',
+  SAVE_FAILED: '学校情報の保存に失敗しました',
+  DELETE_FAILED: '学校情報の削除に失敗しました',
+  NOT_FOUND: '学校が見つかりません',
+} as const;
+
+// 受験情報エラーメッセージ
+export const EXAM_ERROR_MESSAGES = {
+  FETCH_FAILED: '受験情報の取得に失敗しました',
+  SAVE_FAILED: '受験情報の保存に失敗しました',
+  DELETE_FAILED: '受験情報の削除に失敗しました',
+  NOT_FOUND: '受験情報が見つかりません',
+} as const;
+
+// 志望校情報エラーメッセージ
+export const TARGET_ERROR_MESSAGES = {
+  FETCH_FAILED: '志望校情報の取得に失敗しました',
+  SAVE_FAILED: '志望校情報の保存に失敗しました',
+  DELETE_FAILED: '志望校情報の削除に失敗しました',
+  NOT_FOUND: '志望校情報が見つかりません',
+} as const;
+
+// 一般エラーメッセージ
+export const GENERAL_ERROR_MESSAGES = {
+  NETWORK_ERROR: 'ネットワークエラーが発生しました',
+  UNEXPECTED_ERROR: '予期しないエラーが発生しました',
+  LOGIN_REQUIRED: 'ログインが必要です',
+  PERMISSION_DENIED: '権限がありません',
+} as const;

@@ -54,8 +54,8 @@ export function PasswordReset() {
     setIsSubmitted(true)
     }
     } catch (error) {
-      console.error('パスワードリセットエラー:', error)
-      setSubmitError('予期しないエラーが発生しました。')
+      logger.error('パスワードリセットエラー:', error);
+      setSubmitError('予期しないエラーが発生しました。');
     } finally {
       resetForm.setSubmitting(false)
     }

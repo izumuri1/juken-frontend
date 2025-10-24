@@ -8,6 +8,7 @@ import { PageLayout } from '../components/common/PageLayout';
 import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
 import { SchoolMap } from '../components/school/SchoolMap';
 import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
+import { TARGET_ERROR_MESSAGES } from '../constants/errorMessages';
 import './Target.scss';
 
 interface School {
@@ -221,8 +222,8 @@ function Target() {
       });
 
     } catch (error) {
-      console.error('登録エラー:', error);
-      setErrorMessage('登録に失敗しました');
+      logger.error('登録エラー:', error);
+      setErrorMessage(TARGET_ERROR_MESSAGES.SAVE_FAILED);
     }
   };
 

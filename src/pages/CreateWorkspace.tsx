@@ -2,10 +2,12 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
-import { logger } from "../utils/logger"; // ← 追加
+import { logger } from "../utils/logger";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { sanitizeHtml } from "../utils/sanitize";
+import { handleDatabaseError } from "../utils/errorHandler";
+import { WORKSPACE_ERROR_MESSAGES, GENERAL_ERROR_MESSAGES } from "../constants/errorMessages";
 import type { Workspace, CreateWorkspaceFormData } from "../types/workspace";
 import "./CreateWorkspace.scss";
 
@@ -125,25 +127,9 @@ export function CreateWorkspace() {
       reset();
       setShowCreateForm(false);
     } catch (error: any) {
-      console.error("ワークスペース作成エラー:", error);
-
-      // エラーハンドリング
-      if (error?.code) {
-        switch (error.code) {
-          case "23505": // unique_violation
-            setSubmitError("同じ名前のワークスペースが既に存在します");
-            break;
-          case "23514": // check_violation
-            setSubmitError("ワークスペース名が無効です");
-            break;
-          default:
-            setSubmitError(`エラー: ${error.message}`);
-        }
-      } else {
-        setSubmitError(
-          "ワークスペースの作成に失敗しました。もう一度お試しください。"
-        );
-      }
+      logger.error("ワークスペース作成エラー:", error);
+      const errorMessage = handleDatabaseError(error);
+      setSubmitError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +141,7 @@ export function CreateWorkspace() {
       setIsLoading(true);
       await signOut();
     } catch (error) {
-      console.error("ログアウトに失敗しました:", error);
+      logger.error("ログアウトに失敗しました:", error);
       navigate("/login");
     } finally {
       setIsLoading(false);
@@ -209,7 +195,7 @@ export function CreateWorkspace() {
         setCopyButtonText("リンクをコピー");
         
     } catch (error: any) {
-        console.error('招待リンク生成エラー:', error);
+        logger.error('招待リンク生成エラー:', error);
         setSubmitError('招待リンクの生成に失敗しました');
     } finally {
         setIsLoading(false);

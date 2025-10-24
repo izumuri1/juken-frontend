@@ -14,6 +14,7 @@ import { SchoolMap } from '../components/school/SchoolMap';
 import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
 import type { SchoolInfo, SchoolDetails } from '../types/school';
 import type { ExamInfo } from '../types/exam';
+import { EXAM_ERROR_MESSAGES } from '../constants/errorMessages';
 import './Exam.scss'
 
 export default function Exam() {
@@ -151,8 +152,8 @@ export default function Exam() {
       if (error) throw error
       await fetchExamInfos()
     } catch (err) {
-      console.error('Error deleting exam info:', err)
-      setError('受験情報の削除に失敗しました')
+      logger.error('Error deleting exam info:', err);
+      setError(EXAM_ERROR_MESSAGES.DELETE_FAILED);
     }
   }
 

@@ -14,6 +14,8 @@ import { ActionButtons } from '../components/common/ActionButtons'; // ← 追�
 import { LoadingError } from '../components/common/LoadingError'; // ← 追加
 import { PageLayout } from '../components/common/PageLayout';
 import type { SchoolInfo, SchoolDetails } from '../types/school';
+import { handleDatabaseError } from '../utils/errorHandler';
+import { SCHOOL_ERROR_MESSAGES } from '../constants/errorMessages';
 import './School.scss';
 
 const School: React.FC = () => {
@@ -143,8 +145,9 @@ const School: React.FC = () => {
       navigate(`/workspace/${workspaceId}?scrollTo=${schoolInfo.id}`);
 
     } catch (err) {
-      console.error('登録エラー:', err);
-      alert('学校情報の登録に失敗しました');
+      logger.error('登録エラー:', err);
+      const errorMessage = handleDatabaseError(err as Error);
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -190,8 +193,8 @@ const School: React.FC = () => {
       setOfficialWebsite('');
       setIsEditing(true); // 削除後は入力欄を表示
     } catch (err) {
-      console.error('削除エラー:', err);
-      alert('学校情報の削除に失敗しました');
+      logger.error('削除エラー:', err);
+      alert(SCHOOL_ERROR_MESSAGES.DELETE_FAILED);
     }
   };
 
