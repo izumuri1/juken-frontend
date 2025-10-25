@@ -1,6 +1,7 @@
 // src/contexts/AuthContext.tsx
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
+import { sessionManager } from '../utils/sessionManager'  // ← 追加
 import type { User, Session, AuthError, AuthChangeEvent } from '@supabase/auth-js'
 
 // Context の型定義
@@ -35,6 +36,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       appf_setSession(session)
       appf_setUser(session?.user ?? null)
       appf_setLoading(false)
+      
+      // ← セッション監視を開始（追加）
+      if (session?.user) {
+        sessionManager.startMonitoring()
+      }
     }
 
     appf_getSession()
@@ -45,10 +51,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         appf_setSession(session)
         appf_setUser(session?.user ?? null)
         appf_setLoading(false)
+        
+        // ← セッション監視の制御（追加）
+        if (session?.user) {
+          sessionManager.startMonitoring()
+        } else {
+          sessionManager.stopMonitoring()
+        }
       }
     )
 
-    return () => subscription.unsubscribe()
+    // ← クリーンアップ（変更）
+    return () => {
+      subscription.unsubscribe()
+      sessionManager.stopMonitoring()
+    }
   }, [])
 
   // サインアップ関数（自作関数として appf_ プレフィックス）

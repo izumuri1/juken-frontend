@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { logger } from '../utils/logger' // ← 追加
+import { secureLogger } from '../utils/secureLogger';
 import './InviteHandler.scss';
 
 interface InviteTokenData {
@@ -102,14 +102,14 @@ export function InviteHandler() {
       logger.log('招待トークン処理: ワークスペース情報', processedData);
 
       if (user) {
-        logger.log('ログイン済みユーザー - joinWorkspace実行');
+        secureLogger.log('ログイン済みユーザー - joinWorkspace実行');
         await joinWorkspace(processedData, user.id);
       } else {
-        logger.log('未ログインユーザー - 新規登録画面へ');
+        secureLogger.log('未ログインユーザー - 新規登録画面へ');
         // ...
       }
       } catch (error: any) {
-        logger.error('招待トークン検証エラー:', error);
+        secureLogger.error('招待トークン検証エラー:', error);
         setError('招待リンクの処理中にエラーが発生しました');
       } finally {
         setLoading(false);
@@ -128,10 +128,10 @@ export function InviteHandler() {
         .eq('user_id', userId)
         .maybeSingle();
 
-        logger.log('既存メンバーチェック:', existingMember);
+        secureLogger.log('既存メンバーチェック:', existingMember);
 
         if (existingMember) {
-          logger.log('既にメンバーです。ワークスペースへ遷移します。');
+          secureLogger.log('既にメンバーです。ワークスペースへ遷移します。');
           navigate(`/workspace/${tokenData.workspace_id}`);
           return;
         }
@@ -139,13 +139,13 @@ export function InviteHandler() {
         // ...
 
         if (tokenUpdateError) {
-          logger.warn('トークン更新エラー:', tokenUpdateError);
+          secureLogger.warn('トークン更新エラー:', tokenUpdateError);
         }
 
         // ...
 
         } catch (error: any) {
-          logger.error('ワークスペース参加エラー:', error);
+          secureLogger.error('ワークスペース参加エラー:', error);
           setError('ワークスペースへの参加に失敗しました');
         } finally {
       setLoading(false);

@@ -1,7 +1,7 @@
 // src/hooks/useWorkspace.ts
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { logger } from '../utils/logger'; // ← 追加
+import { secureLogger } from '../utils/secureLogger';
 
 export const useWorkspace = (workspaceId: string | undefined) => {
   const [workspaceName, setWorkspaceName] = useState('');
@@ -11,11 +11,11 @@ export const useWorkspace = (workspaceId: string | undefined) => {
 
   useEffect(() => {
   const fetchWorkspaceInfo = async () => {
-    logger.log('=== ワークスペース情報取得開始 ===');
-    logger.log('workspaceId:', workspaceId);
+    secureLogger.log('=== ワークスペース情報取得開始 ===');
+    secureLogger.log('workspaceId:', workspaceId);
     
     if (!workspaceId) {
-      logger.log('workspaceIdが未設定のため処理をスキップ');
+      secureLogger.log('workspaceIdが未設定のため処理をスキップ');
       setLoading(false);
       return;
     }
@@ -28,16 +28,16 @@ export const useWorkspace = (workspaceId: string | undefined) => {
         .eq('id', workspaceId)
         .single();
 
-      logger.log('ワークスペース取得結果:', workspace);
-      logger.log('ワークスペース取得エラー:', workspaceError);
+      secureLogger.log('ワークスペース取得結果:', workspace);
+      secureLogger.log('ワークスペース取得エラー:', workspaceError);
 
       if (workspaceError) throw workspaceError;
 
       if (workspace) {
-        logger.log('ワークスペース名設定:', workspace.name);
+        secureLogger.log('ワークスペース名設定:', workspace.name);
         setWorkspaceName(workspace.name);
 
-        logger.log('オーナーID:', workspace.owner_id);
+        secureLogger.log('オーナーID:', workspace.owner_id);
         
         // オーナー情報を取得
         const { data: owner, error: ownerError } = await supabase
@@ -46,18 +46,18 @@ export const useWorkspace = (workspaceId: string | undefined) => {
           .eq('id', workspace.owner_id)
           .single();
 
-        logger.log('オーナー取得結果:', owner);
-        logger.log('オーナー取得エラー:', ownerError);
+        secureLogger.log('オーナー取得結果:', owner);
+        secureLogger.log('オーナー取得エラー:', ownerError);
 
         if (ownerError) throw ownerError;
 
         if (owner) {
-          logger.log('オーナー名設定:', owner.username);
+          secureLogger.log('オーナー名設定:', owner.username);
           setWorkspaceOwner(owner.username);
         }
       }
     } catch (err) {
-      logger.error('ワークスペース情報取得エラー:', err);
+      secureLogger.error('ワークスペース情報取得エラー:', err);
       setWorkspaceName('ワークスペース');
       setWorkspaceOwner('');
       setError('ワークスペース情報の取得に失敗しました');

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { logger } from '../utils/logger' // ← 追加
+import { secureLogger } from '../utils/secureLogger'
 import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { validationRules } from '../utils/validationRules'
@@ -43,34 +43,34 @@ export function PasswordResetConfirm() {
       const tokenHash = searchParams.get('token_hash')
       const type = searchParams.get('type')
       
-      logger.log('=== パスワードリセット初期化 ===')
-      logger.log('hash:', hash)
-      logger.log('tokenHash:', tokenHash)
-      logger.log('type:', type)
+      secureLogger.log('=== パスワードリセット初期化 ===')
+      secureLogger.log('hash:', hash)
+      secureLogger.log('tokenHash:', tokenHash)
+      secureLogger.log('type:', type)
       
       try {
         if (tokenHash && type === 'recovery') {
-          logger.log('クエリパラメータ形式で処理します')
+          secureLogger.log('クエリパラメータ形式で処理します')
           const { error } = await supabase.auth.verifyOtp({
             token_hash: tokenHash,
             type: 'recovery'
           })
           
           if (error) {
-            logger.error('トークン検証エラー:', error)
+            secureLogger.error('トークン検証エラー:', error)
             setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
           } else {
-            logger.log('パスワードリセットトークンが検証されました')
+            secureLogger.log('パスワードリセットトークンが検証されました')
           }
         } else if (hash) {
-          logger.log('URLハッシュ形式で処理します')
+          secureLogger.log('URLハッシュ形式で処理します')
           // ...以下略
         } else {
-          logger.error('トークンが見つかりません')
+          secureLogger.error('トークンが見つかりません')
           setSubmitError('無効なリセットリンクです。再度パスワードリセットを行ってください。')
         }
       } catch (error) {
-        logger.error('パスワードリセット処理エラー:', error)
+        secureLogger.error('パスワードリセット処理エラー:', error)
         setSubmitError('パスワードリセット処理中にエラーが発生しました。')
       }
     }

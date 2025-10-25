@@ -3,7 +3,7 @@
 
 import React, { Component } from 'react'
 import type { ReactNode } from 'react'
-import { logger } from '../utils/logger'
+import { secureLogger } from '../utils/secureLogger'
 
 interface Props {
   children: ReactNode
@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // エラーをログに記録
-    logger.error('Error Boundary caught an error:', error, errorInfo)
+    secureLogger.error('Error Boundary caught an error:', error, errorInfo)
   }
 
   handleReset = () => {

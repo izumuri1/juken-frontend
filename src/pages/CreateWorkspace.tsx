@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
-import { logger } from "../utils/logger";
+import { secureLogger } from '../utils/secureLogger';
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { sanitizeHtml } from "../utils/sanitize";
@@ -43,11 +43,11 @@ export function CreateWorkspace() {
   // 3. ユーザーのワークスペース一覧を取得（修正版）
   const fetchWorkspaces = async () => {
     if (!user) {
-      logger.log("ユーザーが存在しません:", user);
+      secureLogger.log("ユーザーが存在しません:", user);
       return;
     }
 
-    logger.log("現在のユーザーID:", user.id);
+    secureLogger.log("現在のユーザーID:", user.id);
 
     try {
       // オーナーとしてのワークスペースを取得
@@ -56,9 +56,9 @@ export function CreateWorkspace() {
         .select("*")
         .eq("owner_id", user.id);
 
-      logger.log("オーナーワークスペース:", ownerWorkspaces);
+      secureLogger.log("オーナーワークスペース:", ownerWorkspaces);
       if (ownerError) {
-        logger.error("オーナークエリエラー:", ownerError);
+        secureLogger.error("オーナークエリエラー:", ownerError);
       }
 
       // メンバーとして参加しているワークスペースIDを取得
@@ -67,9 +67,9 @@ export function CreateWorkspace() {
         .select("workspace_id")
         .eq("user_id", user.id);
 
-      logger.log("メンバーワークスペース:", memberData);
+      secureLogger.log("メンバーワークスペース:", memberData);
       if (memberError) {
-        logger.error("メンバークエリエラー:", memberError);
+         secureLogger.error("メンバークエリエラー:", memberError);
       }
 
       // メンバーワークスペースの詳細を取得
@@ -82,7 +82,7 @@ export function CreateWorkspace() {
           .in("id", workspaceIds);
         
         if (detailsError) {
-          logger.error("ワークスペース詳細取得エラー:", detailsError);
+          secureLogger.error("ワークスペース詳細取得エラー:", detailsError);
         } else if (workspaceDetails) {
           memberWorkspaces.push(...workspaceDetails);
         }
@@ -98,10 +98,10 @@ export function CreateWorkspace() {
         }
       });
 
-      logger.log("全ワークスペース:", allWorkspaces);
+      secureLogger.log("全ワークスペース:", allWorkspaces);
       setWorkspaces(allWorkspaces);
     } catch (error) {
-      logger.error("ワークスペース取得エラー:", error);
+      secureLogger.error("ワークスペース取得エラー:", error);
       setWorkspaces([]);
     }
   };

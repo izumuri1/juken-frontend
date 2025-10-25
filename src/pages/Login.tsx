@@ -6,6 +6,7 @@ import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { LoadingSpinner } from '../components/LoadingSpinner'
 import { supabase } from '../lib/supabase'
+import { rateLimiter } from '../utils/rateLimiter'  // ← 追加
 import type { LoginFormData } from '../types/auth'
 import './Auth.scss'
 
@@ -50,7 +51,7 @@ export function Login() {
     }
   })
 
-  // ログイン処理
+// ログイン処理
   const appf_handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
 
@@ -59,66 +60,84 @@ export function Login() {
   }
 
   appf_setSubmitError('')
+  
+  // ← ここから追加
+  // レート制限チェック
+  const trimmedEmail = appv_loginForm.values.email.trim()
+  const rateLimitCheck = rateLimiter.checkAttempt(trimmedEmail)
+  
+  if (!rateLimitCheck.allowed) {
+    const blockedMinutes = rateLimitCheck.blockedUntil 
+      ? Math.ceil((rateLimitCheck.blockedUntil.getTime() - Date.now()) / 60000)
+      : 30
+    appf_setSubmitError(
+      `ログイン試行回数が上限に達しました。${blockedMinutes}分後に再度お試しください。`
+    )
+    return
+  }
+  // ← ここまで追加
+
   appv_loginForm.setSubmitting(true)
 
   try {
-  const trimmedEmail = appv_loginForm.values.email.trim()
-  
-  const { error } = await signIn(trimmedEmail, appv_loginForm.values.password)
+      const { error } = await signIn(trimmedEmail, appv_loginForm.values.password)
 
-    if (error) {
-      switch (error.code) {
-        case 'invalid_credentials':
-          appf_setSubmitError('メールアドレスまたはパスワードが正しくありません。')
-          break
-        case 'email_not_confirmed':
-          appf_setSubmitError('メールアドレスの確認が完了していません。確認メールをご確認ください。')
-          break
-        case 'user_not_found':
-          appf_setSubmitError('アカウントが見つかりません。メールアドレスを確認してください。')
-          break
-        default:
-          appf_setSubmitError('ログインに失敗しました。メールアドレスとパスワードを確認してください。')
-      }
-    } else {
-      // ログイン成功
-      const { data: { user: currentUser } } = await supabase.auth.getUser()
-      
-      if (currentUser) {
-        // 招待トークンがある場合は招待リンクに戻る
-        const pendingToken = sessionStorage.getItem('pendingInviteToken')
-        if (pendingToken) {
-          sessionStorage.removeItem('pendingInviteToken')
-          appv_navigate(`/invite/${pendingToken}`)
-          return
+      if (error) {
+        // エラー処理（セキュリティを考慮したエラーメッセージ）
+        switch (error.code) {
+          case 'invalid_credentials':
+          case 'user_not_found':  // ユーザーの存在を明示しない
+            appf_setSubmitError('メールアドレスまたはパスワードが正しくありません。')
+            break
+          case 'email_not_confirmed':
+            appf_setSubmitError('メールアドレスの確認が完了していません。')
+            break
+          default:
+            // 詳細なエラー情報を表示しない
+            appf_setSubmitError('ログインできませんでした。入力内容をご確認ください。')
         }
+      } else {
+        // ログイン成功時に試行回数をリセット
+        rateLimiter.resetAttempts(trimmedEmail)
+        
+        // ログイン成功
+        const { data: { user: currentUser } } = await supabase.auth.getUser()
+        
+        if (currentUser) {
+          // 招待トークンがある場合は招待リンクに戻る
+          const pendingToken = sessionStorage.getItem('pendingInviteToken')
+          if (pendingToken) {
+            sessionStorage.removeItem('pendingInviteToken')
+            appv_navigate(`/invite/${pendingToken}`)
+            return
+          }
 
-        // 通常のログイン処理
-        const { data: ownerWorkspaces } = await supabase
-          .from("workspaces")
-          .select("id")
-          .eq("owner_id", currentUser.id)
-        
-        const { data: memberWorkspaces } = await supabase
-          .from("workspace_members")
-          .select("workspace_id")
-          .eq("user_id", currentUser.id)
-        
-        const allWorkspaceIds = new Set([
-          ...(ownerWorkspaces || []).map(w => w.id),
-          ...(memberWorkspaces || []).map(m => m.workspace_id)
-        ])
-        
-        if (allWorkspaceIds.size === 0) {
-          appv_navigate('/workspaces')
-        } else if (allWorkspaceIds.size === 1) {
-          const workspaceId = Array.from(allWorkspaceIds)[0]
-          appv_navigate(`/workspace/${workspaceId}`)
-        } else {
-          appv_navigate('/workspaces')
+          // 通常のログイン処理
+          const { data: ownerWorkspaces } = await supabase
+            .from("workspaces")
+            .select("id")
+            .eq("owner_id", currentUser.id)
+          
+          const { data: memberWorkspaces } = await supabase
+            .from("workspace_members")
+            .select("workspace_id")
+            .eq("user_id", currentUser.id)
+          
+          const allWorkspaceIds = new Set([
+            ...(ownerWorkspaces || []).map(w => w.id),
+            ...(memberWorkspaces || []).map(m => m.workspace_id)
+          ])
+          
+          if (allWorkspaceIds.size === 0) {
+            appv_navigate('/workspaces')
+          } else if (allWorkspaceIds.size === 1) {
+            const workspaceId = Array.from(allWorkspaceIds)[0]
+            appv_navigate(`/workspace/${workspaceId}`)
+          } else {
+            appv_navigate('/workspaces')
+          }
         }
       }
-    }
     } catch (err) {
       console.error('Login error:', err)
       appf_setSubmitError('ログインに失敗しました。')

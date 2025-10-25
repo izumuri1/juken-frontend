@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { logger } from '../utils/logger'
+import { secureLogger } from '../utils/secureLogger'
 import { WORKSPACE_ERROR_MESSAGES } from '../constants/errorMessages'
 
 interface WorkspaceMember {
@@ -43,7 +43,7 @@ export function useWorkspaceMembers(
 
   const fetchMembers = async () => {
     if (!workspaceId) {
-      logger.log('workspaceIdが未設定のためメンバー取得をスキップ')
+      secureLogger.log('workspaceIdが未設定のためメンバー取得をスキップ')
       setLoading(false)
       return
     }
@@ -59,14 +59,14 @@ export function useWorkspaceMembers(
         })
 
       if (rpcError) {
-        logger.error('メンバー取得RPC呼び出しエラー:', rpcError)
+        secureLogger.error('メンバー取得RPC呼び出しエラー:', rpcError)
         throw rpcError
       }
 
       setMembers(data || [])
-      logger.log('メンバー取得成功:', data)
+      secureLogger.log('メンバー取得成功:', data)
     } catch (err) {
-      logger.error('メンバー取得エラー:', err)
+      secureLogger.error('メンバー取得エラー:', err)
       setError(WORKSPACE_ERROR_MESSAGES.FETCH_FAILED)
     } finally {
       setLoading(false)
