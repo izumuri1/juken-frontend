@@ -8,7 +8,7 @@ const ACTIVITY_CHECK_INTERVAL = 5 * 60 * 1000; // 5分ごとにチェック
 
 class SessionManager {
   private lastActivityTime: number = Date.now();
-  private activityCheckInterval: NodeJS.Timeout | null = null;
+  private activityCheckInterval: number | null = null;
 
   /**
    * セッション管理を開始
@@ -88,7 +88,7 @@ class SessionManager {
    */
   async refreshSession() {
     try {
-      const { data, error } = await supabase.auth.refreshSession();
+      const { error } = await supabase.auth.refreshSession();
       
       if (error) {
         console.error('セッションリフレッシュエラー:', error);

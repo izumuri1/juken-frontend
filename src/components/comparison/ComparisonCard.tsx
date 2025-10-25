@@ -1,6 +1,7 @@
 // src/components/comparison/ComparisonCard.tsx
 // Comparison1とComparison2の両方で使える共通カードコンポーネント
-import React, { ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import './ComparisonCard.scss';
 
 export interface ComparisonCardButton {

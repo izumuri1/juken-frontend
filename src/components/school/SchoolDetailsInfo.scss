@@ -1,5 +1,5 @@
 // src/components/school/SchoolDetailsInfo.scss
-@import '../../styles/variables';
+@use '../../styles/variables' as *;
 
 .details-card {
   background-color: $home-card-bg;

@@ -215,16 +215,11 @@ const Tutorial: React.FC<TutorialProps> = ({ isOpen, onClose }) => {
                 {section.number}
               </div>
               <div style={{ flex: 1 }}>
-                {section.title && (
-                  <h3 style={{
-                    fontSize: '1rem',
-                    fontWeight: '700',
-                    color: '#000000',
-                    margin: '0 0 0.25rem 0'
-                  }}>
-                    {section.title}
-                  </h3>
-                )}
+                {'title' in section && section.title && (
+                    <h3 className="tutorial-subsection-title">
+                      {section.title}
+                    </h3>
+                  )}
                 <p style={{
                   fontSize: '0.875rem',
                   color: '#6A6A6A',

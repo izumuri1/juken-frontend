@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { secureLogger } from '../utils/secureLogger'
+import { logger } from '../utils/logger';
+import { secureLogger } from '../utils/secureLogger';
 import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { validationRules } from '../utils/validationRules'

@@ -1,5 +1,6 @@
 // src/components/common/PageLayout.tsx (新規作成)
-import React, { ReactNode, useState } from 'react';  // ← useStateを追加
+import React, { useState } from 'react';
+import type { ReactNode } from 'react';
 import { PageHeader } from './PageHeader';
 import Tutorial from '../Tutorial';  // ← 追加
 import './PageLayout.scss';

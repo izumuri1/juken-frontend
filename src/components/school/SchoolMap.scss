@@ -1,5 +1,5 @@
 // src/components/school/SchoolMap.scss
-@import '../../styles/variables';
+@use '../../styles/variables' as *;
 
 .map-container {
   margin: $spacing-mobile 0;

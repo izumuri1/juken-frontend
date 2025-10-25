@@ -6,7 +6,6 @@ import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { sanitizeHtml } from '../utils/sanitize'
 import { validationRules } from '../utils/validationRules'  // 追加
-import { AUTH_ERROR_MESSAGES } from '../constants/errorMessages'  // 追加
 import type { SignUpFormData } from '../types/auth'
 import './Auth.scss'
 

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { logger } from '../utils/logger';
 import { secureLogger } from '../utils/secureLogger';
 import './InviteHandler.scss';
 
@@ -121,7 +122,7 @@ export function InviteHandler() {
       setLoading(true);
 
       // 既にメンバーかチェック
-        const { data: existingMember, error: memberCheckError } = await supabase
+        const { data: existingMember } = await supabase
         .from('workspace_members')
         .select('id')
         .eq('workspace_id', tokenData.workspace_id)
@@ -136,11 +137,6 @@ export function InviteHandler() {
           return;
         }
 
-        // ...
-
-        if (tokenUpdateError) {
-          secureLogger.warn('トークン更新エラー:', tokenUpdateError);
-        }
 
         // ...
 

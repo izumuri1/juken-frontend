@@ -12,15 +12,15 @@ interface ButtonConfig {
 }
 
 interface ActionButtonsProps {
-  workspaceId: string;
+  workspaceId?: string;  // ← 追加（オプショナルに）
   buttons: ButtonConfig[];
-  direction?: 'horizontal' | 'vertical';  // ← 追加
+  direction?: 'horizontal' | 'vertical';
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ 
-  workspaceId, 
+  workspaceId: _workspaceId,  // アンダースコアで「意図的に未使用」を示す
   buttons,
-  direction = 'horizontal'  // ← デフォルトは横並び
+  direction = 'horizontal'
 }) => {
   const navigate = useNavigate();
 

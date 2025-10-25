@@ -80,21 +80,24 @@ const Comparison1: React.FC = () => {
       data?.forEach(item => {
         const schoolId = item.school_id;
         
+        // schoolsが配列の場合は最初の要素を取得
+        const school = Array.isArray(item.schools) ? item.schools[0] : item.schools;
+        
         if (!schoolMap.has(schoolId)) {
-          schoolMap.set(schoolId, {
+            schoolMap.set(schoolId, {
             id: item.id,
             school_id: schoolId,
-            school_code: item.schools.school_code,
-            schoolName: item.schools.name,
+            school_code: school.school_code,
+            schoolName: school.name,
             childAspiration: item.child_aspiration,
             parentAspiration: item.parent_aspiration,
-            commuteTime: item.schools.school_details?.[0]?.commute_time || null,
-            nearestStation: item.schools.school_details?.[0]?.nearest_station || null,
-            officialWebsite: item.schools.school_details?.[0]?.official_website || null,
+            commuteTime: school.school_details?.[0]?.commute_time || null,
+            nearestStation: school.school_details?.[0]?.nearest_station || null,
+            officialWebsite: school.school_details?.[0]?.official_website || null,
             updatedAt: item.updated_at
-          });
+            });
         }
-      });
+        });
 
       setSchools(Array.from(schoolMap.values()));
     } catch (err) {
@@ -102,15 +105,6 @@ const Comparison1: React.FC = () => {
       setError('志望校情報の読み込みに失敗しました');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSort = (newSortBy: SortBy) => {
-    if (sortBy === newSortBy) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(newSortBy);
-      setSortOrder('desc');
     }
   };
 

@@ -98,11 +98,13 @@ const Comparison2: React.FC = () => {
             .eq('school_id', exam.school_id)
             .single();
 
+            const school = Array.isArray(exam.schools) ? exam.schools[0] : exam.schools;
+
             return {
             id: exam.id,
             school_id: exam.school_id,
-            school_code: exam.schools.school_code,
-            schoolName: exam.schools.name,
+            school_code: school.school_code,
+            schoolName: school.name,
             examCandidateSign: exam.exam_candidate_sign,
             deviationValue: exam.deviation_value,
             judgmentResult: exam.judgment_result,
@@ -151,15 +153,6 @@ const Comparison2: React.FC = () => {
 
     return sorted;
     };
-
-  const handleSort = (newSortBy: SortBy) => {
-    if (sortBy === newSortBy) {
-      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(newSortBy);
-      setSortOrder('desc');
-    }
-  };
 
   const handleNavigateToExam = (schoolId: string) => {
     navigate(`/workspace/${workspaceId}/school/${schoolId}/exam`);

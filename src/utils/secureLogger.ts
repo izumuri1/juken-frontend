@@ -7,7 +7,7 @@
 function maskSensitiveData(data: any): any {
   if (typeof data === 'string') {
     // メールアドレスをマスク
-    data = data.replace(/([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, (match, user, domain) => {
+    data = data.replace(/([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g, (_match, user, domain) => {
       const maskedUser = user.length > 2 ? user.slice(0, 2) + '***' : '***';
       return `${maskedUser}@${domain}`;
     });

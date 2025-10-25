@@ -9,6 +9,7 @@ import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
 import { SchoolMap } from '../components/school/SchoolMap';
 import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
 import { TARGET_ERROR_MESSAGES } from '../constants/errorMessages';
+import { logger } from '../utils/logger';
 import './Target.scss';
 
 interface School {
@@ -28,19 +29,20 @@ interface SchoolDetails {
   commute_route?: string;
   commute_time?: number;
   nearest_station?: string;
+  official_website?: string;  // ← 追加
 }
 
 interface TargetInfo {
   id: string;
-  event_date?: string;
-  event_name?: string;
-  participants?: string;
-  access_method?: string;
-  talked_with?: string;
-  child_aspiration?: number;
-  child_impression?: string;
-  parent_aspiration?: number;
-  parent_impression?: string;
+  event_date?: string | null;  // ← nullを許容
+  event_name?: string | null;  // ← nullを許容
+  participants?: string | null;  // ← nullを許容
+  access_method?: string | null;  // ← nullを許容
+  talked_with?: string | null;  // ← nullを許容
+  child_aspiration?: number | null;  // ← nullを許容
+  child_impression?: string | null;  // ← nullを許容
+  parent_aspiration?: number | null;  // ← nullを許容
+  parent_impression?: string | null;  // ← nullを許容
   updated_at: string;
 }
 
@@ -193,7 +195,15 @@ function Target() {
         if (error) throw error;
         
         setTargetInfos(prev =>
-          prev.map(info => info.id === editingId ? { ...info, ...targetData } : info)
+          prev.map(info => 
+            info.id === editingId 
+              ? { 
+                  ...info, 
+                  ...targetData,
+                  event_date: targetData.event_date || undefined  // nullをundefinedに変換
+                } 
+              : info
+          )
         );
         setEditingId(null);
       } else {

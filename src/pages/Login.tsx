@@ -16,7 +16,7 @@ export function Login() {
   const appv_navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [appv_submitError, appf_setSubmitError] = useState('')
-  const [inviteToken, setInviteToken] = useState<string | null>(null)
+  const [_inviteToken, setInviteToken] = useState<string | null>(null)
 
   // URLパラメータから招待トークンを取得
   useEffect(() => {

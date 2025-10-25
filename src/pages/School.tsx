@@ -3,9 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { logger } from '../utils/logger'; // ← 追加
-import { useAuth } from "../contexts/AuthContext";
-import { PageHeader } from '../components/common/PageHeader'; // 追加
-import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { SchoolMap } from '../components/SchoolMap';
 import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
 import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
@@ -14,7 +11,6 @@ import { useSchoolInfo } from '../hooks/useSchoolInfo';
 import { ActionButtons } from '../components/common/ActionButtons';
 import { LoadingError } from '../components/common/LoadingError';
 import { PageLayout } from '../components/common/PageLayout';
-import type { SchoolInfo, SchoolDetails } from '../types/school';
 import { handleDatabaseError } from '../utils/errorHandler';
 import { SCHOOL_ERROR_MESSAGES } from '../constants/errorMessages';
 import './School.scss';
@@ -22,7 +18,6 @@ import './School.scss';
 const School: React.FC = () => {
   const { workspaceId, schoolCode } = useParams<{ workspaceId: string; schoolCode: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   // ワークスペース情報
   const { workspaceName, workspaceOwner } = useWorkspace(workspaceId);
@@ -41,7 +36,6 @@ const School: React.FC = () => {
   const [nearestStation, setNearestStation] = useState('');
   const [officialWebsite, setOfficialWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAlreadyTarget, setIsAlreadyTarget] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   // メニュー表示状態
@@ -57,10 +51,8 @@ const School: React.FC = () => {
       setNearestStation(schoolDetails.nearest_station || '');
       setOfficialWebsite(schoolDetails.official_website || '');
       setIsEditing(false);
-      setIsAlreadyTarget(true);
     } else {
       setIsEditing(true);
-      setIsAlreadyTarget(false);
     }
   }, [schoolDetails]);
           

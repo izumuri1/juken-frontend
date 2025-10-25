@@ -1,6 +1,6 @@
 // src/pages/Exam.tsx
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { logger } from '../utils/logger'
@@ -14,7 +14,6 @@ import ExamInfoCard from '../components/exam/ExamInfoCard'
 import { SchoolBasicInfo } from '../components/school/SchoolBasicInfo';
 import { SchoolMap } from '../components/school/SchoolMap';
 import { SchoolDetailsInfo } from '../components/school/SchoolDetailsInfo';
-import type { SchoolInfo, SchoolDetails } from '../types/school';
 import type { ExamInfo } from '../types/exam';
 import { EXAM_ERROR_MESSAGES } from '../constants/errorMessages';
 import './Exam.scss'
@@ -22,7 +21,6 @@ import './Exam.scss'
 export default function Exam() {
   const { workspaceId, schoolId } = useParams<{ workspaceId: string; schoolId: string }>()
   const { user } = useAuth()
-  const navigate = useNavigate()
 
   const [examInfos, setExamInfos] = useState<ExamInfo[]>([])
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -76,7 +74,7 @@ export default function Exam() {
       await fetchExamInfos()
     } catch (err) {
       logger.error('Error deleting exam info:', err);
-      setError(EXAM_ERROR_MESSAGES.DELETE_FAILED);
+      alert(EXAM_ERROR_MESSAGES.DELETE_FAILED);  // ← alertに変更
     }
   }
 

@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
+import { logger } from '../utils/logger';
 import { secureLogger } from '../utils/secureLogger';
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { sanitizeHtml } from "../utils/sanitize";
 import { handleDatabaseError } from "../utils/errorHandler";
-import { WORKSPACE_ERROR_MESSAGES, GENERAL_ERROR_MESSAGES } from "../constants/errorMessages";
 import type { Workspace, CreateWorkspaceFormData } from "../types/workspace";
 import "./CreateWorkspace.scss";
 

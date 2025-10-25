@@ -3,7 +3,6 @@ import { supabase } from '../lib/supabase'
 import { secureLogger } from '../utils/secureLogger';
 import { useNavigate, useParams } from 'react-router-dom'; // ← useParamsを追加
 import { getDesireBadgeClass } from '../utils/helpers'; // 追加
-import { PageHeader } from '../components/common/PageHeader'; // 追加
 import { InfoCard } from '../components/common/InfoCard'; // 追加
 import { WorkspaceMembers } from '../components/WorkspaceMembers'; // 追加
 import { useWorkspace } from '../hooks/useWorkspace'; // ← 追加
@@ -11,7 +10,6 @@ import { ActionButtons } from '../components/common/ActionButtons'; // ← 追�
 import { PageLayout } from '../components/common/PageLayout';
 import type { SchoolMaster, SchoolListItem } from '../types/school';
 import type { ExamListItem } from '../types/exam';
-import type { WorkspaceMember } from '../types/workspace';
 import { SEARCH, ALLOWED_PATTERNS, DATE_FORMAT } from '../constants/appConstants'
 import './Home.scss';
 
@@ -35,10 +33,9 @@ const Home: React.FC = () => {
   // データ
   const [schools, setSchools] = useState<SchoolListItem[]>([]);
   const [exams, setExams] = useState<ExamListItem[]>([]);
-  const [members, setMembers] = useState<WorkspaceMember[]>([]);
 
   // ソート
-  const [schoolSortBy, setSchoolSortBy] = useState<'desire' | 'time'>('desire');
+  const [schoolSortBy, setSchoolSortBy] = useState<'desire' | 'commute'>('desire');
   const [schoolSortOrder, setSchoolSortOrder] = useState<'asc' | 'desc'>('desc');
   const [examSortBy, setExamSortBy] = useState<'desire' | 'date' | 'deviation'>('date');
   const [examSortOrder, setExamSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -305,17 +302,6 @@ const handleSearchInput = async (value: string) => {
       navigate(`/workspace/${workspaceId}/school/${school.school_code}`); // ← workspaceIdを追加
     };
 
-    const handleSearch = () => {
-      // 検索ボタンクリック時の処理（現状は入力時に自動検索されるため空実装）
-      secureLogger.log('検索ボタンがクリックされました');
-    };
-
-  // Enterキーでの検索対応
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
 
   // ソート処理
   const sortSchools = (schools: SchoolListItem[]) => {

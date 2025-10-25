@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import FormField from '../components/common/FormField'
 import { useForm } from '../hooks/useForm'
 import { supabase } from '../lib/supabase'
+import { logger } from '../utils/logger'
 import { sanitizeHtml } from '../utils/sanitize'
 import { validationRules } from '../utils/validationRules'  // 追加
 import { handleAuthError } from '../utils/authErrorHandler'  // 追加

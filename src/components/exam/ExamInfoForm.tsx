@@ -165,20 +165,30 @@ export default function ExamInfoForm({ workspaceId, schoolId, onExamInfoCreated 
   if (!difficultyValid || !examValid) {
     const missingFields: string[] = []
     
+    // difficultyFormの必須フィールドを直接チェック
     if (!difficultyValid) {
-      Object.entries(difficultyForm.validationRules).forEach(([field, rule]) => {
-        if (rule.required && !difficultyForm.values[field as keyof DifficultyFormData]) {
-          missingFields.push(rule.displayName || field)
-        }
-      })
+      if (!difficultyForm.values.deviationValue) {
+        missingFields.push('偏差値');
+      }
     }
     
+    // examFormの必須フィールドを直接チェック
     if (!examValid) {
-      Object.entries(examForm.validationRules).forEach(([field, rule]) => {
-        if (rule.required && !examForm.values[field as keyof ExamFormData]) {
-          missingFields.push(rule.displayName || field)
-        }
-      })
+      if (!examForm.values.examCandidateSign) {
+        missingFields.push('受験候補サイン');
+      }
+      if (!examForm.values.examStart) {
+        missingFields.push('受験開始時刻');
+      }
+      if (!examForm.values.examEnd) {
+        missingFields.push('受験終了時刻');
+      }
+      if (!examForm.values.examVenue) {
+        missingFields.push('受験会場');
+      }
+      if (!examForm.values.examSubjects) {
+        missingFields.push('受験科目');
+      }
     }
     
     setError(`必須項目を入力してください: ${missingFields.join('、')}`)

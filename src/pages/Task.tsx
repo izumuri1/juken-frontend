@@ -135,7 +135,7 @@ const { data: examData, error: examError } = await supabase
         : null;
 
         // 既存のタスクを確認
-        const { data: existingTask, error: fetchError } = await supabase
+        const { data: existingTask } = await supabase
         .from('tasks')
         .select('id')
         .eq('exam_info_id', examInfoId)
@@ -215,7 +215,7 @@ const { data: examData, error: examError } = await supabase
         const completedAt = newStatus ? new Date().toISOString() : null;
 
         // 既存のタスクを確認
-        const { data: existingTask, error: fetchError } = await supabase
+        const { data: existingTask } = await supabase
         .from('tasks')
         .select('id')
         .eq('exam_info_id', examInfoId)
@@ -327,22 +327,11 @@ const { data: examData, error: examError } = await supabase
   };
 
   const formatTime = (datetime: string) => {
-    const date = new Date(datetime);
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-  };
+  const date = new Date(datetime);
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+};
 
-  const getTaskLabel = (taskType: string): string => {
-    const labels: { [key: string]: string } = {
-      application: '受験申込',
-      fee_payment: '受験料支払',
-      announcement: '合格発表',
-      enrollment: '入学申込',
-      admission_fee: '入学金支払'
-    };
-    return labels[taskType] || taskType;
-  };
-
-  if (loading) {
+if (loading) {
     return (
       <PageLayout
         workspaceName={workspaceName}
