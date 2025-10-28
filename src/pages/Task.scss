@@ -198,23 +198,35 @@
     gap: $spacing-small;
 
     .info-item {
-      display: flex;
-      justify-content: space-between;
-      font-size: $font-size-body;
+    display: flex;
+    justify-content: space-between;
+    font-size: $font-size-body;
+    
+    .label {
+      color: $home-text-muted;
+      font-weight: $font-weight-medium;
+    }
 
+    .value {
+      color: $home-text-body;
+      font-weight: $font-weight-medium;
+      text-align: right;
+    }
+    
+    // 左寄せ表示用のクラス
+    &.info-item-left {
+      flex-direction: column;
+      gap: 0.25rem;
+      
       .label {
-        color: $home-text-muted;
         font-weight: $font-weight-medium;
-        flex-shrink: 0;
-        margin-right: $spacing-small;
       }
-
+      
       .value {
-        color: $home-text-body;
-        font-weight: $font-weight-medium;
-        text-align: right;
+        text-align: left;
       }
     }
+  }
   }
 
   .card-actions {

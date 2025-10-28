@@ -41,29 +41,36 @@ const Task: React.FC = () => {
       setError(null);
 
       // 受験情報を取得
-const { data: examData, error: examError } = await supabase
-    .from('exam_info')
-    .select(`
-        id,
-        school_id,
-        schools!inner(school_code, name),
-        exam_candidate_sign,
-        exam_start,
-        exam_end,
-        exam_venue,
-        exam_subjects,
-        application_start,
-        application_end,
-        application_deadline,
-        application_materials,
-        fee_deadline,
-        announcement_time,
-        enrollment_start,
-        enrollment_end,
-        admission_fee_deadline
-    `)
-    .eq('workspace_id', workspaceId)
-    .order('exam_start', { ascending: true });
+      const { data: examData, error: examError } = await supabase
+          .from('exam_info')
+          .select(`
+              id,
+              school_id,
+              schools!inner(school_code, name),
+              exam_candidate_sign,
+              exam_start,
+              exam_end,
+              exam_venue,
+              exam_subjects,
+              application_start,
+              application_end,
+              application_deadline,
+              application_method,
+              application_materials,
+              fee_deadline,
+              fee_payment_method,
+              fee_note,
+              announcement_time,
+              enrollment_start,
+              enrollment_end,
+              enrollment_method,
+              enrollment_note,
+              admission_fee_deadline,
+              admission_fee_payment_method,
+              admission_fee_note
+          `)
+          .eq('workspace_id', workspaceId)
+          .order('exam_start', { ascending: true });
 
       if (examError) throw examError;
 
@@ -108,12 +115,19 @@ const { data: examData, error: examError } = await supabase
           application_start: exam.application_start,
           application_end: exam.application_end,
           application_deadline: exam.application_deadline,
+          application_method: exam.application_method,
           application_materials: exam.application_materials,
           fee_deadline: exam.fee_deadline,
+          fee_payment_method: exam.fee_payment_method,
+          fee_note: exam.fee_note,
           announcement_time: exam.announcement_time,
           enrollment_start: exam.enrollment_start,
           enrollment_end: exam.enrollment_end,
+          enrollment_method: exam.enrollment_method,
+          enrollment_note: exam.enrollment_note,
           admission_fee_deadline: exam.admission_fee_deadline,
+          admission_fee_payment_method: exam.admission_fee_payment_method,
+          admission_fee_note: exam.admission_fee_note,
           tasks: examTasks
         };
       });
@@ -472,8 +486,14 @@ if (loading) {
                           <span className="value">{formatDateTime(exam.application_deadline)}</span>
                         </div>
                       )}
+                      {exam.application_method && (
+                        <div className="info-item info-item-left">
+                          <span className="label">申込方法</span>
+                          <span className="value">{exam.application_method}</span>
+                        </div>
+                      )}
                       {exam.application_materials && (
-                        <div className="info-item">
+                        <div className="info-item info-item-left">
                           <span className="label">必要資材</span>
                           <span className="value">{exam.application_materials}</span>
                         </div>
@@ -513,6 +533,18 @@ if (loading) {
                         <div className="info-item">
                           <span className="label">支払期限</span>
                           <span className="value">{formatDateTime(exam.fee_deadline)}</span>
+                        </div>
+                      )}
+                      {exam.fee_payment_method && (
+                        <div className="info-item info-item-left">
+                          <span className="label">支払方法</span>
+                          <span className="value">{exam.fee_payment_method}</span>
+                        </div>
+                      )}
+                      {exam.fee_note && (
+                        <div className="info-item info-item-left">
+                          <span className="label">備考</span>
+                          <span className="value">{exam.fee_note}</span>
                         </div>
                       )}
                     </div>
@@ -591,6 +623,18 @@ if (loading) {
                           </span>
                         </div>
                       )}
+                      {exam.enrollment_method && (
+                        <div className="info-item info-item-left">
+                          <span className="label">申込方法</span>
+                          <span className="value">{exam.enrollment_method}</span>
+                        </div>
+                      )}
+                      {exam.enrollment_note && (
+                        <div className="info-item info-item-left">
+                          <span className="label">備考</span>
+                          <span className="value">{exam.enrollment_note}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -626,6 +670,18 @@ if (loading) {
                         <div className="info-item">
                           <span className="label">支払期限</span>
                           <span className="value">{formatDateTime(exam.admission_fee_deadline)}</span>
+                        </div>
+                      )}
+                      {exam.admission_fee_payment_method && (
+                        <div className="info-item info-item-left">
+                          <span className="label">支払方法</span>
+                          <span className="value">{exam.admission_fee_payment_method}</span>
+                        </div>
+                      )}
+                      {exam.admission_fee_note && (
+                        <div className="info-item info-item-left">
+                          <span className="label">備考</span>
+                          <span className="value">{exam.admission_fee_note}</span>
                         </div>
                       )}
                     </div>
