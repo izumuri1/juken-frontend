@@ -423,12 +423,22 @@ $ease-in-out:             ease-in-out;
   
   // 縦画面での中央配置調整
   justify-content: flex-start;
-  padding-top: $spacing-xlarge;
-  padding-bottom: $spacing-xlarge;
   
-  // スクロール時に上下の余白を確保
-  margin-top: 2rem;
-  margin-bottom: 10rem;
+  // スマホ向け：余白を小さく
+  @media (max-width: 600px) {
+    padding-top: $spacing-mobile;
+    padding-bottom: $spacing-mobile;
+    margin-top: 0.5rem;
+    margin-bottom: 3rem;
+  }
+  
+  // PC向け：余白を大きく
+  @media (min-width: 601px) {
+    padding-top: $spacing-xlarge;
+    padding-bottom: $spacing-xlarge;
+    margin-top: 2rem;
+    margin-bottom: 10rem;
+  }
 }
 
 //////////////////////////////////////////////////////////////
