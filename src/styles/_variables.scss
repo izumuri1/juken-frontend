@@ -392,16 +392,16 @@ $ease-in-out:             ease-in-out;
   top: 0;
   left: 0;
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   background-color: $auth-bg-color;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   overflow-y: auto;
   
-  // セーフエリア対応 - 下部により多くのスペースを確保
-  padding-top: max(2rem, env(safe-area-inset-top));
-  padding-bottom: max(10rem, env(safe-area-inset-bottom));
+  // セーフエリア対応
+  padding-top: max($spacing-mobile, env(safe-area-inset-top));
+  padding-bottom: max($spacing-mobile, env(safe-area-inset-bottom));
   padding-left: max($spacing-mobile, env(safe-area-inset-left));
   padding-right: max($spacing-mobile, env(safe-area-inset-right));
   
@@ -424,7 +424,11 @@ $ease-in-out:             ease-in-out;
   // 縦画面での中央配置調整
   justify-content: flex-start;
   padding-top: $spacing-xlarge;
-  padding-bottom: calc($spacing-xlarge + 5rem);
+  padding-bottom: $spacing-xlarge;
+  
+  // スクロール時に上下の余白を確保
+  margin-top: 2rem;
+  margin-bottom: 10rem;
 }
 
 //////////////////////////////////////////////////////////////
