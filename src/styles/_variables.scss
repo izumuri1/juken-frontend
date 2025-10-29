@@ -400,7 +400,7 @@ $ease-in-out:             ease-in-out;
   
   // セーフエリア対応 - 下部により多くのスペースを確保
   padding-top: max($spacing-mobile, env(safe-area-inset-top));
-  padding-bottom: max(calc($spacing-mobile + 4rem), env(safe-area-inset-bottom));
+  padding-bottom: max(calc($spacing-mobile + 8rem), env(safe-area-inset-bottom));
   padding-left: max($spacing-mobile, env(safe-area-inset-left));
   padding-right: max($spacing-mobile, env(safe-area-inset-right));
   
@@ -423,7 +423,7 @@ $ease-in-out:             ease-in-out;
   // 縦画面での中央配置調整
   justify-content: flex-start;
   padding-top: $spacing-xlarge;
-  padding-bottom: calc($spacing-xlarge + 3rem);
+  padding-bottom: calc($spacing-xlarge + 5rem);
 }
 
 //////////////////////////////////////////////////////////////
