@@ -392,26 +392,28 @@ $ease-in-out:             ease-in-out;
   top: 0;
   left: 0;
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;              // ← min-height から height に変更
+  max-height: 100vh;          // ← 追加
   background-color: $auth-bg-color;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-start;    // ← center から flex-start に変更（上寄せ）
   justify-content: center;
   overflow-y: auto;
+  overflow-x: hidden;
   
   // セーフエリア対応
   padding-top: max($spacing-mobile, env(safe-area-inset-top));
   padding-left: max($spacing-mobile, env(safe-area-inset-left));
   padding-right: max($spacing-mobile, env(safe-area-inset-right));
   
-  // スマホ向け：下部に大きな余白を確保
+  // スマホ向け:下部に非常に大きな余白を確保
   @media (max-width: 600px) {
-    padding-bottom: max(8rem, env(safe-area-inset-bottom));
+    padding-bottom: 15rem;     // ← 大きな余白
   }
   
-  // PC向け：下部に余白を確保
+  // PC向け:下部に余白を確保
   @media (min-width: 601px) {
-    padding-bottom: max(10rem, env(safe-area-inset-bottom));
+    padding-bottom: 10rem;
   }
   
   // スマホ最適化
