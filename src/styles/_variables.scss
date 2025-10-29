@@ -392,10 +392,10 @@ $ease-in-out:             ease-in-out;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   background-color: $auth-bg-color;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   overflow-y: auto;
   
@@ -424,12 +424,12 @@ $ease-in-out:             ease-in-out;
   // 縦画面での中央配置調整
   justify-content: flex-start;
   
-  // スマホ向け：余白を小さく
+  // スマホ向け：余白を調整
   @media (max-width: 600px) {
     padding-top: $spacing-mobile;
     padding-bottom: $spacing-mobile;
-    margin-top: 0.5rem;
-    margin-bottom: 3rem;
+    margin-top: 1rem;
+    margin-bottom: 5rem;
   }
   
   // PC向け：余白を大きく
