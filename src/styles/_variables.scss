@@ -392,16 +392,16 @@ $ease-in-out:             ease-in-out;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   background-color: $auth-bg-color;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   overflow-y: auto;
   
   // セーフエリア対応 - 下部により多くのスペースを確保
-  padding-top: max($spacing-mobile, env(safe-area-inset-top));
-  padding-bottom: max(8rem, env(safe-area-inset-bottom));
+  padding-top: max(2rem, env(safe-area-inset-top));
+  padding-bottom: max(10rem, env(safe-area-inset-bottom));
   padding-left: max($spacing-mobile, env(safe-area-inset-left));
   padding-right: max($spacing-mobile, env(safe-area-inset-right));
   
