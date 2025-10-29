@@ -401,9 +401,18 @@ $ease-in-out:             ease-in-out;
   
   // セーフエリア対応
   padding-top: max($spacing-mobile, env(safe-area-inset-top));
-  padding-bottom: max($spacing-mobile, env(safe-area-inset-bottom));
   padding-left: max($spacing-mobile, env(safe-area-inset-left));
   padding-right: max($spacing-mobile, env(safe-area-inset-right));
+  
+  // スマホ向け：下部に大きな余白を確保
+  @media (max-width: 600px) {
+    padding-bottom: max(8rem, env(safe-area-inset-bottom));
+  }
+  
+  // PC向け：下部に余白を確保
+  @media (min-width: 601px) {
+    padding-bottom: max(10rem, env(safe-area-inset-bottom));
+  }
   
   // スマホ最適化
   -webkit-overflow-scrolling: touch;
@@ -429,7 +438,7 @@ $ease-in-out:             ease-in-out;
     padding-top: $spacing-mobile;
     padding-bottom: $spacing-mobile;
     margin-top: 1rem;
-    margin-bottom: 5rem;
+    margin-bottom: 0;
   }
   
   // PC向け：余白を大きく
@@ -437,7 +446,7 @@ $ease-in-out:             ease-in-out;
     padding-top: $spacing-xlarge;
     padding-bottom: $spacing-xlarge;
     margin-top: 2rem;
-    margin-bottom: 10rem;
+    margin-bottom: 0;
   }
 }
 
