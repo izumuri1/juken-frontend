@@ -475,26 +475,26 @@ if (loading) {
                     </div>
                     <div className="info-grid">
                       <div className="info-item">
-                        <span className="label">申込期間</span>
+                        <span className="label">申込期間:</span>
                         <span className="value">
                           {formatDate(exam.application_start)} ～ {formatDate(exam.application_end)}
                         </span>
                       </div>
                       {exam.application_deadline && (
                         <div className="info-item">
-                          <span className="label">申込期限</span>
+                          <span className="label">申込期限:</span>
                           <span className="value">{formatDateTime(exam.application_deadline)}</span>
                         </div>
                       )}
                       {exam.application_method && (
                         <div className="info-item info-item-left">
-                          <span className="label">申込方法</span>
+                          <span className="label">申込方法:</span>
                           <span className="value">{exam.application_method}</span>
                         </div>
                       )}
                       {exam.application_materials && (
                         <div className="info-item info-item-left">
-                          <span className="label">必要資材</span>
+                          <span className="label">必要資材:</span>
                           <span className="value">{exam.application_materials}</span>
                         </div>
                       )}
@@ -531,19 +531,19 @@ if (loading) {
                     <div className="info-grid">
                       {exam.fee_deadline && (
                         <div className="info-item">
-                          <span className="label">支払期限</span>
+                          <span className="label">支払期限:</span>
                           <span className="value">{formatDateTime(exam.fee_deadline)}</span>
                         </div>
                       )}
                       {exam.fee_payment_method && (
                         <div className="info-item info-item-left">
-                          <span className="label">支払方法</span>
+                          <span className="label">支払方法:</span>
                           <span className="value">{exam.fee_payment_method}</span>
                         </div>
                       )}
                       {exam.fee_note && (
                         <div className="info-item info-item-left">
-                          <span className="label">備考</span>
+                          <span className="label">備考:</span>
                           <span className="value">{exam.fee_note}</span>
                         </div>
                       )}
@@ -580,7 +580,7 @@ if (loading) {
                     <div className="info-grid">
                       {exam.announcement_time && (
                         <div className="info-item">
-                          <span className="label">発表時刻</span>
+                          <span className="label">発表時刻:</span>
                           <span className="value">{formatDateTime(exam.announcement_time)}</span>
                         </div>
                       )}
@@ -617,7 +617,7 @@ if (loading) {
                     <div className="info-grid">
                       {exam.enrollment_start && exam.enrollment_end && (
                         <div className="info-item">
-                          <span className="label">申込期間</span>
+                          <span className="label">申込期間:</span>
                           <span className="value">
                             {formatDateTime(exam.enrollment_start)} ～ {formatTime(exam.enrollment_end)}
                           </span>
@@ -625,13 +625,13 @@ if (loading) {
                       )}
                       {exam.enrollment_method && (
                         <div className="info-item info-item-left">
-                          <span className="label">申込方法</span>
+                          <span className="label">申込方法:</span>
                           <span className="value">{exam.enrollment_method}</span>
                         </div>
                       )}
                       {exam.enrollment_note && (
                         <div className="info-item info-item-left">
-                          <span className="label">備考</span>
+                          <span className="label">備考:</span>
                           <span className="value">{exam.enrollment_note}</span>
                         </div>
                       )}
@@ -668,19 +668,19 @@ if (loading) {
                     <div className="info-grid">
                       {exam.admission_fee_deadline && (
                         <div className="info-item">
-                          <span className="label">支払期限</span>
+                          <span className="label">支払期限:</span>
                           <span className="value">{formatDateTime(exam.admission_fee_deadline)}</span>
                         </div>
                       )}
                       {exam.admission_fee_payment_method && (
                         <div className="info-item info-item-left">
-                          <span className="label">支払方法</span>
+                          <span className="label">支払方法:</span>
                           <span className="value">{exam.admission_fee_payment_method}</span>
                         </div>
                       )}
                       {exam.admission_fee_note && (
                         <div className="info-item info-item-left">
-                          <span className="label">備考</span>
+                          <span className="label">備考:</span>
                           <span className="value">{exam.admission_fee_note}</span>
                         </div>
                       )}
