@@ -408,12 +408,12 @@ $ease-in-out:             ease-in-out;
   
   // スマホ向け:下部に非常に大きな余白を確保
   @media (max-width: 600px) {
-    padding-bottom: 15rem;     // ← 大きな余白
+    padding-bottom: 5rem;     // ← 大きな余白
   }
   
   // PC向け:下部に余白を確保
   @media (min-width: 601px) {
-    padding-bottom: 10rem;
+    padding-bottom: 5rem;
   }
   
   // スマホ最適化
