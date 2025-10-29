@@ -8,12 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 .login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: $auth-bg-color;
-  padding: $spacing-mobile;
+  @include auth-container;
 }
 
 .login-card {
