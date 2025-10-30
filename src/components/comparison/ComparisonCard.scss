@@ -51,11 +51,19 @@
         text-align: center;
         min-width: 2.5rem;
 
-        &.badge-level-1 { background-color: #fee; color: #c00; }
-        &.badge-level-2 { background-color: #ffe; color: #c60; }
-        &.badge-level-3 { background-color: #ffc; color: #960; }
-        &.badge-level-4 { background-color: #cfc; color: #060; }
-        &.badge-level-5 { background-color: #9f9; color: #030; }
+        &.badge-level-5,
+        &.badge-level-4 {
+          @include home-badge-high;
+        }
+
+        &.badge-level-3 {
+          @include home-badge-medium;
+        }
+
+        &.badge-level-2,
+        &.badge-level-1 {
+          @include home-badge-low;
+        }
       }
     }
   }
