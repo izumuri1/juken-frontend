@@ -82,13 +82,13 @@ const Comparison2: React.FC = () => {
         (data || []).map(async (exam) => {
             // 最新志望度を取得
             const { data: aspirationData } = await supabase
-            .from('target_infos')
-            .select('child_aspiration')
-            .eq('workspace_id', workspaceId)
-            .eq('school_id', exam.school_id)
-            .order('event_date', { ascending: false })
-            .limit(1)
-            .single();
+              .from('target_schools')  // ← 正しいテーブル名に修正
+              .select('child_aspiration')
+              .eq('workspace_id', workspaceId)
+              .eq('school_id', exam.school_id)
+              .order('event_date', { ascending: false })
+              .limit(1)
+              .maybeSingle();  // ← データが存在しない場合もエラーにならないように変更
 
             // school_detailsを取得
             const { data: schoolDetailData } = await supabase
